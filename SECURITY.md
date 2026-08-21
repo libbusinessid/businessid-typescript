@@ -8,20 +8,26 @@ or a crafted input reach behaviour this document says is impossible.
 
 ## The threat model
 
-Two inputs are untrusted, and both are treated that way.
+**The published package has no untrusted input but the value being validated.**
+It carries no bundle and no decoder: the rules are code, emitted at build time.
+A user value is bounded to 1024 UTF-8 bytes and refused past that without being
+processed, every position and length is counted in code points, and the emitted
+code terminates by construction — the call graph was proved acyclic and bounded
+in depth before a line of it existed. No input makes the engine throw, so it has
+no error type of its own.
 
-**A rule bundle** may be hostile. `BusinessIdEngine.fromRules` applies all
-twenty four load time checks of the specification before a single node runs: the
-size bound, complete decoding, the version and capability gates, the unknown
-field scan, the structural and arithmetic bounds, and the proof that the call
-graph is acyclic and shallower than 32. A bundle that fails any of them raises a
-`BundleError`; the engine never executes a partially validated graph.
+**A rule bundle may be hostile, and it only ever reaches the generator.** That
+runs at build time, under the engine author's control, and applies all twenty
+four load time checks of the specification before emitting anything: the size
+bound, complete decoding at the wire level, the version and capability gates,
+the unknown field scan, the structural and arithmetic bounds, and the proof that
+the call graph is acyclic and shallower than 32. It also refuses a bundle whose
+programs would expand past the evaluation budget when inlined. A bundle failing
+any of them raises a `BundleError` and nothing is emitted.
 
-**A user value** may be hostile. It is bounded to 1024 UTF-8 bytes and refused
-past that without being processed. Every position and length is counted in code
-points. Evaluation is bounded by a budget of 100 000 steps, which also bounds
-the memory a bundle can make the engine allocate, and exhausting it raises an
-engine error rather than running unbounded.
+Moving the decoder out of the package is the point, not a side effect: an
+interpreter would carry the whole validator and sixty three opcodes into every
+consumer's runtime.
 
 ## What the engine never does
 
@@ -33,8 +39,9 @@ engine error rather than running unbounded.
   the whitespace class is a frozen table rather than the runtime's own Unicode
   tables.
 - No country rule is hard coded outside the bundle.
-- No internal error is turned into a verdict. An engine error surfaces as an
-  `EngineError`, never as `invalid_checksum`.
+- No internal error is turned into a verdict. There is no path from an internal
+  inconsistency to `invalid_checksum`, because the generator refused anything it
+  did not understand and the emitted code is total.
 
 ## What this package does not claim
 
@@ -51,5 +58,6 @@ the module is generated and again by `check:generated` in CI. The engine never
 re-serializes a decoded bundle to recompute that digest: Protobuf is not a
 canonical serialization, so only the bytes as received can be verified.
 
-Every GitHub Action is pinned to a commit SHA. The runtime has one dependency,
-`@bufbuild/protobuf`.
+Every GitHub Action is pinned to a commit SHA. **The published package has no
+runtime dependencies at all** — Protobuf-ES is a build-time dependency of the
+generator, and never ships.

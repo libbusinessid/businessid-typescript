@@ -1,9 +1,8 @@
-import { RULES_BUNDLE_BYTES } from "../assets/rules.generated.js";
 import { ENGINE_VERSION } from "../assets/version.generated.js";
 import type { IdentifierInput, ValidationOptions } from "../domain/input.js";
 import type { CanonicalizationResult, ValidationReport } from "../domain/result.js";
-import { loadBundle } from "../runtime/load.js";
-import type { LoadedBundle } from "../runtime/ir.js";
+import * as rules from "../rules.generated.js";
+import type { RuleSet } from "../runtime/ruleset.js";
 import { execute } from "../runtime/pipeline.js";
 import {
   type RegistryInput,
@@ -14,76 +13,59 @@ import {
 } from "../registry/provider.js";
 
 /** What a bundle announces about itself. */
+/** The generated rules this package ships, seen through their contract. */
+const ruleSet: RuleSet = rules;
+
+/** What a rule set announces about itself. */
 export type RulesInfo = Readonly<{
   rulesVersion: string;
   formatVersion: number;
   engineVersion: string;
 }>;
 
-let defaultEngine: BusinessIdEngine | undefined;
-
 /**
- * An engine bound to one rule bundle.
+ * The engine.
  *
- * Immutable once constructed and safe to share. Ordinary user input never
- * throws: an unusable value produces a report saying why. Only a bundle that
- * cannot be executed throws, and it throws when the engine is built rather
- * than when a value is validated.
+ * The rules are code: a generator read the bundle when this package was built,
+ * applied every load time check, and emitted what you are calling. Nothing here
+ * decodes anything, so there is no factory taking bundle bytes — a custom rule
+ * set goes through the generator, at build time.
+ *
+ * Immutable and safe to share. Ordinary user input never throws: an unusable
+ * value produces a report saying why.
  */
 export class BusinessIdEngine {
-  readonly #bundle: LoadedBundle;
-
-  private constructor(bundle: LoadedBundle) {
-    this.#bundle = bundle;
-  }
-
   /**
-   * The engine bound to the bundle this package ships.
+   * The engine bound to the rules this package ships.
    *
-   * Decoded at most once per process, on first use. No network request and no
-   * filesystem read is involved, so this works unchanged in a browser.
+   * Nothing is decoded, fetched or read from a file, so this works unchanged in
+   * a browser and costs nothing at start-up.
    */
-  static get default(): BusinessIdEngine {
-    defaultEngine ??= new BusinessIdEngine(loadBundle(RULES_BUNDLE_BYTES));
-    return defaultEngine;
-  }
+  static readonly default: BusinessIdEngine = new BusinessIdEngine();
 
-  /**
-   * Builds an engine from bundle bytes.
-   *
-   * The bytes are treated as untrusted: every load time check and every limit
-   * applies.
-   *
-   * @throws BundleError when the bundle is malformed or announces something
-   * this build does not implement.
-   */
-  static fromRules(bytes: Uint8Array): BusinessIdEngine {
-    return new BusinessIdEngine(loadBundle(bytes));
-  }
-
-  /** What the loaded bundle announces about itself. */
+  /** What the generated rules announce about themselves. */
   rulesInfo(): RulesInfo {
     return {
-      rulesVersion: this.#bundle.rulesVersion,
-      formatVersion: this.#bundle.formatVersion,
+      rulesVersion: ruleSet.RULES_VERSION,
+      formatVersion: ruleSet.FORMAT_VERSION,
       engineVersion: ENGINE_VERSION,
     };
   }
 
-  /** The capability ids the loaded bundle requires, ascending. */
+  /** The capability ids the rules required of their generator, ascending. */
   capabilities(): readonly number[] {
-    return [...this.#bundle.capabilities].sort((left, right) => left - right);
+    return ruleSet.CAPABILITIES;
   }
 
-  /** Every kind token this bundle routes, canonical kinds and aliases alike. */
+  /** Every kind token these rules route, canonical kinds and aliases alike. */
   kinds(): readonly string[] {
-    return [...this.#bundle.kindIndex.keys()].sort();
+    return ruleSet.KINDS;
   }
 
   /** Canonicalizes a value without running format or checksum rules. */
   canonicalize(input: IdentifierInput, options?: ValidationOptions): CanonicalizationResult {
     return execute(
-      this.#bundle,
+      ruleSet,
       ENGINE_VERSION,
       "canonicalize",
       input,
@@ -93,7 +75,7 @@ export class BusinessIdEngine {
 
   /** Runs format and, when the format is valid, checksum. */
   validate(input: IdentifierInput, options?: ValidationOptions): ValidationReport {
-    return execute(this.#bundle, ENGINE_VERSION, "validate", input, options) as ValidationReport;
+    return execute(ruleSet, ENGINE_VERSION, "validate", input, options) as ValidationReport;
   }
 
   /**
@@ -103,13 +85,7 @@ export class BusinessIdEngine {
    * `not_run` with `not_requested`, never omitted.
    */
   validateFormat(input: IdentifierInput, options?: ValidationOptions): ValidationReport {
-    return execute(
-      this.#bundle,
-      ENGINE_VERSION,
-      "validateFormat",
-      input,
-      options,
-    ) as ValidationReport;
+    return execute(ruleSet, ENGINE_VERSION, "validateFormat", input, options) as ValidationReport;
   }
 
   /**
@@ -119,13 +95,7 @@ export class BusinessIdEngine {
    * separate name exists for readability, never to bypass the format step.
    */
   validateChecksum(input: IdentifierInput, options?: ValidationOptions): ValidationReport {
-    return execute(
-      this.#bundle,
-      ENGINE_VERSION,
-      "validateChecksum",
-      input,
-      options,
-    ) as ValidationReport;
+    return execute(ruleSet, ENGINE_VERSION, "validateChecksum", input, options) as ValidationReport;
   }
 
   /**

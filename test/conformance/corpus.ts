@@ -4,7 +4,7 @@ import { fromBinary } from "@bufbuild/protobuf";
 import {
   type ConformanceBundle,
   ConformanceBundleSchema,
-} from "../../src/generated/libbusinessid/conformance/v1/conformance_pb.js";
+} from "../../generated/libbusinessid/conformance/v1/conformance_pb.js";
 
 /**
  * Reads the conformance corpus published by the spec repository.

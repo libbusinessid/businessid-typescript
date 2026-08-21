@@ -14,14 +14,16 @@ export default defineConfig({
       provider: "v8",
       include: ["src/**/*.ts"],
       exclude: [
-        // Generated from the spec artifacts and verified by `check:generated`.
-        "src/generated/**",
+        // The rules themselves, emitted by the generator from the attested
+        // bundle and covered end to end by the conformance run. What is
+        // measured here is the code that was written by hand.
+        "src/rules.generated.ts",
         "src/assets/**",
         // Type-only modules: they declare shapes and compile to nothing, so
-        // there is no behaviour to cover. Every module holding runtime code
-        // stays in, including the defensive paths of the interpreter.
-        "src/runtime/ir.ts",
+        // there is no behaviour to cover.
         "src/domain/input.ts",
+        "src/runtime/ruleset.ts",
+        "src/runtime/values.ts",
       ],
       thresholds: {
         lines: 95,
@@ -36,6 +38,11 @@ export default defineConfig({
         test: {
           name: "node",
           include: ["test/**/*.test.ts"],
+          // Fuzzing generates code thousands of times, which takes far longer
+          // than the default per-test budget allows, especially under coverage
+          // instrumentation. Raising the budget is the answer; running fewer
+          // cases is not.
+          testTimeout: 120_000,
           exclude: ["test/browser/**"],
           environment: "node",
           typecheck: {

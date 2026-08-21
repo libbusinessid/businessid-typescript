@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { BusinessIdEngine } from "../../src/index.js";
+import { engineFor, type TestEngine } from "../helpers/rules.js";
 import {
   PredicateOpKind,
   StringOpKind,
   ValueType,
-} from "../../src/generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
 import {
   assertionSequence,
   constantNode,
@@ -25,15 +25,15 @@ import {
  * cannot be taken is absent, absence propagates through every constructor, and
  * a predicate reading an absent view is false.
  */
-function engineWhere(spec: {
+async function engineWhere(spec: {
   build: NodeSpec[];
   predicate: (stringNode: number) => NodeSpec;
-}): BusinessIdEngine {
+}): Promise<TestEngine> {
   const nodes = [...spec.build];
   nodes.push(spec.predicate(nodes.length - 1));
   nodes.push(requireNode(nodes.length - 1));
   nodes.push(assertionSequence([nodes.length - 1]));
-  return BusinessIdEngine.fromRules(singleKindBundle({ format: nodes }));
+  return engineFor(singleKindBundle({ format: nodes }));
 }
 
 type NodeSpec = ReturnType<typeof valueNode>;
@@ -59,28 +59,28 @@ const equalsConstant = (input: number, constantIndex: number): NodeSpec =>
   ]);
 
 /** Builds an engine whose format rule requires `expr` to equal `expected`. */
-function equalityEngine(build: NodeSpec[], expected: string): BusinessIdEngine {
+async function equalityEngine(build: NodeSpec[], expected: string): Promise<TestEngine> {
   const nodes = [...build, constantNode(expected)];
   nodes.push(equalsConstant(build.length - 1, nodes.length - 1));
   nodes.push(requireNode(nodes.length - 1));
   nodes.push(assertionSequence([nodes.length - 1]));
-  return BusinessIdEngine.fromRules(singleKindBundle({ format: nodes }));
+  return engineFor(singleKindBundle({ format: nodes }));
 }
 
-const verdict = (engine: BusinessIdEngine, value: string): string =>
+const verdict = (engine: TestEngine, value: string): string =>
   engine.validateFormat({ kind: "test", value }).format.status;
 
 describe("STRING_OP_KIND_CONSTANT", () => {
-  it("yields its constant whatever the input", () => {
-    const engine = equalityEngine([constantNode("FIXED")], "FIXED");
+  it("yields its constant whatever the input", async () => {
+    const engine = await equalityEngine([constantNode("FIXED")], "FIXED");
 
     expect(verdict(engine, "anything")).toBe("valid");
   });
 });
 
 describe("STRING_OP_KIND_VALUE", () => {
-  it("yields the canonical value", () => {
-    const engine = equalityEngine([valueNode()], "ABC");
+  it("yields the canonical value", async () => {
+    const engine = await equalityEngine([valueNode()], "ABC");
 
     expect(verdict(engine, "ABC")).toBe("valid");
     expect(verdict(engine, "ABD")).toBe("invalid");
@@ -97,26 +97,26 @@ describe("STRING_OP_KIND_SLICE", () => {
     ),
   ];
 
-  it("yields the code points in [start, end)", () => {
-    expect(verdict(equalityEngine(sliced(1, 3), "BC"), "ABCD")).toBe("valid");
+  it("yields the code points in [start, end)", async () => {
+    expect(verdict(await equalityEngine(sliced(1, 3), "BC"), "ABCD")).toBe("valid");
   });
 
-  it("is absent when end exceeds the length", () => {
-    const engine = engineWhere({ build: sliced(1, 9), predicate: isAbsent });
+  it("is absent when end exceeds the length", async () => {
+    const engine = await engineWhere({ build: sliced(1, 9), predicate: isAbsent });
 
     expect(verdict(engine, "ABCD")).toBe("valid");
   });
 
-  it("is absent when start is greater than end", () => {
-    const engine = engineWhere({ build: sliced(3, 1), predicate: isAbsent });
+  it("is absent when start is greater than end", async () => {
+    const engine = await engineWhere({ build: sliced(3, 1), predicate: isAbsent });
 
     expect(verdict(engine, "ABCD")).toBe("valid");
   });
 
-  it("counts positions in code points, not UTF-16 units", () => {
+  it("counts positions in code points, not UTF-16 units", async () => {
     // U+1D400 occupies two UTF-16 units; slicing [1,2) must yield the single
     // code point that follows it, not half of it.
-    expect(verdict(equalityEngine(sliced(1, 2), "B"), "\u{1D400}BC")).toBe("valid");
+    expect(verdict(await equalityEngine(sliced(1, 2), "B"), "\u{1D400}BC")).toBe("valid");
   });
 });
 
@@ -130,16 +130,20 @@ describe("STRING_OP_KIND_SLICE_FROM", () => {
     ),
   ];
 
-  it("yields the code points from start", () => {
-    expect(verdict(equalityEngine(from(2), "CD"), "ABCD")).toBe("valid");
+  it("yields the code points from start", async () => {
+    expect(verdict(await equalityEngine(from(2), "CD"), "ABCD")).toBe("valid");
   });
 
-  it("yields the empty view when start equals the length", () => {
-    expect(verdict(engineWhere({ build: from(4), predicate: isEmpty }), "ABCD")).toBe("valid");
+  it("yields the empty view when start equals the length", async () => {
+    expect(verdict(await engineWhere({ build: from(4), predicate: isEmpty }), "ABCD")).toBe(
+      "valid",
+    );
   });
 
-  it("is absent when start exceeds the length", () => {
-    expect(verdict(engineWhere({ build: from(5), predicate: isAbsent }), "ABCD")).toBe("valid");
+  it("is absent when start exceeds the length", async () => {
+    expect(verdict(await engineWhere({ build: from(5), predicate: isAbsent }), "ABCD")).toBe(
+      "valid",
+    );
   });
 });
 
@@ -153,12 +157,12 @@ describe("STRING_OP_KIND_SLICE_TO", () => {
     ),
   ];
 
-  it("yields the code points before end", () => {
-    expect(verdict(equalityEngine(to(2), "AB"), "ABCD")).toBe("valid");
+  it("yields the code points before end", async () => {
+    expect(verdict(await equalityEngine(to(2), "AB"), "ABCD")).toBe("valid");
   });
 
-  it("is absent when end exceeds the length", () => {
-    expect(verdict(engineWhere({ build: to(9), predicate: isAbsent }), "ABCD")).toBe("valid");
+  it("is absent when end exceeds the length", async () => {
+    expect(verdict(await engineWhere({ build: to(9), predicate: isAbsent }), "ABCD")).toBe("valid");
   });
 });
 
@@ -168,25 +172,25 @@ describe("STRING_OP_KIND_BEFORE_FIRST and AFTER_FIRST", () => {
     node(ValueType.STRING, { case: "stringOperation", value: { kind, text } }, [0]),
   ];
 
-  it("splits on the first occurrence", () => {
-    expect(verdict(equalityEngine(split(StringOpKind.BEFORE_FIRST, "."), "FR"), "FR.123")).toBe(
-      "valid",
-    );
-    expect(verdict(equalityEngine(split(StringOpKind.AFTER_FIRST, "."), "123.4"), "FR.123.4")).toBe(
-      "valid",
-    );
+  it("splits on the first occurrence", async () => {
+    expect(
+      verdict(await equalityEngine(split(StringOpKind.BEFORE_FIRST, "."), "FR"), "FR.123"),
+    ).toBe("valid");
+    expect(
+      verdict(await equalityEngine(split(StringOpKind.AFTER_FIRST, "."), "123.4"), "FR.123.4"),
+    ).toBe("valid");
   });
 
-  it("is absent when the delimiter does not occur", () => {
+  it("is absent when the delimiter does not occur", async () => {
     expect(
       verdict(
-        engineWhere({ build: split(StringOpKind.BEFORE_FIRST, "."), predicate: isAbsent }),
+        await engineWhere({ build: split(StringOpKind.BEFORE_FIRST, "."), predicate: isAbsent }),
         "FR123",
       ),
     ).toBe("valid");
     expect(
       verdict(
-        engineWhere({ build: split(StringOpKind.AFTER_FIRST, "."), predicate: isAbsent }),
+        await engineWhere({ build: split(StringOpKind.AFTER_FIRST, "."), predicate: isAbsent }),
         "FR123",
       ),
     ).toBe("valid");
@@ -203,19 +207,19 @@ describe("STRING_OP_KIND_STRIP_PREFIX", () => {
     ),
   ];
 
-  it("removes the exact leading text", () => {
-    expect(verdict(equalityEngine(strip("FR"), "123"), "FR123")).toBe("valid");
+  it("removes the exact leading text", async () => {
+    expect(verdict(await equalityEngine(strip("FR"), "123"), "FR123")).toBe("valid");
   });
 
-  it("is absent when the value does not start with it", () => {
-    expect(verdict(engineWhere({ build: strip("FR"), predicate: isAbsent }), "BE123")).toBe(
+  it("is absent when the value does not start with it", async () => {
+    expect(verdict(await engineWhere({ build: strip("FR"), predicate: isAbsent }), "BE123")).toBe(
       "valid",
     );
   });
 });
 
 describe("STRING_OP_KIND_CONCAT", () => {
-  it("joins its operands in order", () => {
+  it("joins its operands in order", async () => {
     const build: NodeSpec[] = [
       constantNode("A"),
       constantNode("B"),
@@ -226,10 +230,10 @@ describe("STRING_OP_KIND_CONCAT", () => {
       ),
     ];
 
-    expect(verdict(equalityEngine(build, "AB"), "anything")).toBe("valid");
+    expect(verdict(await equalityEngine(build, "AB"), "anything")).toBe("valid");
   });
 
-  it("is absent when any operand is absent", () => {
+  it("is absent when any operand is absent", async () => {
     const build: NodeSpec[] = [
       valueNode(),
       node(
@@ -245,6 +249,6 @@ describe("STRING_OP_KIND_CONCAT", () => {
       ),
     ];
 
-    expect(verdict(engineWhere({ build, predicate: isAbsent }), "ABC")).toBe("valid");
+    expect(verdict(await engineWhere({ build, predicate: isAbsent }), "ABC")).toBe("valid");
   });
 });

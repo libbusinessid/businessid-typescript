@@ -45,6 +45,35 @@ arrêter l’implémentation, ouvrir un défaut dans `spec` et ne pas choisir ar
 une interprétation. Le code Go de l’interpréteur de référence n’est jamais une source
 normative et ne doit pas être copié.
 
+## 1.1 Générateur, pas interpréteur
+
+Un moteur NE DOIT PAS interpréter le bundle à l’exécution. Le travail se sépare en
+deux :
+
+- un **générateur**, que vous écrivez, s’exécute à la construction du moteur. Il lit
+  `businessid-rules.binpb`, applique les vingt-quatre contrôles de chargement de
+  `ir.md` section 10, et émet du code source dans votre langage. Il refuse de produire
+  quoi que ce soit s’il ne comprend pas une version, un champ, un opcode ou une
+  capacité.
+- le **moteur**, qui est ce qui est livré : le code généré, un jeu réduit de
+  primitives qu’il appelle, et une API publique écrite à la main.
+
+Le générateur n’est pas dans le dépôt `spec` et n’y sera jamais : la spécification
+reste agnostique et n’héberge aucun langage cible. Écrivez-le dans le langage qui vous
+convient, du moment qu’il sait lire le bundle.
+
+Ce point était auparavant absent de ce document, énoncé dans `PROVENANCE.md`, et
+contredit par une tolérance de `spec.md` section 2.3. Un moteur a suivi cette
+tolérance de bonne foi et livré un interpréteur complet. La règle est désormais ici,
+dans le contrat commun, où elle aurait dû être.
+
+Conséquence sur l’API : aucun moteur n’expose de fabrique acceptant un bundle en
+octets à l’exécution. Un jeu de règles personnalisé passe par le générateur, à la
+construction. Les vingt-quatre contrôles de chargement restent intégralement exigés,
+et le protocole `testee` les exerce : un testee qui génère du code en amont répond aux
+cas `load_ruleset` en appelant son générateur, comme le dit le commentaire du champ 7
+de `testee.proto`.
+
 ## 2. Priorités de conception
 
 Dans l’ordre :
@@ -390,11 +419,11 @@ sont `unsupported_country` ; un token kind mal formé ou inconnu est
 
 1. normaliser le kind par trim ASCII, lowercase ASCII et table `kind_aliases` ;
 2. si aucun dispatcher ne correspond, retourner `unsupported_kind` sans programme ;
-3. normaliser un pays explicite par uppercase ASCII et `country_aliases` ; s’il est
+3. exécuter le `pre_canonicalization_program`, limité aux transformations sûres
+   déclarées dans `ir.md` ;
+4. normaliser un pays explicite par uppercase ASCII et `country_aliases` ; s’il est
    syntaxiquement invalide, retourner `unsupported_country`; s’il n’a pas de cible
    dans un dispatcher country-specific, retourner aussi `unsupported_country` ;
-4. exécuter le `pre_canonicalization_program`, limité aux transformations sûres
-   déclarées dans `ir.md` ;
 5. choisir la correspondance exacte au plus long `accepted_prefix` ;
 6. si pays et préfixe pointent vers deux cibles différentes, retourner
    `country_mismatch` ;
@@ -403,6 +432,12 @@ sont `unsupported_country` ; un token kind mal formé ou inconnu est
 8. si aucune cible n’est choisie, retourner `missing_country_code` ;
 9. vérifier la cohérence kind/pays de la définition puis exécuter son programme de
    canonicalisation sur la valeur pré-canonique.
+
+L’ordre des étapes 3 et 4 est observable et `ir.md` section 5 fait foi. La
+pré-canonicalisation précède la décision de pays, donc un pays inutilisable est
+rapporté avec la valeur déjà pré-canonique, pas avec la valeur brute. Ce document les
+donnait dans l’ordre inverse, ce qui changeait la `canonical_value` rapportée sur
+cette branche ; aucun cas du corpus ne le distinguait.
 
 Les alias de kind, alias de pays et préfixes sont des espaces séparés. Le pays du
 résultat est le code ISO de la cible, pas nécessairement son préfixe métier (par

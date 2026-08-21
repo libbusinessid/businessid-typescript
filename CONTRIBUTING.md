@@ -1,5 +1,28 @@
 # Contributing
 
+## Generator, not interpreter
+
+`engine.md` section 1.1 is the shape of this repository. A generator reads the
+bundle at build time, applies the twenty four load time checks, and emits
+TypeScript. The engine is what ships: that emitted code, the primitives it
+calls, and a hand written API.
+
+```
+spec/businessid-rules.binpb          the attested bundle
+        |
+        v  tools/generator/           the decoder, the 24 checks, the emitter
+src/rules.generated.ts                committed output
+        |
+        v  src/runtime/support.ts     the primitives it calls
+src/api/engine.ts                     the public API
+```
+
+Nothing under `src/` decodes anything. There is no factory taking bundle bytes,
+and adding one would mean carrying the validator and every opcode into each
+consumer's runtime.
+
+The generator may use Node freely. The package may not.
+
 ## What governs
 
 The specification governs, not this repository. `spec/` holds the artifacts it
@@ -10,7 +33,7 @@ authority:
    check. Where it and another document disagree, this one wins.
 2. `spec/features.md` — the frozen content of each capability id.
 3. `spec/rules.proto`, `spec/conformance.proto`, `spec/testee.proto`.
-4. `spec/engine.md` — the contract common to every engine.
+4. `spec/engine.md` — the contract common to every engine, section 1.1 first.
 5. `spec/spec.md` — the general specification.
 
 If two of them contradict each other, **stop and get `spec` corrected**. Do not
@@ -47,11 +70,15 @@ Node freely — they never ship.
 
 ```sh
 pnpm install
-pnpm generate          # after any change to spec/ or to package.json's version
+pnpm generate          # after any change to spec/, rules.lock or the version
 pnpm test
 pnpm run lint
 pnpm run typecheck
 ```
+
+`src/rules.generated.ts` is committed and must never be edited by hand. Change
+the generator and re-run `pnpm generate`; `check:generated` fails the build if
+the two disagree.
 
 Before opening a pull request, the whole of `ci` must be green locally:
 `format:check`, `lint`, `typecheck`, `check:generated`, `test:node`,
@@ -72,5 +99,7 @@ An optimisation must demonstrate by test that it changes no result.
 ## Updating the rules
 
 A rules update arrives as a change to `spec/` and `rules.lock`. Verify the
-digests, run `pnpm generate`, run the full conformance suite, and publish a new
-package version. Rules are never updated silently at runtime.
+digests, run `pnpm generate`, review the diff of `src/rules.generated.ts` — it
+is the whole of what changed — run the full conformance suite, and publish a new
+package version. Rules are never updated at run time; they cannot be, because
+they are code.

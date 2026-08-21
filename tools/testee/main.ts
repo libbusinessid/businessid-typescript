@@ -10,22 +10,28 @@
  * absence of cheating verifiable. It also never branches on `case_id`: the
  * identifier exists only so that a desynchronized exchange is detected rather
  * than silently scoring the wrong case.
+ *
+ * The engine interprets nothing, so `OPERATION_LOAD_RULESET` is answered by the
+ * generator, exactly as the comment on field 7 of `testee.proto` describes: the
+ * twenty four load time checks live there, and a bundle it refuses is a bundle
+ * no engine would ever have been built from.
  */
 import { fromBinary, toBinary } from "@bufbuild/protobuf";
 import {
   Operation,
   StepStatus,
-} from "../../src/generated/libbusinessid/conformance/v1/conformance_pb.js";
-import { ReasonCode } from "../../src/generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/libbusinessid/conformance/v1/conformance_pb.js";
+import { ReasonCode } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
 import {
   FailureKind,
   type TesteeRequest,
   TesteeRequestSchema,
   type TesteeResponse,
   TesteeResponseSchema,
-} from "../../src/generated/libbusinessid/testee/v1/testee_pb.js";
+} from "../../generated/libbusinessid/testee/v1/testee_pb.js";
 import { BusinessIdEngine } from "../../src/index.js";
-import { BundleError } from "../../src/domain/errors.js";
+import { BundleError } from "../generator/errors.js";
+import { generate } from "../generator/generate.js";
 import type { ValidationOptions } from "../../src/domain/input.js";
 import type { ReasonCode as ReasonCodeName } from "../../src/domain/reason-code.js";
 import type { StepStatus as StepStatusName } from "../../src/domain/status.js";
@@ -60,7 +66,7 @@ function answer(request: TesteeRequest): TesteeResponse {
 
   if (request.operation === Operation.LOAD_RULESET) {
     try {
-      BusinessIdEngine.fromRules(request.rulesPayload ?? new Uint8Array());
+      generate(request.rulesPayload ?? new Uint8Array());
       return response(request, {
         case: "load",
         value: { $typeName: LOAD, accepted: true, engineError: "" },
@@ -112,18 +118,29 @@ function answer(request: TesteeRequest): TesteeResponse {
       kind: report.kind,
       canonicalValue: report.canonicalValue,
       ...(report.countryCode === undefined ? {} : { countryCode: report.countryCode }),
-      format: {
-        $typeName: STEP,
-        status: STATUS_BY_NAME[report.format.status],
-        reasonCode: reasonOf(report.format.reasonCode),
-      },
-      checksum: {
-        $typeName: STEP,
-        status: STATUS_BY_NAME[report.checksum.status],
-        reasonCode: reasonOf(report.checksum.reasonCode),
-      },
+      format: observedStep(report.format),
+      checksum: observedStep(report.checksum),
     },
   });
+}
+
+/**
+ * One validation level as the engine resolved it.
+ *
+ * The message key is reported when the rule carries one, and omitted when the
+ * result was produced before any rule assertion ran.
+ */
+function observedStep(step: {
+  status: StepStatusName;
+  reasonCode: ReasonCodeName;
+  messageKey?: string;
+}): { $typeName: typeof STEP; status: StepStatus; reasonCode: ReasonCode; messageKey?: string } {
+  return {
+    $typeName: STEP,
+    status: STATUS_BY_NAME[step.status],
+    reasonCode: reasonOf(step.reasonCode),
+    ...(step.messageKey === undefined ? {} : { messageKey: step.messageKey }),
+  };
 }
 
 const LOAD = "libbusinessid.testee.v1.ObservedLoad" as const;

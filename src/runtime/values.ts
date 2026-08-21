@@ -1,49 +1,39 @@
 /**
- * The typed values an IR program manipulates.
+ * The values the generated rules produce.
  *
- * Strings are held as code point arrays rather than JavaScript strings. Every
- * length, index and slice of the IR is counted in code points, and a string
- * indexed in UTF-16 units answers those questions wrongly the moment a value
- * leaves the BMP. Converting once at the boundary makes the whole interpreter
- * correct by construction instead of correct by remembering.
+ * Strings are held as code point arrays. Every length, index and slice the IR
+ * defines is counted in code points, and a JavaScript string indexed in UTF-16
+ * units answers those questions wrongly the moment a value leaves the BMP.
+ * Converting once at the boundary makes the whole engine correct by
+ * construction instead of correct by remembering.
  */
 import type { ReasonCode } from "../domain/reason-code.js";
 
-/** A possibly absent string view, held as code points. */
+/**
+ * A possibly absent string view, held as code points.
+ *
+ * Absence propagates: every constructor applied to an absent operand yields an
+ * absent result, and every predicate reading one yields false except the one
+ * that asks about absence. Absence is never an error.
+ */
 export type StringValue = readonly number[] | undefined;
 
-/** A checked integer that may be indeterminate. */
+/**
+ * A checked integer that may be indeterminate.
+ *
+ * An indeterminate integer propagates through every operation and makes the
+ * enclosing checksum `unsupported`. It never produces `invalid`.
+ */
 export type IntegerValue = bigint | undefined;
 
-/** The tri-state result of a checksum node. */
+/** The tri-state result of a checksum rule. */
 export type ChecksumOutcome = Readonly<{
   status: "valid" | "invalid" | "unsupported";
   reasonCode: ReasonCode;
   messageKey?: string;
 }>;
 
-/**
- * A `WHEN` branch whose predicate is false.
- *
- * Distinct from any outcome: `CHOOSE` skips a non applicable branch and falls
- * through to the next, which is not the same as receiving an `unsupported`
- * outcome it would have to return.
- */
-export const NOT_APPLICABLE = Symbol("not applicable");
-
-/** What evaluating a checksum node yields. */
-export type ChecksumResult = ChecksumOutcome | typeof NOT_APPLICABLE;
-
-/** The result of an assertion node. */
+/** The result of a format rule. */
 export type AssertionResult =
   | Readonly<{ failed: false }>
   | Readonly<{ failed: true; reasonCode: ReasonCode; messageKey?: string }>;
-
-/** The assertion result of a rule that raised no objection. */
-export const ASSERTION_PASSED: AssertionResult = { failed: false };
-
-/** The outcome every indeterminate checksum computation collapses to. */
-export const CHECKSUM_UNSUPPORTED: ChecksumOutcome = {
-  status: "unsupported",
-  reasonCode: "unsupported_checksum",
-};

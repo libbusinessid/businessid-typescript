@@ -5,7 +5,13 @@ identifiers — VAT numbers, national company numbers, EUID, LEI and more — dr
 by the shared LibBusinessID rule bundle.
 
 **94 identifiers across 37 countries**, rules version `2026.08.14`. No network
-access, no locale dependence, no regular expressions.
+access, no locale dependence, no regular expressions, and **no runtime
+dependencies**.
+
+The rules are code. A generator read the published rule bundle when this package
+was built, applied every load time check, and emitted TypeScript. What ships is
+that code plus a small set of primitives — no bundle, no decoder, no
+interpreter.
 
 ## What this does and does not say
 
@@ -52,9 +58,9 @@ report.checksum.status; // "valid"
 isFullyValidated(report); // true
 ```
 
-The default engine builds itself on first use from a bundle inlined at build
-time. There is no fetch, no filesystem read and no top level await, so the same
-code runs unchanged in a browser.
+`BusinessIdEngine.default` is the engine. Nothing is decoded, fetched or read
+from a file, so it costs nothing at start-up and the same code runs unchanged in
+a browser.
 
 ### The four operations
 
@@ -111,20 +117,20 @@ reports `unsupported_kind` rather than failing to build. The kinds the shipped
 bundle routes are listed by `engine.kinds()` and typed by
 `KNOWN_IDENTIFIER_KINDS`.
 
-### A custom bundle
+### A custom rule set
 
-```ts
-const engine = BusinessIdEngine.fromRules(bytes);
+There is no factory taking bundle bytes. A custom rule set goes through the
+generator, at build time:
+
+```sh
+pnpm generate    # reads spec/businessid-rules.binpb, writes src/rules.generated.ts
 ```
 
-The bytes are treated as untrusted whatever their source: every load time check
-and every limit applies. A bundle that is malformed throws a `BundleError` with
-`reason: "invalid_ruleset"`; one that announces a format version or a capability
-this build does not implement throws with `"incompatible_ruleset"`, which tells
-an operator to upgrade rather than to suspect the file.
-
-Ordinary user input never throws. Only a bundle does, and only when the engine
-is built.
+The generator applies all twenty four load time checks of the specification and
+refuses to emit anything it does not fully understand — an unknown version,
+field, opcode or capability stops it. That is why the published engine can never
+meet one, and why it has no error type of its own: **no input, however hostile,
+makes it throw.**
 
 ### Versions
 
@@ -165,6 +171,11 @@ A longer input is refused without being processed, reported as
 surrogate, which has no UTF-8 encoding — is reported as
 `unsupported`/`invalid_encoding`.
 
+The bundle shaped limits are the generator's business and no longer apply once
+the code exists. The step budget does not apply at all: the emitted code
+terminates by construction, because the call graph is acyclic and its depth is
+bounded, both proved before a line was emitted.
+
 ## Conformance
 
 Every one of the **663 shared conformance cases passes**, run over the testee
@@ -172,21 +183,33 @@ protocol the specification defines: a separate process receives one request at a
 time and never sees an expected result, so the absence of cheating is
 verifiable. No case is skipped, filtered, or marked expected to fail.
 
+That includes the reason code _and_ the message key of every step, and the 33
+`load_ruleset` cases, which the testee answers by calling the generator — the
+twenty four checks live there now.
+
 ## Development
 
 ```sh
 pnpm install
-pnpm generate        # regenerate the inlined bundle and Protobuf types
-pnpm test            # unit, conformance, property and security tests
+pnpm generate        # run the generator: bundle -> src/rules.generated.ts
+pnpm test            # unit, generator, conformance and property tests
 pnpm test:coverage   # with the 95% line and 90% branch thresholds
 pnpm test:browser    # the same engine in headless Chromium
 pnpm test:pack       # pack, install into a blank project, run and type check
 pnpm bench
 ```
 
-`spec/` holds the artifacts published by the specification repository, and
-`rules.lock` attests the SHA-256 of each. `pnpm check:generated` verifies both
-the digests and that the generated modules match what the generator would emit.
+|                          |                                                        |
+| ------------------------ | ------------------------------------------------------ |
+| `spec/`                  | artifacts published by the specification repository    |
+| `rules.lock`             | the SHA-256 each of them is attested by                |
+| `tools/generator/`       | the generator: the decoder, the 24 checks, the emitter |
+| `src/rules.generated.ts` | its output, committed                                  |
+| `src/runtime/support.ts` | the primitives the generated rules call                |
+| `tools/testee/`          | the conformance testee                                 |
+
+`pnpm check:generated` verifies the digests and that the committed rules are
+exactly what the generator emits from them.
 
 ## Licence
 

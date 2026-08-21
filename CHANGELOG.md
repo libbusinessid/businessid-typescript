@@ -12,14 +12,22 @@ update that changes a verdict is published as a new package version.
 
 - First implementation of the TypeScript engine, against rules version
   `2026.08.14` and IR format version 1.
+- A generator under `tools/generator`: it reads the attested bundle, applies the
+  twenty four load time checks of `ir.md` section 10 over a decoder that stays
+  at the wire level, and emits `src/rules.generated.ts`. All 63 operations, the
+  ten step dispatch algorithm and the tri-state checksum are emitted as code.
 - Public API: `BusinessIdEngine` with `canonicalize`, `validate`,
   `validateFormat`, `validateChecksum`, `rulesInfo`, `capabilities`, `kinds` and
   `registryLookup`.
-- The complete IR interpreter: 63 operations, the ten step dispatch algorithm,
-  and the validation pipeline.
-- Load time validation: the twenty four checks of `ir.md` section 10, in order,
-  over a decoder that stays at the wire level.
 - `RegistryProvider`, declared and deliberately unimplemented.
-- The rule bundle inlined from the exact bytes of the published artifact, with
-  its digest verified against `rules.lock` at generation and in CI.
-- All 663 shared conformance cases pass over the testee protocol.
+- All 663 shared conformance cases pass over the testee protocol, reason codes
+  and message keys alike, with the 33 `load_ruleset` cases answered by the
+  generator.
+
+### Notes
+
+- The published package carries no bundle, no decoder and no interpreter, and
+  **has no runtime dependencies**. Nothing under `src/` reaches a Node built-in,
+  a DOM API or the network.
+- There is deliberately no factory taking bundle bytes. A custom rule set goes
+  through the generator, at build time.

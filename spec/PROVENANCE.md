@@ -1,7 +1,7 @@
 # Where these files come from, and what to build
 
 Copied from `github.com/libbusinessid/spec` at commit
-`57cde4ac13bc98cb457d1c96dd8617058aaadcde`, rules version
+`3295dc0d26914a3b2e778a5620ab0e5cf1f7e8c9`, rules version
 `2026.08.14`, stability `alpha`.
 
 ## What this engine is — and is not

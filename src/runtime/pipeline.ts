@@ -1,24 +1,22 @@
 /**
  * Dispatch and the normative validation pipeline.
  *
- * The dispatch algorithm is the ten step form of `ir.md` section 5. Note that
- * it runs the pre-canonicalization program as soon as the dispatcher is
- * resolved, before any country decision, so a result that stops on an
- * unusable country still reports the pre-canonical value. `engine.md` section
- * 8.0 and `spec.md` section 6.11 still describe a nine step order that
- * normalises the country first; `ir.md` is the exhaustive revision, states the
- * reason for its order, and governs here.
+ * Dispatch follows the ten step algorithm of `ir.md` section 5. Its order
+ * matters in one place that is easy to get wrong: the pre-canonicalization
+ * program runs as soon as the dispatcher is resolved, **before** any country
+ * decision, so a result that stops on an unusable country still reports the
+ * pre-canonical value rather than the raw one.
+ *
+ * Everything the rules themselves decide lives in the generated module. What is
+ * here is the frame around them: the input bound, the selection of a
+ * definition, and the order in which the two steps run.
  */
 import type { IdentifierInput, ValidationOptions } from "../domain/input.js";
 import { DISPATCH_DEFAULT_PROFILE, type ValidationProfile } from "../domain/profile.js";
 import type { ReasonCode } from "../domain/reason-code.js";
 import type { CanonicalizationResult, StepResult, ValidationReport } from "../domain/result.js";
 import type { StepStatus } from "../domain/status.js";
-import { Budget } from "./budget.js";
-import type { EvaluationContext } from "./interpret.js";
-import { runCanonicalization, runChecksum, runFormat } from "./interpret.js";
-import type { IrDefinition, IrDispatcher, IrTarget, LoadedBundle } from "./ir.js";
-import { LIMITS } from "./limits.js";
+import type { RuleSet } from "./ruleset.js";
 import {
   codePointsOf,
   hasLoneSurrogate,
@@ -32,19 +30,22 @@ import {
 /** The public operation being served. */
 export type OperationName = "canonicalize" | "validateFormat" | "validateChecksum" | "validate";
 
+/** The maximum size of a user supplied value, in UTF-8 bytes. */
+const MAX_INPUT_BYTES = 1024;
+
 const COUNTRY_PATTERN = /^[A-Z]{2}$/;
 
 /** How far dispatch got, and what it produced. */
-type Dispatch = Readonly<{
+interface Dispatch {
   kind: string;
   canonicalValue: readonly number[];
   countryCode: string | undefined;
   profile: ValidationProfile;
-  definition: IrDefinition | undefined;
-  target: IrTarget | undefined;
+  /** -1 when no definition was selected. */
+  definition: number;
   /** Absent when a definition was selected. */
   failure: ReasonCode | undefined;
-}>;
+}
 
 function step(
   level: "format" | "checksum",
@@ -60,13 +61,11 @@ function step(
 /* -------------------------------------------------------------------------- */
 
 function dispatch(
-  bundle: LoadedBundle,
+  rules: RuleSet,
   input: IdentifierInput,
   requested: ValidationProfile | undefined,
-  budget: Budget,
 ): Dispatch {
   const dispatchProfile = requested ?? DISPATCH_DEFAULT_PROFILE;
-  const rawValue = codePointsOf(input.value);
   // An empty token behaves like an absent context.
   const rawCountry =
     input.countryCode === undefined || trimAsciiSpace(input.countryCode) === ""
@@ -76,11 +75,10 @@ function dispatch(
 
   const stalled = (failure: ReasonCode): Dispatch => ({
     kind: requestedKind,
-    canonicalValue: rawValue,
+    canonicalValue: codePointsOf(input.value),
     countryCode: rawCountry,
     profile: dispatchProfile,
-    definition: undefined,
-    target: undefined,
+    definition: -1,
     failure,
   });
 
@@ -90,125 +88,85 @@ function dispatch(
   }
 
   /* 2 and 3. normalize the kind and resolve a dispatcher */
-  const dispatcher = bundle.kindIndex.get(requestedKind);
-  if (dispatcher === undefined) {
+  const dispatcher = rules.dispatcherOf(requestedKind);
+  if (dispatcher < 0) {
     return stalled("unsupported_kind");
   }
 
   /* 4. run the pre-canonicalization program exactly once on the raw value */
-  const context = baseContext(bundle, budget, dispatchProfile);
-  const preCanonical = runCanonicalization(
-    context,
-    dispatcher.preCanonicalizationProgram,
-    rawValue,
-  );
+  const preCanonical = rules.preCanonicalize(dispatcher, codePointsOf(input.value));
+  const canonicalKind = rules.canonicalKindOf(dispatcher);
 
   const halted = (failure: ReasonCode, country: string | undefined): Dispatch => ({
-    kind: dispatcher.kind,
+    kind: canonicalKind,
     canonicalValue: preCanonical,
     countryCode: country,
     profile: dispatchProfile,
-    definition: undefined,
-    target: undefined,
+    definition: -1,
     failure,
   });
 
+  const globalDefinition = rules.globalDefinitionOf(dispatcher);
+
   /* 5. normalize an explicit country */
   let country: string | undefined;
+  let countryDefinition = -1;
   if (rawCountry !== undefined) {
     const token = upperCaseAscii(trimAsciiSpace(rawCountry));
     if (!COUNTRY_PATTERN.test(token)) {
       return halted("unsupported_country", rawCountry);
     }
-    country = dispatcher.countryAliases.get(token) ?? token;
-    if (dispatcher.globalTarget === undefined && !dispatcher.targetsByCountry.has(country)) {
+    country = rules.aliasCountry(dispatcher, token);
+    countryDefinition = rules.definitionForCountry(dispatcher, country);
+    // A GLOBAL dispatcher ignores a well formed country for routing and keeps
+    // it in the result; a country specific one has nothing to route to.
+    if (countryDefinition < 0 && globalDefinition < 0) {
       return halted("unsupported_country", country);
     }
   }
 
   /* 6. select the target owning the longest exactly matching accepted prefix */
-  const prefixTarget = longestPrefixTarget(dispatcher, preCanonical);
+  const prefixDefinition = rules.definitionForPrefix(dispatcher, preCanonical);
 
   /* 7. an explicit country and a recognized prefix designating two targets */
-  const countryTarget =
-    country === undefined ? undefined : dispatcher.targetsByCountry.get(country);
-  if (countryTarget !== undefined && prefixTarget !== undefined && countryTarget !== prefixTarget) {
+  if (countryDefinition >= 0 && prefixDefinition >= 0 && countryDefinition !== prefixDefinition) {
     return halted("country_mismatch", country);
   }
 
   /* 8 and 9. select, in order, the country, prefix, GLOBAL then implicit target */
-  const target =
-    countryTarget ?? prefixTarget ?? dispatcher.globalTarget ?? dispatcher.implicitTarget;
-  if (target === undefined) {
-    return halted("missing_country_code", country);
-  }
-
-  const definition = bundle.definitions.get(target.definitionId);
-  if (definition === undefined) {
+  const definition =
+    countryDefinition >= 0
+      ? countryDefinition
+      : prefixDefinition >= 0
+        ? prefixDefinition
+        : globalDefinition >= 0
+          ? globalDefinition
+          : rules.implicitDefinitionOf(dispatcher);
+  if (definition < 0) {
     return halted("missing_country_code", country);
   }
 
   /*
-   * Once a definition is selected, its default_profile applies when, and only
-   * when, the caller supplied no profile.
+   * Once a definition is selected, its default profile applies when, and only
+   * when, the caller supplied none.
    */
-  const profile = requested ?? definition.defaultProfile;
+  const profile = requested ?? rules.profileOf(definition);
 
   /*
    * A GLOBAL target keeps a well formed country context in the result without
    * using it for routing; a country target reports its own ISO code, which may
    * differ from its business prefix.
    */
-  const reportedCountry = target.countryCode ?? country;
+  const reportedCountry = rules.countryOf(definition) ?? country;
 
   /* 10. run the canonicalization program of the selected definition once */
-  const canonical = runCanonicalization(
-    {
-      ...baseContext(bundle, budget, profile),
-      countryCode: target.countryCode,
-      target,
-      definition,
-    },
-    definition.canonicalizationProgram,
-    preCanonical,
-  );
-
   return {
-    kind: dispatcher.kind,
-    canonicalValue: canonical,
+    kind: canonicalKind,
+    canonicalValue: rules.canonicalizeWith(definition, preCanonical, profile),
     countryCode: reportedCountry,
     profile,
     definition,
-    target,
     failure: undefined,
-  };
-}
-
-function longestPrefixTarget(
-  dispatcher: IrDispatcher,
-  value: readonly number[],
-): IrTarget | undefined {
-  for (let length = Math.min(dispatcher.longestPrefix, value.length); length >= 1; length -= 1) {
-    const candidate = dispatcher.targetsByPrefix.get(stringOf(value.slice(0, length)));
-    if (candidate !== undefined) {
-      return candidate;
-    }
-  }
-  return undefined;
-}
-
-function baseContext(
-  bundle: LoadedBundle,
-  budget: Budget,
-  profile: ValidationProfile,
-): EvaluationContext {
-  return {
-    bundle,
-    budget,
-    profile,
-    countryCode: undefined,
-    target: undefined,
-    definition: undefined,
   };
 }
 
@@ -217,7 +175,7 @@ function baseContext(
 /* -------------------------------------------------------------------------- */
 
 /** The identity every result carries, whatever the operation. */
-type Identity = Readonly<{
+interface Identity {
   kind: string;
   inputValue: string;
   canonicalValue: string;
@@ -226,10 +184,10 @@ type Identity = Readonly<{
   rulesVersion: string;
   formatVersion: number;
   engineVersion: string;
-}>;
+}
 
 function identityOf(
-  bundle: LoadedBundle,
+  rules: RuleSet,
   engineVersion: string,
   input: IdentifierInput,
   outcome: Dispatch,
@@ -240,8 +198,8 @@ function identityOf(
     canonicalValue: stringOf(outcome.canonicalValue),
     ...(outcome.countryCode === undefined ? {} : { countryCode: outcome.countryCode }),
     profile: outcome.profile,
-    rulesVersion: bundle.rulesVersion,
-    formatVersion: bundle.formatVersion,
+    rulesVersion: rules.RULES_VERSION,
+    formatVersion: rules.FORMAT_VERSION,
     engineVersion,
   };
 }
@@ -256,8 +214,7 @@ function tooLong(input: IdentifierInput, profile: ValidationProfile | undefined)
         ? undefined
         : input.countryCode,
     profile: profile ?? DISPATCH_DEFAULT_PROFILE,
-    definition: undefined,
-    target: undefined,
+    definition: -1,
     failure: "input_too_long",
   };
 }
@@ -270,27 +227,26 @@ function tooLong(input: IdentifierInput, profile: ValidationProfile | undefined)
  * a value the previous step did not accept.
  */
 export function execute(
-  bundle: LoadedBundle,
+  rules: RuleSet,
   engineVersion: string,
   operation: OperationName,
   input: IdentifierInput,
   options: ValidationOptions | undefined,
 ): ValidationReport | CanonicalizationResult {
   const requested = options?.profile;
-  const budget = new Budget();
 
   /* 1. an input above the byte limit is refused without being processed */
   const outcome =
-    utf8ByteLength(input.value) > LIMITS.inputBytes
+    utf8ByteLength(input.value) > MAX_INPUT_BYTES
       ? tooLong(input, requested)
-      : dispatch(bundle, input, requested, budget);
+      : dispatch(rules, input, requested);
 
-  const identity = identityOf(bundle, engineVersion, input, outcome);
+  const identity = identityOf(rules, engineVersion, input, outcome);
 
   if (operation === "canonicalize") {
     return canonicalizationOf(identity, outcome);
   }
-  return reportOf(bundle, identity, outcome, operation, budget);
+  return reportOf(rules, identity, outcome, operation);
 }
 
 function canonicalizationOf(identity: Identity, outcome: Dispatch): CanonicalizationResult {
@@ -307,14 +263,13 @@ function canonicalizationOf(identity: Identity, outcome: Dispatch): Canonicaliza
 }
 
 function reportOf(
-  bundle: LoadedBundle,
+  rules: RuleSet,
   identity: Identity,
   outcome: Dispatch,
   operation: OperationName,
-  budget: Budget,
 ): ValidationReport {
   /* 3 and 4. dispatch did not reach a definition */
-  if (outcome.failure !== undefined || outcome.definition === undefined) {
+  if (outcome.failure !== undefined || outcome.definition < 0) {
     const failure = outcome.failure ?? "unsupported_kind";
     if (failure === "country_mismatch") {
       return {
@@ -330,18 +285,8 @@ function reportOf(
     };
   }
 
-  const definition = outcome.definition;
-  const context: EvaluationContext = {
-    bundle,
-    budget,
-    profile: outcome.profile,
-    countryCode: definition.countryCode,
-    target: outcome.target,
-    definition,
-  };
-
-  /* 5. run the format program on the canonical value */
-  const assertion = runFormat(context, definition.formatProgram, outcome.canonicalValue);
+  /* 5. run the format rule on the canonical value */
+  const assertion = rules.checkFormat(outcome.definition, outcome.canonicalValue, outcome.profile);
 
   /* 6. an invalid format stops the checksum */
   if (assertion.failed) {
@@ -359,33 +304,11 @@ function reportOf(
     return { ...identity, format, checksum: step("checksum", "not_run", "not_requested") };
   }
 
-  /* 8. a valid format without a checksum program */
-  if (definition.checksumProgram === undefined) {
-    return {
-      ...identity,
-      format,
-      checksum: step(
-        "checksum",
-        "unsupported",
-        definition.absentChecksumReason ?? "unsupported_checksum",
-      ),
-    };
-  }
-
-  /* 9. a valid format with a checksum program runs it */
-  const outcomeOfChecksum = runChecksum(
-    context,
-    definition.checksumProgram,
-    outcome.canonicalValue,
-  );
+  /* 8 and 9. run the checksum rule, or report why no algorithm applies */
+  const checksum = rules.checkChecksum(outcome.definition, outcome.canonicalValue, outcome.profile);
   return {
     ...identity,
     format,
-    checksum: step(
-      "checksum",
-      outcomeOfChecksum.status,
-      outcomeOfChecksum.reasonCode,
-      outcomeOfChecksum.messageKey,
-    ),
+    checksum: step("checksum", checksum.status, checksum.reasonCode, checksum.messageKey),
   };
 }

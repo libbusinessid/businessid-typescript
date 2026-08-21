@@ -11,9 +11,7 @@ import * as surface from "../../src/index.js";
 describe("the package exports", () => {
   it("exports exactly what it means to", () => {
     expect(Object.keys(surface).sort()).toEqual([
-      "BundleError",
       "BusinessIdEngine",
-      "EngineError",
       "KNOWN_IDENTIFIER_KINDS",
       "REASON_CODES",
       "REGISTRY_STATUSES",
@@ -31,6 +29,15 @@ describe("the package exports", () => {
     const names = Object.keys(surface).join(" ");
 
     expect(names).not.toMatch(/Schema|RuleBundle|proto|\$typeName/i);
+  });
+
+  it("offers no way to load a bundle at run time", () => {
+    // The rules are code, emitted by the generator when this package was built.
+    // Nothing here decodes anything, so there is no bundle error to catch and
+    // no factory to call.
+    const names = Object.keys(surface).join(" ");
+
+    expect(names).not.toMatch(/fromRules|BundleError|loadBundle/);
   });
 
   it("names the four public operations and nothing ambiguous", () => {

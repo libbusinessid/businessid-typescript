@@ -25,5 +25,6 @@
     "sourceMap": true,
     "noEmit": true
   },
-  "include": ["src", "test", "scripts", "tools", "*.config.ts", "*.config.mts"]
+  "include": ["src", "test", "tools", "generated", "scripts", "*.config.ts", "*.config.mts"],
+  "exclude": ["test/.generated"]
 }

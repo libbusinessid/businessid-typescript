@@ -11,7 +11,6 @@
  */
 import { performance } from "node:perf_hooks";
 import { BusinessIdEngine } from "../dist/index.js";
-import { RULES_BUNDLE_BYTES } from "../dist/assets/rules.generated.js";
 
 function measure(name, iterations, body) {
   // One untimed pass so the measurement is not dominated by first-call costs.
@@ -29,10 +28,8 @@ function measure(name, iterations, body) {
 
 const engine = BusinessIdEngine.default;
 
-measure("cold load of the bundle", 20, () => {
-  BusinessIdEngine.fromRules(RULES_BUNDLE_BYTES);
-});
-
+// There is no bundle to decode: the rules are code. What used to be a cold
+// load is now module evaluation, which the first call below already includes.
 measure("validate, simple format", 20_000, () => {
   engine.validate({ kind: "siren", value: "552100554" });
 });

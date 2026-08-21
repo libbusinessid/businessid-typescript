@@ -91,7 +91,6 @@ export type IdentifierInput = Readonly<{
 
 export class BusinessIdEngine {
   static readonly default: BusinessIdEngine;
-  static fromRules(bytes: Uint8Array): BusinessIdEngine;
 
   canonicalize(input: IdentifierInput, options?: ValidationOptions): CanonicalizationResult;
   validate(input: IdentifierInput, options?: ValidationOptions): ValidationReport;
@@ -115,8 +114,14 @@ Principes :
 - sortie JSON naturelle conforme au contrat commun ;
 - `.d.ts` propres et API Extractor ou équivalent pour contrôler la surface publique.
 
-Le moteur par défaut est construit une fois depuis un `Uint8Array` généré. Aucun
-top-level await, fetch ou lecture filesystem nécessaire au chemin par défaut.
+Le moteur par défaut est construit une fois depuis le code généré. Aucun top-level
+await, fetch ou lecture filesystem nécessaire au chemin par défaut.
+
+Il n’y a pas de fabrique acceptant un bundle en octets à l’exécution. Une version
+antérieure de ce document déclarait `static fromRules(bytes: Uint8Array)`, ce qui
+imposait de porter le validateur complet et la machine d’exécution de l’IR chez chaque
+appelant — c’est-à-dire un interpréteur, que `engine.md` section 1.1 interdit. Un jeu
+de règles personnalisé passe par le générateur, à la construction.
 
 ## Interface registre TypeScript
 

@@ -6,9 +6,9 @@ import {
   type ConformanceCase,
   Operation,
   StepStatus,
-} from "../../src/generated/libbusinessid/conformance/v1/conformance_pb.js";
-import { ReasonCode } from "../../src/generated/libbusinessid/ir/v1/rules_pb.js";
-import type { TesteeRequest } from "../../src/generated/libbusinessid/testee/v1/testee_pb.js";
+} from "../../generated/libbusinessid/conformance/v1/conformance_pb.js";
+import { ReasonCode } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+import type { TesteeRequest } from "../../generated/libbusinessid/testee/v1/testee_pb.js";
 import { loadCorpus } from "./corpus.js";
 import { TesteeClient } from "./testee-client.js";
 
@@ -57,10 +57,48 @@ function requestOf(entry: ConformanceCase): TesteeRequest {
 const statusName = (value: StepStatus): string => StepStatus[value] ?? `UNKNOWN(${String(value)})`;
 const reasonName = (value: ReasonCode): string => ReasonCode[value] ?? `UNKNOWN(${String(value)})`;
 
+interface ComparedStep {
+  status: string;
+  reasonCode: string;
+  messageKey: string | undefined;
+}
+
+/**
+ * One step as the testee reported it.
+ *
+ * The message key is part of the comparison: `engine.md` section 11.2 says the
+ * common tests compare the code and the key, and the protocol carries it since
+ * `ObservedStep` gained field 3. Without it an engine could emit any key at all
+ * and no case would notice.
+ */
+const comparedStep = (
+  step: { status: StepStatus; reasonCode: ReasonCode; messageKey?: string | undefined } | undefined,
+): ComparedStep => ({
+  status: statusName(step?.status ?? StepStatus.UNSPECIFIED),
+  reasonCode: reasonName(step?.reasonCode ?? ReasonCode.UNSPECIFIED),
+  messageKey: step?.messageKey,
+});
+
 describe("conformance", () => {
   it("holds every published case", () => {
     expect(corpus.cases.length).toBe(663);
     expect(corpus.rulesVersion).toBe("2026.08.14");
+  });
+
+  it("compares message keys on the cases that declare one", () => {
+    // `ObservedStep` carries the key since `testee.proto` gained field 3, so
+    // the comparison below is not vacuous. Counting the cases that declare one
+    // is what proves it: without this, every key could be `undefined` on both
+    // sides and no case would notice.
+    const declared = corpus.cases
+      .map((entry) => entry.expected?.value)
+      .filter((value) => value?.case === "validationReport")
+      .flatMap((value) =>
+        value?.case === "validationReport" ? [value.value.format, value.value.checksum] : [],
+      )
+      .filter((step) => step?.messageKey !== undefined);
+
+    expect(declared.length).toBe(149);
   });
 
   it.each(corpus.cases.map((entry) => [entry.id, entry] as const))("%s", async (_id, entry) => {
@@ -115,26 +153,14 @@ describe("conformance", () => {
         kind: got.kind,
         canonicalValue: got.canonicalValue,
         countryCode: got.countryCode,
-        format: {
-          status: statusName(got.format?.status ?? StepStatus.UNSPECIFIED),
-          reasonCode: reasonName(got.format?.reasonCode ?? ReasonCode.UNSPECIFIED),
-        },
-        checksum: {
-          status: statusName(got.checksum?.status ?? StepStatus.UNSPECIFIED),
-          reasonCode: reasonName(got.checksum?.reasonCode ?? ReasonCode.UNSPECIFIED),
-        },
+        format: comparedStep(got.format),
+        checksum: comparedStep(got.checksum),
       }).toEqual({
         kind: wanted.kind,
         canonicalValue: wanted.canonicalValue,
         countryCode: wanted.countryCode,
-        format: {
-          status: statusName(wanted.format?.status ?? StepStatus.UNSPECIFIED),
-          reasonCode: reasonName(wanted.format?.reasonCode ?? ReasonCode.UNSPECIFIED),
-        },
-        checksum: {
-          status: statusName(wanted.checksum?.status ?? StepStatus.UNSPECIFIED),
-          reasonCode: reasonName(wanted.checksum?.reasonCode ?? ReasonCode.UNSPECIFIED),
-        },
+        format: comparedStep(wanted.format),
+        checksum: comparedStep(wanted.checksum),
       });
     }
   });

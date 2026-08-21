@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { BusinessIdEngine } from "../../src/index.js";
+import { engineFor } from "../helpers/rules.js";
 import {
   CanonicalizationOpKind,
   PredicateOpKind,
   ValueType,
-} from "../../src/generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
 import {
   alwaysValidFormat,
   canonicalizationSequence,
@@ -21,9 +21,9 @@ import {
  * cannot apply leaves the value as it found it. Every case here therefore
  * asserts a produced value, never an error.
  */
-function canonical(steps: NodeSpec[], value: string, countryCode?: string): string {
+async function canonical(steps: NodeSpec[], value: string, countryCode?: string): Promise<string> {
   const nodes = [...steps, canonicalizationSequence(steps.map((_, index) => index))];
-  const engine = BusinessIdEngine.fromRules(
+  const engine = await engineFor(
     singleKindBundle({ canonicalization: nodes, format: alwaysValidFormat() }),
   );
   return engine.canonicalize({
@@ -40,94 +40,100 @@ const step = (kind: CanonicalizationOpKind, value: Record<string, unknown> = {})
   });
 
 describe("TRIM_WHITESPACE", () => {
-  it("removes the frozen table at both ends only", () => {
+  it("removes the frozen table at both ends only", async () => {
     const trim = [step(CanonicalizationOpKind.TRIM_WHITESPACE)];
 
     // U+00A0, U+3000 and U+FEFF are in whitespace_v1; U+200B is not.
-    expect(canonical(trim, "  AB CD　﻿")).toBe("AB CD");
-    expect(canonical(trim, "​AB​")).toBe("​AB​");
+    expect(await canonical(trim, "  AB CD　﻿")).toBe("AB CD");
+    expect(await canonical(trim, "​AB​")).toBe("​AB​");
   });
 });
 
 describe("REMOVE_WHITESPACE", () => {
-  it("removes every occurrence of the frozen table", () => {
-    expect(canonical([step(CanonicalizationOpKind.REMOVE_WHITESPACE)], "A B C　D")).toBe("ABCD");
+  it("removes every occurrence of the frozen table", async () => {
+    expect(await canonical([step(CanonicalizationOpKind.REMOVE_WHITESPACE)], "A B C　D")).toBe(
+      "ABCD",
+    );
   });
 });
 
 describe("UPPERCASE_ASCII", () => {
-  it("maps only a..z and never consults a locale", () => {
+  it("maps only a..z and never consults a locale", async () => {
     // A Turkish locale would map i to İ, and a German one ß to SS. Neither
     // happens here: only a..z moves, and every other code point is preserved.
-    expect(canonical([step(CanonicalizationOpKind.UPPERCASE_ASCII)], "ißé9z")).toBe("Ißé9Z");
+    expect(await canonical([step(CanonicalizationOpKind.UPPERCASE_ASCII)], "ißé9z")).toBe("Ißé9Z");
   });
 });
 
 describe("REMOVE_CHARS", () => {
-  it("removes every code point of the set", () => {
-    expect(canonical([step(CanonicalizationOpKind.REMOVE_CHARS, { text: ".-" })], "1.2-3")).toBe(
-      "123",
-    );
+  it("removes every code point of the set", async () => {
+    expect(
+      await canonical([step(CanonicalizationOpKind.REMOVE_CHARS, { text: ".-" })], "1.2-3"),
+    ).toBe("123");
   });
 });
 
 describe("REPLACE_PREFIX", () => {
   const replace = [step(CanonicalizationOpKind.REPLACE_PREFIX, { text: "GR", replacement: "EL" })];
 
-  it("replaces the exact leading text", () => {
-    expect(canonical(replace, "GR123")).toBe("EL123");
+  it("replaces the exact leading text", async () => {
+    expect(await canonical(replace, "GR123")).toBe("EL123");
   });
 
-  it("leaves a value that does not start with it alone", () => {
-    expect(canonical(replace, "FRGR1")).toBe("FRGR1");
+  it("leaves a value that does not start with it alone", async () => {
+    expect(await canonical(replace, "FRGR1")).toBe("FRGR1");
   });
 });
 
 describe("PREPEND and APPEND", () => {
-  it("adds constant text at either end", () => {
-    expect(canonical([step(CanonicalizationOpKind.PREPEND, { text: "FR" })], "123")).toBe("FR123");
-    expect(canonical([step(CanonicalizationOpKind.APPEND, { text: "Z" })], "123")).toBe("123Z");
+  it("adds constant text at either end", async () => {
+    expect(await canonical([step(CanonicalizationOpKind.PREPEND, { text: "FR" })], "123")).toBe(
+      "FR123",
+    );
+    expect(await canonical([step(CanonicalizationOpKind.APPEND, { text: "Z" })], "123")).toBe(
+      "123Z",
+    );
   });
 });
 
 describe("INSERT", () => {
-  it("inserts at a code point position", () => {
-    expect(canonical([step(CanonicalizationOpKind.INSERT, { index: 2, text: "-" })], "1234")).toBe(
-      "12-34",
-    );
+  it("inserts at a code point position", async () => {
+    expect(
+      await canonical([step(CanonicalizationOpKind.INSERT, { index: 2, text: "-" })], "1234"),
+    ).toBe("12-34");
   });
 
-  it("leaves the value unchanged when the position is past the end", () => {
+  it("leaves the value unchanged when the position is past the end", async () => {
     // Appending instead would silently move the inserted text.
-    expect(canonical([step(CanonicalizationOpKind.INSERT, { index: 9, text: "-" })], "1234")).toBe(
-      "1234",
-    );
+    expect(
+      await canonical([step(CanonicalizationOpKind.INSERT, { index: 9, text: "-" })], "1234"),
+    ).toBe("1234");
   });
 });
 
 describe("LEFT_PAD", () => {
-  it("pads to the requested length", () => {
-    expect(canonical([step(CanonicalizationOpKind.LEFT_PAD, { length: 5, text: "0" })], "12")).toBe(
-      "00012",
-    );
+  it("pads to the requested length", async () => {
+    expect(
+      await canonical([step(CanonicalizationOpKind.LEFT_PAD, { length: 5, text: "0" })], "12"),
+    ).toBe("00012");
   });
 
-  it("never truncates a longer value", () => {
+  it("never truncates a longer value", async () => {
     expect(
-      canonical([step(CanonicalizationOpKind.LEFT_PAD, { length: 2, text: "0" })], "12345"),
+      await canonical([step(CanonicalizationOpKind.LEFT_PAD, { length: 2, text: "0" })], "12345"),
     ).toBe("12345");
   });
 });
 
 describe("PREPEND_COUNTRY_IF_MISSING", () => {
-  function withTarget(options: {
+  async function withTarget(options: {
     acceptedPrefixes: string[];
     canonicalPrefix?: string;
     value: string;
-  }): string {
+  }): Promise<string> {
     const steps = [step(CanonicalizationOpKind.PREPEND_COUNTRY_IF_MISSING)];
     const nodes = [...steps, canonicalizationSequence([0])];
-    const engine = BusinessIdEngine.fromRules(
+    const engine = await engineFor(
       singleKindBundle({
         countryCode: "GR",
         acceptedPrefixes: options.acceptedPrefixes,
@@ -141,26 +147,26 @@ describe("PREPEND_COUNTRY_IF_MISSING", () => {
     return engine.canonicalize({ kind: "test", value: options.value }).canonicalValue;
   }
 
-  it("leaves a value that already carries an accepted prefix", () => {
+  it("leaves a value that already carries an accepted prefix", async () => {
     expect(
-      withTarget({ acceptedPrefixes: ["EL", "GR"], canonicalPrefix: "EL", value: "EL123" }),
+      await withTarget({ acceptedPrefixes: ["EL", "GR"], canonicalPrefix: "EL", value: "EL123" }),
     ).toBe("EL123");
   });
 
-  it("prepends the canonical prefix, which may differ from the country", () => {
+  it("prepends the canonical prefix, which may differ from the country", async () => {
     // Country GR, business prefix EL: the prefix is what goes on the value.
     expect(
-      withTarget({ acceptedPrefixes: ["EL", "GR"], canonicalPrefix: "EL", value: "123" }),
+      await withTarget({ acceptedPrefixes: ["EL", "GR"], canonicalPrefix: "EL", value: "123" }),
     ).toBe("EL123");
   });
 
-  it("falls back to the country code when no canonical prefix is declared", () => {
-    expect(withTarget({ acceptedPrefixes: [], value: "123" })).toBe("GR123");
+  it("falls back to the country code when no canonical prefix is declared", async () => {
+    expect(await withTarget({ acceptedPrefixes: [], value: "123" })).toBe("GR123");
   });
 });
 
 describe("WHEN", () => {
-  it("evaluates its predicate against the value current at that point", () => {
+  it("evaluates its predicate against the value current at that point", async () => {
     // The first step removes dots; the guard then sees the shortened value, so
     // a rule that reasons about length must observe the value as of that step.
     const steps: NodeSpec[] = [
@@ -179,7 +185,7 @@ describe("WHEN", () => {
       ),
     ];
     const nodes = [...steps, canonicalizationSequence([0, 4])];
-    const engine = BusinessIdEngine.fromRules(
+    const engine = await engineFor(
       singleKindBundle({ canonicalization: nodes, format: alwaysValidFormat() }),
     );
 
@@ -191,16 +197,16 @@ describe("WHEN", () => {
 });
 
 describe("idempotence", () => {
-  it("re-canonicalizing a canonical value changes nothing", () => {
+  it("re-canonicalizing a canonical value changes nothing", async () => {
     const steps = [
       step(CanonicalizationOpKind.TRIM_WHITESPACE),
       step(CanonicalizationOpKind.REMOVE_WHITESPACE),
       step(CanonicalizationOpKind.UPPERCASE_ASCII),
       step(CanonicalizationOpKind.REMOVE_CHARS, { text: ".-" }),
     ];
-    const once = canonical(steps, " be 0123.456-749 ");
+    const once = await canonical(steps, " be 0123.456-749 ");
 
     expect(once).toBe("BE0123456749");
-    expect(canonical(steps, once)).toBe(once);
+    expect(await canonical(steps, once)).toBe(once);
   });
 });

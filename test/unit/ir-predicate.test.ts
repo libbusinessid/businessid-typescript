@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BusinessIdEngine } from "../../src/index.js";
+import { engineFor } from "../helpers/rules.js";
 import {
   ChecksumOpKind,
   IntegerOpKind,
@@ -7,7 +7,7 @@ import {
   ReasonCode,
   StringOpKind,
   ValueType,
-} from "../../src/generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
 import {
   alwaysValidFormat,
   assertionSequence,
@@ -27,10 +27,10 @@ import {
  * reports `valid` and a false one reports `invalid`. Absent operands are tested
  * throughout: every predicate but `IS_ABSENT` reads absence as false.
  */
-function holds(build: NodeSpec[], value: string): boolean {
+async function holds(build: NodeSpec[], value: string): Promise<boolean> {
   const nodes = [...build, requireNode(build.length - 1)];
   nodes.push(assertionSequence([nodes.length - 1]));
-  const engine = BusinessIdEngine.fromRules(singleKindBundle({ format: nodes }));
+  const engine = await engineFor(singleKindBundle({ format: nodes }));
   return engine.validateFormat({ kind: "test", value }).format.status === "valid";
 }
 
@@ -59,20 +59,23 @@ describe("length predicates", () => {
     [PredicateOpKind.LENGTH_IN, { lengths: [2, 4] }, "ABC", false],
     [PredicateOpKind.LENGTH_BETWEEN, { minLength: 2, maxLength: 4 }, "ABC", true],
     [PredicateOpKind.LENGTH_BETWEEN, { minLength: 2, maxLength: 4 }, "ABCDE", false],
-  ])("%s %o on %o is %s", (kind, options, value, expected) => {
-    expect(holds([valueNode(), predicate(kind, options, [0])], value)).toBe(expected);
+  ])("%s %o on %o is %s", async (kind, options, value, expected) => {
+    expect(await holds([valueNode(), predicate(kind, options, [0])], value)).toBe(expected);
   });
 
-  it("counts code points, not UTF-16 units", () => {
+  it("counts code points, not UTF-16 units", async () => {
     // "\u{1D400}AB" is four UTF-16 units but three code points.
     expect(
-      holds([valueNode(), predicate(PredicateOpKind.LENGTH_EQ, { length: 3 }, [0])], "\u{1D400}AB"),
+      await holds(
+        [valueNode(), predicate(PredicateOpKind.LENGTH_EQ, { length: 3 }, [0])],
+        "\u{1D400}AB",
+      ),
     ).toBe(true);
   });
 
   it.each([PredicateOpKind.LENGTH_EQ, PredicateOpKind.LENGTH_IN, PredicateOpKind.LENGTH_BETWEEN])(
     "%s is false on an absent view",
-    (kind) => {
+    async (kind) => {
       const options =
         kind === PredicateOpKind.LENGTH_EQ
           ? { length: 0 }
@@ -80,13 +83,13 @@ describe("length predicates", () => {
             ? { lengths: [0] }
             : { minLength: 0, maxLength: 4096 };
 
-      expect(holds([...absentView(), predicate(kind, options, [1])], "ABC")).toBe(false);
+      expect(await holds([...absentView(), predicate(kind, options, [1])], "ABC")).toBe(false);
     },
   );
 });
 
 describe("emptiness and absence", () => {
-  it("IS_EMPTY is true only on a present, empty view", () => {
+  it("IS_EMPTY is true only on a present, empty view", async () => {
     const empty: NodeSpec[] = [
       valueNode(),
       node(
@@ -97,41 +100,45 @@ describe("emptiness and absence", () => {
       predicate(PredicateOpKind.IS_EMPTY, {}, [1]),
     ];
 
-    expect(holds(empty, "ABC")).toBe(true);
-    expect(holds([valueNode(), predicate(PredicateOpKind.IS_EMPTY, {}, [0])], "ABC")).toBe(false);
-    expect(holds([...absentView(), predicate(PredicateOpKind.IS_EMPTY, {}, [1])], "ABC")).toBe(
+    expect(await holds(empty, "ABC")).toBe(true);
+    expect(await holds([valueNode(), predicate(PredicateOpKind.IS_EMPTY, {}, [0])], "ABC")).toBe(
       false,
     );
+    expect(
+      await holds([...absentView(), predicate(PredicateOpKind.IS_EMPTY, {}, [1])], "ABC"),
+    ).toBe(false);
   });
 
-  it("IS_ABSENT is the only predicate that reads absence as true", () => {
-    expect(holds([...absentView(), predicate(PredicateOpKind.IS_ABSENT, {}, [1])], "ABC")).toBe(
-      true,
+  it("IS_ABSENT is the only predicate that reads absence as true", async () => {
+    expect(
+      await holds([...absentView(), predicate(PredicateOpKind.IS_ABSENT, {}, [1])], "ABC"),
+    ).toBe(true);
+    expect(await holds([valueNode(), predicate(PredicateOpKind.IS_ABSENT, {}, [0])], "ABC")).toBe(
+      false,
     );
-    expect(holds([valueNode(), predicate(PredicateOpKind.IS_ABSENT, {}, [0])], "ABC")).toBe(false);
   });
 });
 
 describe("EQUALS", () => {
-  it("compares code point sequences", () => {
+  it("compares code point sequences", async () => {
     const build: NodeSpec[] = [
       valueNode(),
       constantNode("ABC"),
       predicate(PredicateOpKind.EQUALS, {}, [0, 1]),
     ];
 
-    expect(holds(build, "ABC")).toBe(true);
-    expect(holds(build, "ABD")).toBe(false);
+    expect(await holds(build, "ABC")).toBe(true);
+    expect(await holds(build, "ABD")).toBe(false);
   });
 
-  it("is false when either operand is absent", () => {
+  it("is false when either operand is absent", async () => {
     const build: NodeSpec[] = [
       ...absentView(),
       constantNode("ABC"),
       predicate(PredicateOpKind.EQUALS, {}, [1, 2]),
     ];
 
-    expect(holds(build, "ABC")).toBe(false);
+    expect(await holds(build, "ABC")).toBe(false);
   });
 });
 
@@ -146,11 +153,11 @@ describe("character classes", () => {
     [PredicateOpKind.ASCII_ALPHANUMERIC, {}, "A1b", false],
     [PredicateOpKind.ASCII_CHARSET, { text: "AB" }, "ABBA", true],
     [PredicateOpKind.ASCII_CHARSET, { text: "AB" }, "ABC", false],
-  ])("%s %o on %o is %s", (kind, options, value, expected) => {
-    expect(holds([valueNode(), predicate(kind, options, [0])], value)).toBe(expected);
+  ])("%s %o on %o is %s", async (kind, options, value, expected) => {
+    expect(await holds([valueNode(), predicate(kind, options, [0])], value)).toBe(expected);
   });
 
-  it("rejects an empty view: a class needs something to classify", () => {
+  it("rejects an empty view: a class needs something to classify", async () => {
     const empty: NodeSpec[] = [
       valueNode(),
       node(
@@ -161,18 +168,18 @@ describe("character classes", () => {
       predicate(PredicateOpKind.ASCII_DIGITS, {}, [1]),
     ];
 
-    expect(holds(empty, "123")).toBe(false);
+    expect(await holds(empty, "123")).toBe(false);
   });
 
-  it("CHAR_AT_IN reads one code point position", () => {
+  it("CHAR_AT_IN reads one code point position", async () => {
     const build = (index: number): NodeSpec[] => [
       valueNode(),
       predicate(PredicateOpKind.CHAR_AT_IN, { index, text: "XY" }, [0]),
     ];
 
-    expect(holds(build(1), "AXC")).toBe(true);
-    expect(holds(build(1), "ABC")).toBe(false);
-    expect(holds(build(9), "ABC")).toBe(false);
+    expect(await holds(build(1), "AXC")).toBe(true);
+    expect(await holds(build(1), "ABC")).toBe(false);
+    expect(await holds(build(9), "ABC")).toBe(false);
   });
 });
 
@@ -186,8 +193,8 @@ describe("text predicates", () => {
     [PredicateOpKind.PREFIX_IN, { values: ["BE", "FR"] }, "DE1", false],
     [PredicateOpKind.CONTAINS, { text: "12" }, "FR123", true],
     [PredicateOpKind.CONTAINS, { text: "99" }, "FR123", false],
-  ])("%s %o on %o is %s", (kind, options, value, expected) => {
-    expect(holds([valueNode(), predicate(kind, options, [0])], value)).toBe(expected);
+  ])("%s %o on %o is %s", async (kind, options, value, expected) => {
+    expect(await holds([valueNode(), predicate(kind, options, [0])], value)).toBe(expected);
   });
 
   it.each([
@@ -195,8 +202,8 @@ describe("text predicates", () => {
     [PredicateOpKind.ENDS_WITH, { text: "FR" }],
     [PredicateOpKind.PREFIX_IN, { values: ["FR"] }],
     [PredicateOpKind.CONTAINS, { text: "FR" }],
-  ])("%s is false on an absent view", (kind, options) => {
-    expect(holds([...absentView(), predicate(kind, options, [1])], "FR123")).toBe(false);
+  ])("%s is false on an absent view", async (kind, options) => {
+    expect(await holds([...absentView(), predicate(kind, options, [1])], "FR123")).toBe(false);
   });
 });
 
@@ -204,36 +211,38 @@ describe("combinators", () => {
   const yes = (): NodeSpec => predicate(PredicateOpKind.IS_ABSENT, {}, [1]);
   const no = (): NodeSpec => predicate(PredicateOpKind.IS_ABSENT, {}, [0]);
 
-  it("ALL requires every operand", () => {
+  it("ALL requires every operand", async () => {
     expect(
-      holds([...absentView(), yes(), yes(), predicate(PredicateOpKind.ALL, {}, [2, 3])], "A"),
+      await holds([...absentView(), yes(), yes(), predicate(PredicateOpKind.ALL, {}, [2, 3])], "A"),
     ).toBe(true);
     expect(
-      holds([...absentView(), yes(), no(), predicate(PredicateOpKind.ALL, {}, [2, 3])], "A"),
+      await holds([...absentView(), yes(), no(), predicate(PredicateOpKind.ALL, {}, [2, 3])], "A"),
     ).toBe(false);
   });
 
-  it("ANY requires one operand", () => {
+  it("ANY requires one operand", async () => {
     expect(
-      holds([...absentView(), no(), yes(), predicate(PredicateOpKind.ANY, {}, [2, 3])], "A"),
+      await holds([...absentView(), no(), yes(), predicate(PredicateOpKind.ANY, {}, [2, 3])], "A"),
     ).toBe(true);
     expect(
-      holds([...absentView(), no(), no(), predicate(PredicateOpKind.ANY, {}, [2, 3])], "A"),
+      await holds([...absentView(), no(), no(), predicate(PredicateOpKind.ANY, {}, [2, 3])], "A"),
     ).toBe(false);
   });
 
-  it("NOT negates", () => {
-    expect(holds([...absentView(), no(), predicate(PredicateOpKind.NOT, {}, [2])], "A")).toBe(true);
+  it("NOT negates", async () => {
+    expect(await holds([...absentView(), no(), predicate(PredicateOpKind.NOT, {}, [2])], "A")).toBe(
+      true,
+    );
   });
 });
 
 describe("PROFILE_IS", () => {
   const build: NodeSpec[] = [predicate(PredicateOpKind.PROFILE_IS, { text: "strict_current" }, [])];
 
-  it("reads the effective profile", () => {
+  it("reads the effective profile", async () => {
     const nodes = [...build, requireNode(0)];
     nodes.push(assertionSequence([1]));
-    const engine = BusinessIdEngine.fromRules(singleKindBundle({ format: nodes }));
+    const engine = await engineFor(singleKindBundle({ format: nodes }));
 
     expect(
       engine.validateFormat({ kind: "test", value: "A" }, { profile: "strict_current" }).format
@@ -251,7 +260,7 @@ describe("INTEGER_IS", () => {
    * programs alone, so it is driven through a `CHOOSE` here. The reason code
    * reports which branch applied.
    */
-  function branchReason(value: string, constant: bigint): string {
+  async function branchReason(value: string, constant: bigint): Promise<string> {
     const checksum: NodeSpec[] = [
       subjectNode(),
       node(
@@ -279,23 +288,21 @@ describe("INTEGER_IS", () => {
         [4, 5],
       ),
     ];
-    const engine = BusinessIdEngine.fromRules(
-      singleKindBundle({ format: alwaysValidFormat(), checksum }),
-    );
+    const engine = await engineFor(singleKindBundle({ format: alwaysValidFormat(), checksum }));
     return engine.validate({ kind: "test", value }).checksum.reasonCode;
   }
 
-  it("is true when the integer equals the literal", () => {
+  it("is true when the integer equals the literal", async () => {
     // 10 mod 7 is 3, so the branch applies.
-    expect(branchReason("10", 3n)).toBe("checksum_not_published");
+    expect(await branchReason("10", 3n)).toBe("checksum_not_published");
   });
 
-  it("is false when it does not, and the CHOOSE falls through", () => {
-    expect(branchReason("11", 3n)).toBe("unsupported_checksum");
+  it("is false when it does not, and the CHOOSE falls through", async () => {
+    expect(await branchReason("11", 3n)).toBe("unsupported_checksum");
   });
 
-  it("is false on an indeterminate operand rather than failing", () => {
+  it("is false on an indeterminate operand rather than failing", async () => {
     // "1X" cannot be read as digits, so the branch simply does not apply.
-    expect(branchReason("1X", 3n)).toBe("unsupported_checksum");
+    expect(await branchReason("1X", 3n)).toBe("unsupported_checksum");
   });
 });

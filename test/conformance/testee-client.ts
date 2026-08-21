@@ -5,7 +5,7 @@ import {
   TesteeRequestSchema,
   type TesteeResponse,
   TesteeResponseSchema,
-} from "../../src/generated/libbusinessid/testee/v1/testee_pb.js";
+} from "../../generated/libbusinessid/testee/v1/testee_pb.js";
 
 interface Waiter {
   resolve: (frame: Buffer) => void;

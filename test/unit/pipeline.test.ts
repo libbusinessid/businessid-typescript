@@ -1,12 +1,12 @@
-import { describe, expect, it } from "vitest";
-import { BusinessIdEngine } from "../../src/index.js";
+import { beforeAll, describe, expect, it } from "vitest";
+import { engineFor, type TestEngine } from "../helpers/rules.js";
 import {
   CanonicalizationOpKind,
   PredicateOpKind,
   ProgramKind,
   ReasonCode,
   ValueType,
-} from "../../src/generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
 import {
   alwaysValidFormat,
   assertionSequence,
@@ -40,7 +40,10 @@ const digitsFormat = (): NodeSpec[] => [
 ];
 
 describe("the input bound", () => {
-  const engine = BusinessIdEngine.fromRules(singleKindBundle({ format: digitsFormat() }));
+  let engine: TestEngine;
+  beforeAll(async () => {
+    engine = await engineFor(singleKindBundle({ format: digitsFormat() }));
+  });
 
   it("refuses a value above 1024 UTF-8 bytes without processing it", () => {
     const report = engine.validate({ kind: "test", value: "1".repeat(1025) });
@@ -67,7 +70,10 @@ describe("the input bound", () => {
 });
 
 describe("invalid encoding", () => {
-  const engine = BusinessIdEngine.fromRules(singleKindBundle({ format: digitsFormat() }));
+  let engine: TestEngine;
+  beforeAll(async () => {
+    engine = await engineFor(singleKindBundle({ format: digitsFormat() }));
+  });
 
   it("refuses a lone surrogate, reporting the value verbatim", () => {
     // A lone surrogate has no UTF-8 encoding, so it carries no code point
@@ -80,7 +86,10 @@ describe("invalid encoding", () => {
 });
 
 describe("kind resolution", () => {
-  const engine = BusinessIdEngine.fromRules(singleKindBundle({ format: digitsFormat() }));
+  let engine: TestEngine;
+  beforeAll(async () => {
+    engine = await engineFor(singleKindBundle({ format: digitsFormat() }));
+  });
 
   it("normalizes the token by trim and lower casing", () => {
     expect(engine.validate({ kind: "  TEST \t", value: "1" }).kind).toBe("test");
@@ -97,67 +106,68 @@ describe("kind resolution", () => {
 });
 
 describe("country resolution", () => {
-  function twoCountryEngine(): BusinessIdEngine {
-    return BusinessIdEngine.fromRules(
-      encode(
-        bundle({
-          programs: [
-            program(1, ProgramKind.CANONICALIZATION, [canonicalizationSequence()]),
-            program(2, ProgramKind.CANONICALIZATION, [canonicalizationSequence()]),
-            program(3, ProgramKind.FORMAT, alwaysValidFormat()),
-          ],
-          definitions: [
-            {
-              id: 1,
-              kind: "vat",
-              countryCode: "BE",
-              canonicalizationProgram: 2,
-              formatProgram: 3,
-              absentChecksumReason: ReasonCode.CHECKSUM_NOT_PUBLISHED,
-              defaultProfile: "compatible",
-              sources: [],
-            },
-            {
-              id: 2,
-              kind: "vat",
-              countryCode: "FR",
-              canonicalizationProgram: 2,
-              formatProgram: 3,
-              absentChecksumReason: ReasonCode.CHECKSUM_NOT_PUBLISHED,
-              defaultProfile: "compatible",
-              sources: [],
-            },
-          ],
-          dispatchers: [
-            {
-              kind: "vat",
-              kindAliases: ["vat_id"],
-              preCanonicalizationProgram: 1,
-              countryAliases: [{ alias: "UK", countryCode: "BE" }],
-              targets: [
-                {
-                  countryCode: "BE",
-                  acceptedPrefixes: ["BE"],
-                  canonicalPrefix: "BE",
-                  identifierDefinitionId: 1,
-                  allowUnprefixedWithoutCountry: false,
-                },
-                {
-                  countryCode: "FR",
-                  acceptedPrefixes: ["FR"],
-                  canonicalPrefix: "FR",
-                  identifierDefinitionId: 2,
-                  allowUnprefixedWithoutCountry: false,
-                },
-              ],
-            },
-          ],
-        }),
-      ),
+  function twoCountryBundle(): Uint8Array {
+    return encode(
+      bundle({
+        programs: [
+          program(1, ProgramKind.CANONICALIZATION, [canonicalizationSequence()]),
+          program(2, ProgramKind.CANONICALIZATION, [canonicalizationSequence()]),
+          program(3, ProgramKind.FORMAT, alwaysValidFormat()),
+        ],
+        definitions: [
+          {
+            id: 1,
+            kind: "vat",
+            countryCode: "BE",
+            canonicalizationProgram: 2,
+            formatProgram: 3,
+            absentChecksumReason: ReasonCode.CHECKSUM_NOT_PUBLISHED,
+            defaultProfile: "compatible",
+            sources: [],
+          },
+          {
+            id: 2,
+            kind: "vat",
+            countryCode: "FR",
+            canonicalizationProgram: 2,
+            formatProgram: 3,
+            absentChecksumReason: ReasonCode.CHECKSUM_NOT_PUBLISHED,
+            defaultProfile: "compatible",
+            sources: [],
+          },
+        ],
+        dispatchers: [
+          {
+            kind: "vat",
+            kindAliases: ["vat_id"],
+            preCanonicalizationProgram: 1,
+            countryAliases: [{ alias: "UK", countryCode: "BE" }],
+            targets: [
+              {
+                countryCode: "BE",
+                acceptedPrefixes: ["BE"],
+                canonicalPrefix: "BE",
+                identifierDefinitionId: 1,
+                allowUnprefixedWithoutCountry: false,
+              },
+              {
+                countryCode: "FR",
+                acceptedPrefixes: ["FR"],
+                canonicalPrefix: "FR",
+                identifierDefinitionId: 2,
+                allowUnprefixedWithoutCountry: false,
+              },
+            ],
+          },
+        ],
+      }),
     );
   }
 
-  const engine = twoCountryEngine();
+  let engine: TestEngine;
+  beforeAll(async () => {
+    engine = await engineFor(twoCountryBundle());
+  });
 
   it("resolves a kind alias to its canonical kind", () => {
     expect(engine.validate({ kind: "vat_id", value: "BE1" }).kind).toBe("vat");
@@ -211,7 +221,7 @@ describe("country resolution", () => {
 });
 
 describe("the pre-canonicalization phase", () => {
-  it("runs before the country decision, so a stalled result still carries it", () => {
+  it("runs before the country decision, so a stalled result still carries it", async () => {
     // ir.md section 5 runs the pre-canonicalizer as soon as the dispatcher is
     // resolved. A result that stops on an unusable country therefore reports
     // the pre-canonical value rather than the raw one.
@@ -222,7 +232,7 @@ describe("the pre-canonicalization phase", () => {
       }),
       canonicalizationSequence([0]),
     ];
-    const engine = BusinessIdEngine.fromRules(
+    const engine = await engineFor(
       singleKindBundle({
         countryCode: "FR",
         preCanonicalization: pre,
@@ -239,9 +249,12 @@ describe("the pre-canonicalization phase", () => {
 });
 
 describe("a GLOBAL target", () => {
-  const engine = BusinessIdEngine.fromRules(
-    singleKindBundle({ countryCode: undefined, format: alwaysValidFormat() }),
-  );
+  let engine: TestEngine;
+  beforeAll(async () => {
+    engine = await engineFor(
+      singleKindBundle({ countryCode: undefined, format: alwaysValidFormat() }),
+    );
+  });
 
   it("keeps a well formed country context without routing on it", () => {
     const report = engine.validate({ kind: "test", value: "1", countryCode: "fr" });
@@ -256,8 +269,8 @@ describe("a GLOBAL target", () => {
 });
 
 describe("the format and checksum steps", () => {
-  it("stops the checksum after an invalid format", () => {
-    const engine = BusinessIdEngine.fromRules(singleKindBundle({ format: digitsFormat() }));
+  it("stops the checksum after an invalid format", async () => {
+    const engine = await engineFor(singleKindBundle({ format: digitsFormat() }));
     const report = engine.validate({ kind: "test", value: "12X" });
 
     expect(report.format).toMatchObject({
@@ -271,8 +284,8 @@ describe("the format and checksum steps", () => {
     });
   });
 
-  it("reports the declared absence reason when no checksum program exists", () => {
-    const engine = BusinessIdEngine.fromRules(
+  it("reports the declared absence reason when no checksum program exists", async () => {
+    const engine = await engineFor(
       singleKindBundle({
         format: digitsFormat(),
         absentChecksumReason: ReasonCode.CHECKSUM_NOT_PUBLISHED,
@@ -285,8 +298,8 @@ describe("the format and checksum steps", () => {
     });
   });
 
-  it("validateFormat reports not_requested and never runs the checksum", () => {
-    const engine = BusinessIdEngine.fromRules(singleKindBundle({ format: digitsFormat() }));
+  it("validateFormat reports not_requested and never runs the checksum", async () => {
+    const engine = await engineFor(singleKindBundle({ format: digitsFormat() }));
 
     expect(engine.validateFormat({ kind: "test", value: "12" }).checksum).toMatchObject({
       status: "not_run",
@@ -294,15 +307,15 @@ describe("the format and checksum steps", () => {
     });
   });
 
-  it("validateChecksum returns exactly the report validate returns", () => {
-    const engine = BusinessIdEngine.fromRules(singleKindBundle({ format: digitsFormat() }));
+  it("validateChecksum returns exactly the report validate returns", async () => {
+    const engine = await engineFor(singleKindBundle({ format: digitsFormat() }));
     const input = { kind: "test", value: "12X" };
 
     expect(engine.validateChecksum(input)).toEqual(engine.validate(input));
   });
 
-  it("validateFormat reports a dispatch failure exactly as validate does", () => {
-    const engine = BusinessIdEngine.fromRules(singleKindBundle({ format: digitsFormat() }));
+  it("validateFormat reports a dispatch failure exactly as validate does", async () => {
+    const engine = await engineFor(singleKindBundle({ format: digitsFormat() }));
     const input = { kind: "nope", value: "12" };
 
     expect(engine.validateFormat(input)).toEqual(engine.validate(input));
@@ -310,10 +323,10 @@ describe("the format and checksum steps", () => {
 });
 
 describe("the effective profile", () => {
-  it("lets the definition default apply only when the caller states none", () => {
+  it("lets the definition default apply only when the caller states none", async () => {
     // ir.md section 5.2: absence is meaningful, and is not the same request as
     // an explicit `compatible`.
-    const engine = BusinessIdEngine.fromRules(
+    const engine = await engineFor(
       singleKindBundle({ defaultProfile: "strict_current", format: alwaysValidFormat() }),
     );
 
@@ -323,8 +336,8 @@ describe("the effective profile", () => {
     ).toBe("compatible");
   });
 
-  it("reports the dispatch profile when no definition was selected", () => {
-    const engine = BusinessIdEngine.fromRules(
+  it("reports the dispatch profile when no definition was selected", async () => {
+    const engine = await engineFor(
       singleKindBundle({ defaultProfile: "strict_current", format: alwaysValidFormat() }),
     );
 
@@ -333,8 +346,8 @@ describe("the effective profile", () => {
 });
 
 describe("canonicalize", () => {
-  it("reports valid and ok when a definition was selected", () => {
-    const engine = BusinessIdEngine.fromRules(singleKindBundle({ format: digitsFormat() }));
+  it("reports valid and ok when a definition was selected", async () => {
+    const engine = await engineFor(singleKindBundle({ format: digitsFormat() }));
 
     // The format rule is never run: canonicalize stops after dispatch.
     expect(engine.canonicalize({ kind: "test", value: "12X" })).toMatchObject({
@@ -344,8 +357,8 @@ describe("canonicalize", () => {
     });
   });
 
-  it("reports invalid only for country_mismatch", () => {
-    const engine = BusinessIdEngine.fromRules(
+  it("reports invalid only for country_mismatch", async () => {
+    const engine = await engineFor(
       singleKindBundle({
         countryCode: "FR",
         acceptedPrefixes: ["FR"],

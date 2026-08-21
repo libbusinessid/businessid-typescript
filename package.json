@@ -39,12 +39,11 @@
     "bench": "node --expose-gc scripts/bench.mjs",
     "test:fuzz": "vitest run --project node test/security/fuzz.test.ts",
     "mutation": "stryker run",
-    "prepack": "npm run build"
-  },
-  "dependencies": {
-    "@bufbuild/protobuf": "^2.10.1"
+    "prepack": "npm run build",
+    "build:generator": "tsc -p tsconfig.generator.json"
   },
   "devDependencies": {
+    "@bufbuild/protobuf": "^2.10.1",
     "@bufbuild/protoc-gen-es": "^2.10.1",
     "@eslint/js": "^9.39.1",
     "@stryker-mutator/core": "^10.0.0",

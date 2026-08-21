@@ -11,10 +11,10 @@
   },
   "coverageAnalysis": "perTest",
   "mutate": [
-    "src/runtime/interpret.ts",
+    "src/runtime/support.ts",
     "src/runtime/pipeline.ts",
     "src/runtime/text.ts",
-    "src/runtime/load/**/*.ts"
+    "tools/generator/**/*.ts"
   ],
   "ignorePatterns": ["dist", "build", "coverage", "reports", "spec"],
   "thresholds": {

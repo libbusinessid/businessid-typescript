@@ -30,10 +30,11 @@ jobs:
       - run: pnpm run format:check
       - run: pnpm run lint
       - run: pnpm run typecheck
-      # The bundle inlined in `src/assets` must match the digests rules.lock
-      # attests, and the Protobuf types must match the schemas.
+      # The rules in `src/rules.generated.ts` must be what the generator emits
+      # from the bundle rules.lock attests, and the Protobuf types must match
+      # the schemas.
       - run: pnpm run check:generated
-      - run: pnpm exec buf generate && git diff --exit-code src/generated
+      - run: pnpm exec buf generate && git diff --exit-code generated
 
   test:
     name: tests on node ${{ matrix.node }}

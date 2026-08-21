@@ -1,8 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
-  BundleError,
   BusinessIdEngine,
-  EngineError,
   isChecksumValid,
   isFormatValid,
   isFullyValidated,
@@ -12,21 +10,15 @@ import {
   type RegistryProvider,
   type ValidationReport,
 } from "../../src/index.js";
-import {
-  PredicateOpKind,
-  StringOpKind,
-  ValueType,
-} from "../../src/generated/libbusinessid/ir/v1/rules_pb.js";
-import {
-  assertionSequence,
-  node,
-  type NodeSpec,
-  requireNode,
-  singleKindBundle,
-  valueNode,
-} from "../helpers/bundle.js";
 
 describe("BusinessIdEngine.default", () => {
+  it("is the only way to obtain an engine", () => {
+    // The rules are code, generated when this package was built. There is no
+    // factory taking bundle bytes: a custom rule set goes through the
+    // generator, not through the public API.
+    expect("fromRules" in BusinessIdEngine).toBe(false);
+  });
+
   it("decodes the shipped bundle at most once", () => {
     expect(BusinessIdEngine.default).toBe(BusinessIdEngine.default);
   });
@@ -43,23 +35,6 @@ describe("BusinessIdEngine.default", () => {
 
     expect(kinds).toContain("vat");
     expect(kinds).toEqual([...KNOWN_IDENTIFIER_KINDS].sort());
-  });
-});
-
-describe("BusinessIdEngine.fromRules", () => {
-  it("throws a typed error naming the reason and the check", () => {
-    try {
-      BusinessIdEngine.fromRules(new Uint8Array([0x08, 0x63]));
-      expect.unreachable("the bundle was accepted");
-    } catch (error) {
-      expect(error).toBeInstanceOf(BundleError);
-      expect(error).toMatchObject({ reason: "incompatible_ruleset", check: 3 });
-      expect((error as BundleError).message).toContain("format version");
-    }
-  });
-
-  it("treats the bytes as untrusted whatever their source", () => {
-    expect(() => BusinessIdEngine.fromRules(new Uint8Array())).toThrow(BundleError);
   });
 });
 
@@ -164,43 +139,6 @@ describe("the registry interface", () => {
     };
 
     await expect(engine.registryLookup(input, provider)).resolves.toEqual(answer);
-  });
-});
-
-describe("the evaluation budget", () => {
-  it("stops a bundle whose graph explodes on re-evaluation", () => {
-    // Nodes are re-evaluated at every reference, so a chain where each node
-    // reads the previous one twice costs 2^n evaluations. The budget is what
-    // keeps a bundle from making an engine work, or allocate, without bound.
-    const nodes: NodeSpec[] = [valueNode()];
-    for (let level = 0; level < 20; level += 1) {
-      const previous = nodes.length - 1;
-      nodes.push(
-        node(ValueType.STRING, { case: "stringOperation", value: { kind: StringOpKind.CONCAT } }, [
-          previous,
-          previous,
-        ]),
-      );
-    }
-    // The rule must actually read the top of the chain, or it stays dead code.
-    const top = nodes.length - 1;
-    nodes.push(
-      node(
-        ValueType.BOOLEAN,
-        { case: "predicateOperation", value: { kind: PredicateOpKind.IS_ABSENT } },
-        [top],
-      ),
-      node(
-        ValueType.BOOLEAN,
-        { case: "predicateOperation", value: { kind: PredicateOpKind.NOT } },
-        [top + 1],
-      ),
-      requireNode(top + 2),
-      assertionSequence([top + 3]),
-    );
-    const engine = BusinessIdEngine.fromRules(singleKindBundle({ format: nodes }));
-
-    expect(() => engine.validate({ kind: "test", value: "1" })).toThrow(EngineError);
   });
 });
 

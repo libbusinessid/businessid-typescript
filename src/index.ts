@@ -50,7 +50,6 @@ export {
   type StepResult,
   type ValidationReport,
 } from "./domain/result.js";
-export { BundleError, type BundleErrorReason, EngineError } from "./domain/errors.js";
 export {
   REGISTRY_STATUSES,
   type RegistryInput,

@@ -22,7 +22,7 @@ import {
   type StringOperation,
   StringOpKind,
   ValueType,
-} from "../../src/generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
 
 /**
  * Builds well formed bundles for tests.

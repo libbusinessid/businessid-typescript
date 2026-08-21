@@ -6,3 +6,4 @@ coverage/
 .consumer/
 reports/
 .stryker-tmp/
+test/.generated/
