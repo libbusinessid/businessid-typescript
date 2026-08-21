@@ -90,7 +90,7 @@ function direct(program: IrProgram): ProgramNeeds {
 /**
  * The needs of every program, with calls resolved.
  *
- * The call graph is acyclic and of bounded depth, both proved by check 23, so
+ * The call graph is acyclic and of bounded depth, both proved by check 24, so
  * the recursion terminates without a visited set.
  */
 export function analyseNeeds(bundle: LoadedBundle): ReadonlyMap<number, ProgramNeeds> {

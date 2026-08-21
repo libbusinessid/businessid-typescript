@@ -413,7 +413,7 @@ describe("check 13: bounds", () => {
   });
 });
 
-describe("check 14: anchors and captures", () => {
+describe("check 15: anchors and captures", () => {
   it("refuses a program with no node", () => {
     expectRefusal(
       encode(
@@ -423,7 +423,7 @@ describe("check 14: anchors and captures", () => {
           dispatchers: [],
         }),
       ),
-      14,
+      15,
     );
   });
 
@@ -440,7 +440,7 @@ describe("check 14: anchors and captures", () => {
           dispatchers: [],
         }),
       ),
-      14,
+      15,
     );
   });
 
@@ -457,7 +457,7 @@ describe("check 14: anchors and captures", () => {
           dispatchers: [],
         }),
       ),
-      14,
+      15,
     );
   });
 
@@ -474,12 +474,12 @@ describe("check 14: anchors and captures", () => {
           dispatchers: [],
         }),
       ),
-      14,
+      15,
     );
   });
 });
 
-describe("check 15: program shape", () => {
+describe("check 16: program shape", () => {
   it("refuses an operation family foreign to the program kind", () => {
     // Everything else about this program is well formed: only the integer
     // node, which belongs to checksum programs alone, is out of place.
@@ -501,7 +501,7 @@ describe("check 15: program shape", () => {
           assertionSequence([3]),
         ],
       }),
-      15,
+      16,
     );
   });
 
@@ -511,7 +511,7 @@ describe("check 15: program shape", () => {
         canonicalization: [subjectNode(), canonicalizationSequence()],
         format: alwaysValidFormat(),
       }),
-      15,
+      16,
     );
   });
 
@@ -529,7 +529,7 @@ describe("check 15: program shape", () => {
         ],
         format: alwaysValidFormat(),
       }),
-      15,
+      16,
     );
   });
 
@@ -547,7 +547,7 @@ describe("check 15: program shape", () => {
         ],
         format: alwaysValidFormat(),
       }),
-      15,
+      16,
     );
   });
 
@@ -564,7 +564,7 @@ describe("check 15: program shape", () => {
           requireNode(1),
         ],
       }),
-      15,
+      16,
     );
   });
 
@@ -593,7 +593,7 @@ describe("check 15: program shape", () => {
           ),
         ],
       }),
-      15,
+      16,
     );
   });
 
@@ -616,12 +616,12 @@ describe("check 15: program shape", () => {
           assertionSequence([3]),
         ],
       }),
-      15,
+      16,
     );
   });
 });
 
-describe("check 16 and 17: definitions", () => {
+describe("check 17 and 18: definitions", () => {
   const withDefinition = (
     definition: Record<string, unknown>,
     extra: Record<string, unknown> = {},
@@ -675,34 +675,34 @@ describe("check 16 and 17: definitions", () => {
     );
 
   it("refuses definition id zero", () => {
-    expectRefusal(withDefinition({ id: 0 }), 16);
+    expectRefusal(withDefinition({ id: 0 }), 17);
   });
 
   it("refuses a malformed kind or country", () => {
-    expectRefusal(withDefinition({ kind: "Test" }), 16);
-    expectRefusal(withDefinition({ countryCode: "fr" }), 16);
+    expectRefusal(withDefinition({ kind: "Test" }), 17);
+    expectRefusal(withDefinition({ countryCode: "fr" }), 17);
     // The empty string and the literal GLOBAL are invalid: absence carries the
     // meaning on its own.
-    expectRefusal(withDefinition({ countryCode: "" }), 16);
-    expectRefusal(withDefinition({ countryCode: "GLOBAL" }), 16);
+    expectRefusal(withDefinition({ countryCode: "" }), 17);
+    expectRefusal(withDefinition({ countryCode: "GLOBAL" }), 17);
   });
 
   it("refuses an unknown profile", () => {
-    expectRefusal(withDefinition({ defaultProfile: "lenient" }), 16);
+    expectRefusal(withDefinition({ defaultProfile: "lenient" }), 17);
   });
 
   it("refuses a reference to a missing or mistyped program", () => {
-    expectRefusal(withDefinition({ formatProgram: 99 }), 16);
-    expectRefusal(withDefinition({ formatProgram: 1 }), 16);
+    expectRefusal(withDefinition({ formatProgram: 99 }), 17);
+    expectRefusal(withDefinition({ formatProgram: 1 }), 17);
   });
 
   it("refuses sources without an id or out of order", () => {
-    expectRefusal(withDefinition({ sources: [{ id: "" }] }), 16);
-    expectRefusal(withDefinition({ sources: [{ id: "b" }, { id: "a" }] }), 16);
+    expectRefusal(withDefinition({ sources: [{ id: "" }] }), 17);
+    expectRefusal(withDefinition({ sources: [{ id: "b" }, { id: "a" }] }), 17);
   });
 
   it("refuses a source tier outside the enumeration", () => {
-    expectRefusal(withDefinition({ sources: [{ id: "a", tier: 99 as SourceTier }] }), 16);
+    expectRefusal(withDefinition({ sources: [{ id: "a", tier: 99 as SourceTier }] }), 17);
   });
 
   it("accepts an unspecified tier, which states no tier at all", () => {
@@ -717,16 +717,16 @@ describe("check 16 and 17: definitions", () => {
   it("refuses a definition declaring both a checksum program and an absence reason", () => {
     expectRefusal(
       withDefinition({ checksumProgram: 3, absentChecksumReason: ReasonCode.UNSUPPORTED_CHECKSUM }),
-      17,
+      18,
     );
   });
 
   it("refuses a definition declaring neither", () => {
-    expectRefusal(withDefinition({ absentChecksumReason: undefined }), 17);
+    expectRefusal(withDefinition({ absentChecksumReason: undefined }), 18);
   });
 
   it("refuses an absence reason that cannot report a missing checksum", () => {
-    expectRefusal(withDefinition({ absentChecksumReason: ReasonCode.INVALID_CHECKSUM }), 17);
+    expectRefusal(withDefinition({ absentChecksumReason: ReasonCode.INVALID_CHECKSUM }), 18);
   });
 
   it("refuses definitions that are not in the normative order", () => {
@@ -753,7 +753,7 @@ describe("check 16 and 17: definitions", () => {
           dispatchers: [],
         }),
       ),
-      16,
+      17,
     );
     // GLOBAL sorts before every country.
     expectRefusal(
@@ -764,12 +764,12 @@ describe("check 16 and 17: definitions", () => {
           dispatchers: [],
         }),
       ),
-      16,
+      17,
     );
   });
 });
 
-describe("check 18 to 22: dispatchers", () => {
+describe("check 19 to 23: dispatchers", () => {
   const twoPrograms = [
     program(1, ProgramKind.CANONICALIZATION, [canonicalizationSequence()]),
     program(2, ProgramKind.FORMAT, alwaysValidFormat()),
@@ -808,14 +808,14 @@ describe("check 18 to 22: dispatchers", () => {
   ): Uint8Array => encode(bundle({ programs: twoPrograms, definitions, dispatchers }));
 
   it("refuses a malformed kind or an unsorted kind alias", () => {
-    expectRefusal(withDispatchers([dispatcher({ kind: "Test" })]), 18);
-    expectRefusal(withDispatchers([dispatcher({ kindAliases: ["b", "a"] })]), 18);
+    expectRefusal(withDispatchers([dispatcher({ kind: "Test" })]), 19);
+    expectRefusal(withDispatchers([dispatcher({ kindAliases: ["b", "a"] })]), 19);
   });
 
   it("refuses a kind alias colliding with another kind", () => {
     // Kinds and aliases share one space, so a collision is an ambiguity no
     // ordering could resolve.
-    expectRefusal(withDispatchers([dispatcher({ kindAliases: ["test"] })]), 18);
+    expectRefusal(withDispatchers([dispatcher({ kindAliases: ["test"] })]), 19);
   });
 
   it("refuses dispatchers that are not sorted", () => {
@@ -830,26 +830,26 @@ describe("check 18 to 22: dispatchers", () => {
         ],
         [definition(1, "FR", "alpha"), definition(2, "FR", "zeta")],
       ),
-      18,
+      19,
     );
   });
 
   it("refuses an unusable pre-canonicalization program", () => {
-    expectRefusal(withDispatchers([dispatcher({ preCanonicalizationProgram: 2 })]), 18);
+    expectRefusal(withDispatchers([dispatcher({ preCanonicalizationProgram: 2 })]), 19);
   });
 
   it("refuses a country alias that is malformed, self mapping or shadowing", () => {
     expectRefusal(
       withDispatchers([dispatcher({ countryAliases: [{ alias: "xx", countryCode: "FR" }] })]),
-      19,
+      20,
     );
     expectRefusal(
       withDispatchers([dispatcher({ countryAliases: [{ alias: "BE", countryCode: "BE" }] })]),
-      19,
+      20,
     );
     expectRefusal(
       withDispatchers([dispatcher({ countryAliases: [{ alias: "FR", countryCode: "BE" }] })]),
-      19,
+      20,
     );
     expectRefusal(
       withDispatchers([
@@ -860,12 +860,12 @@ describe("check 18 to 22: dispatchers", () => {
           ],
         }),
       ]),
-      19,
+      20,
     );
   });
 
   it("refuses a dispatcher without targets", () => {
-    expectRefusal(withDispatchers([dispatcher({ targets: [] })]), 20);
+    expectRefusal(withDispatchers([dispatcher({ targets: [] })]), 21);
   });
 
   it("refuses targets that are not sorted or repeat a country", () => {
@@ -882,7 +882,7 @@ describe("check 18 to 22: dispatchers", () => {
         ],
         two,
       ),
-      20,
+      21,
     );
   });
 
@@ -891,13 +891,13 @@ describe("check 18 to 22: dispatchers", () => {
       withDispatchers([
         dispatcher({ targets: [target({ countryCode: "FR", acceptedPrefixes: ["F-R"] })] }),
       ]),
-      20,
+      21,
     );
     expectRefusal(
       withDispatchers([
         dispatcher({ targets: [target({ countryCode: "FR", acceptedPrefixes: ["FR", "AB"] })] }),
       ]),
-      20,
+      21,
     );
   });
 
@@ -908,7 +908,7 @@ describe("check 18 to 22: dispatchers", () => {
           targets: [target({ countryCode: "FR", acceptedPrefixes: ["FR"], canonicalPrefix: "BE" })],
         }),
       ]),
-      20,
+      21,
     );
   });
 
@@ -933,7 +933,7 @@ describe("check 18 to 22: dispatchers", () => {
         ],
         [definition(1, "BE"), definition(2, "FR")],
       ),
-      20,
+      21,
     );
   });
 
@@ -950,7 +950,7 @@ describe("check 18 to 22: dispatchers", () => {
         ],
         [definition(1, undefined), definition(2, "FR")],
       ),
-      21,
+      22,
     );
   });
 
@@ -965,13 +965,13 @@ describe("check 18 to 22: dispatchers", () => {
         ],
         [definition(1, undefined)],
       ),
-      21,
+      22,
     );
   });
 
   it("refuses a target whose definition disagrees on kind or country", () => {
-    expectRefusal(withDispatchers([dispatcher({ targets: [target({ countryCode: "BE" })] })]), 22);
-    expectRefusal(withDispatchers([dispatcher({ targets: [target({})] })]), 22);
+    expectRefusal(withDispatchers([dispatcher({ targets: [target({ countryCode: "BE" })] })]), 23);
+    expectRefusal(withDispatchers([dispatcher({ targets: [target({})] })]), 23);
   });
 
   it("refuses an unknown definition reference", () => {
@@ -979,7 +979,7 @@ describe("check 18 to 22: dispatchers", () => {
       withDispatchers([
         dispatcher({ targets: [target({ countryCode: "FR", identifierDefinitionId: 9 })] }),
       ]),
-      22,
+      23,
     );
   });
 
@@ -998,12 +998,12 @@ describe("check 18 to 22: dispatchers", () => {
         ],
         [definition(1, "FR", "alpha")],
       ),
-      22,
+      23,
     );
   });
 });
 
-describe("check 24: declared capabilities", () => {
+describe("check 25: declared capabilities", () => {
   it("requires the custom alphabet capability from the variant, not the operation", () => {
     // A weighted sum over digits must not oblige an engine to implement an
     // alphabet it never reads, so the capability belongs to the mapping.
@@ -1041,7 +1041,7 @@ describe("check 24: declared capabilities", () => {
     // Everything these bundles use, minus the custom alphabet capability.
     const withoutAlphabet = [1, 3, 5, 10, 20, 21, 30, 33, 34];
     expect(() => loadBundle(withMapping(CharMapping.DIGIT_VALUE, withoutAlphabet))).not.toThrow();
-    expectRefusal(withMapping(CharMapping.CUSTOM_ALPHABET, withoutAlphabet), 24);
+    expectRefusal(withMapping(CharMapping.CUSTOM_ALPHABET, withoutAlphabet), 25);
   });
 
   it("requires the provenance capability from the presence of sources", () => {
@@ -1083,7 +1083,7 @@ describe("check 24: declared capabilities", () => {
       }),
     );
 
-    expectRefusal(payload, 24);
+    expectRefusal(payload, 25);
   });
 
   it("requires the tier capability only from a stated tier", () => {
@@ -1128,6 +1128,6 @@ describe("check 24: declared capabilities", () => {
 
     const withoutTier = [1, 3, 5, 10, 20, 21, 30, 40];
     expect(() => loadBundle(withTier(SourceTier.UNSPECIFIED, withoutTier))).not.toThrow();
-    expectRefusal(withTier(SourceTier.PRIMARY, withoutTier), 24);
+    expectRefusal(withTier(SourceTier.PRIMARY, withoutTier), 25);
   });
 });

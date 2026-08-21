@@ -5,7 +5,6 @@ import type {
   IdentifierInput,
   IdentifierKind,
   ReasonCode,
-  RegistryProvider,
   StepStatus,
   ValidationProfile,
   ValidationReport,
@@ -61,19 +60,22 @@ describe("the operations", () => {
   });
 });
 
+describe("synchrony", () => {
+  it("keeps every validation synchronous, permanently", () => {
+    // `engine.md` section 10.1 fixes this: a registry lookup is a separate
+    // asynchronous operation, never a mode of these. Making one of them return
+    // a promise later would transform every caller.
+    type Engine = BusinessIdEngine;
+
+    expectTypeOf<ReturnType<Engine["validate"]>>().not.toExtend<Promise<unknown>>();
+    expectTypeOf<ReturnType<Engine["canonicalize"]>>().not.toExtend<Promise<unknown>>();
+  });
+});
+
 describe("immutability", () => {
   it("exposes reports as read only", () => {
     expectTypeOf<ValidationReport>().toExtend<{ readonly canonicalValue: string }>();
     expectTypeOf<IdentifierInput>().toExtend<{ readonly value: string }>();
-  });
-});
-
-describe("the registry interface", () => {
-  it("is asynchronous and carries no DOM type", () => {
-    expectTypeOf<RegistryProvider["lookup"]>().returns.toExtend<Promise<unknown>>();
-    // No AbortSignal in V1: a DOM type would contradict a platform agnostic
-    // core. A future network integration defines its own cancellation.
-    expectTypeOf<Parameters<RegistryProvider["lookup"]>[1]>().not.toExtend<AbortSignal>();
   });
 });
 

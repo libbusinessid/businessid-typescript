@@ -4,7 +4,7 @@ Offline canonicalization, format validation and checksum validation of business
 identifiers — VAT numbers, national company numbers, EUID, LEI and more — driven
 by the shared LibBusinessID rule bundle.
 
-**94 identifiers across 37 countries**, rules version `2026.08.14`. No network
+**94 identifiers across 37 countries**, rules version `2026.08.16`. No network
 access, no locale dependence, no regular expressions, and **no runtime
 dependencies**.
 
@@ -126,7 +126,7 @@ generator, at build time:
 pnpm generate    # reads spec/businessid-rules.binpb, writes src/rules.generated.ts
 ```
 
-The generator applies all twenty four load time checks of the specification and
+The generator applies all twenty five load time checks of the specification and
 refuses to emit anything it does not fully understand — an unknown version,
 field, opcode or capability stops it. That is why the published engine can never
 meet one, and why it has no error type of its own: **no input, however hostile,
@@ -136,7 +136,7 @@ makes it throw.**
 
 ```ts
 BusinessIdEngine.default.rulesInfo();
-// { rulesVersion: "2026.08.14", formatVersion: 1, engineVersion: "0.1.0" }
+// { rulesVersion: "2026.08.16", formatVersion: 1, engineVersion: "0.1.0" }
 ```
 
 Three versions move independently. `engineVersion` follows SemVer for the
@@ -144,13 +144,23 @@ package. `rulesVersion` is the business version of the rules. `formatVersion`
 is the structural version of the IR. A rules update that changes a verdict is
 published as a new package version, never applied silently.
 
-### The registry interface
+### Consulting a company register
 
-`RegistryProvider` is declared and unimplemented. Without a provider,
-`registryLookup` answers `registry_not_configured`, which is an absence of
-knowledge and never an invalidity. No `fetch` exists anywhere in this package,
-and V1 deliberately references no `AbortSignal`: a DOM type would contradict a
-platform agnostic core.
+Not in this version, and this package deliberately ships no type for it — a
+public type is a commitment SemVer freezes. What is settled is the shape the
+future takes, so that it can arrive without breaking anything:
+
+- **validation stays synchronous, permanently.** `canonicalize`, `validate`,
+  `validateFormat` and `validateChecksum` will never return a promise. A lookup
+  is a separate asynchronous operation, never a mode of these.
+- **`validate` will never call a register.** The answer will be a separate
+  report from a separate operation, not a field these fill in.
+- **a lookup will live in a separate, server-only entry point.** It carries an
+  API token, which must never be reachable from a browser, so it cannot be a
+  runtime flag on this package.
+
+`registry_not_configured` is reserved in the reason code registry and reported
+by nothing today.
 
 ## Limits
 
@@ -172,20 +182,21 @@ surrogate, which has no UTF-8 encoding — is reported as
 `unsupported`/`invalid_encoding`.
 
 The bundle shaped limits are the generator's business and no longer apply once
-the code exists. The step budget does not apply at all: the emitted code
-terminates by construction, because the call graph is acyclic and its depth is
-bounded, both proved before a line was emitted.
+the code exists. The step budget does not apply at run time either: the emitted
+code terminates by construction, because the call graph is acyclic and its depth
+is bounded, both proved before a line was emitted. It bounds the generator
+instead — a program may not expand past it once repeated operands are inlined.
 
 ## Conformance
 
-Every one of the **663 shared conformance cases passes**, run over the testee
+Every one of the **665 shared conformance cases passes**, run over the testee
 protocol the specification defines: a separate process receives one request at a
 time and never sees an expected result, so the absence of cheating is
 verifiable. No case is skipped, filtered, or marked expected to fail.
 
 That includes the reason code _and_ the message key of every step, and the 33
 `load_ruleset` cases, which the testee answers by calling the generator — the
-twenty four checks live there now.
+twenty five checks live there now.
 
 ## Development
 

@@ -1,5 +1,5 @@
 /**
- * Checks 14 and 15: what a program is shaped like.
+ * Checks 15 and 16: what a program is shaped like.
  *
  * Check 14 places the root, the subject and the captures inside the program and
  * types them. Check 15 asks the different question of which operation may sit
@@ -71,23 +71,23 @@ export function checkProgramShapes(bundle: RuleBundle, resolved: ResolvedProgram
 function checkAnchors(program: ProtoProgram, nodes: readonly ResolvedNode[]): void {
   const where = `program ${String(program.id)}`;
   if (nodes.length === 0) {
-    invalid(14, `${where} declares no node`);
+    invalid(15, `${where} declares no node`);
   }
   if (program.rootNode >= nodes.length) {
-    invalid(14, `${where} roots at node ${String(program.rootNode)}, outside the program`);
+    invalid(15, `${where} roots at node ${String(program.rootNode)}, outside the program`);
   }
   if (nodes[program.rootNode]?.node.outputType !== ROOT_TYPES[program.kind]) {
-    invalid(14, `${where} roots at a node of the wrong type`);
+    invalid(15, `${where} roots at a node of the wrong type`);
   }
   if (program.subjectNode !== undefined) {
     if (program.kind === ProgramKind.CANONICALIZATION) {
-      invalid(14, `${where} is a canonicalization program and declares a subject`);
+      invalid(15, `${where} is a canonicalization program and declares a subject`);
     }
     if (program.subjectNode >= nodes.length) {
-      invalid(14, `${where} declares a subject outside the program`);
+      invalid(15, `${where} declares a subject outside the program`);
     }
     if (nodes[program.subjectNode]?.node.outputType !== ValueType.STRING) {
-      invalid(14, `${where} declares a subject that does not produce a string`);
+      invalid(15, `${where} declares a subject that does not produce a string`);
     }
   }
   checkCaptures(where, program, nodes);
@@ -98,25 +98,25 @@ function checkCaptures(where: string, program: ProtoProgram, nodes: readonly Res
     return;
   }
   if (program.kind !== ProgramKind.FORMAT) {
-    invalid(14, `${where} declares captures but is not a format program`);
+    invalid(15, `${where} declares captures but is not a format program`);
   }
   if (program.captures.length > LIMITS.capturesPerFormat) {
-    invalid(14, `${where} declares ${String(program.captures.length)} captures`);
+    invalid(15, `${where} declares ${String(program.captures.length)} captures`);
   }
   const names = new Set<string>();
   for (const capture of program.captures satisfies readonly Capture[]) {
     if (capture.name === "") {
-      invalid(14, `${where} declares an unnamed capture`);
+      invalid(15, `${where} declares an unnamed capture`);
     }
     if (names.has(capture.name)) {
-      invalid(14, `${where} declares capture ${capture.name} twice`);
+      invalid(15, `${where} declares capture ${capture.name} twice`);
     }
     names.add(capture.name);
     if (capture.node >= nodes.length) {
-      invalid(14, `${where} capture ${capture.name} points outside the program`);
+      invalid(15, `${where} capture ${capture.name} points outside the program`);
     }
     if (nodes[capture.node]?.node.outputType !== ValueType.STRING) {
-      invalid(14, `${where} capture ${capture.name} does not name a string node`);
+      invalid(15, `${where} capture ${capture.name} does not name a string node`);
     }
   }
 }
@@ -137,32 +137,32 @@ function checkFamilies(
     const family = OPCODE_TABLES[entry.operationCase].family;
     const at = `${where} node ${String(index)}`;
     if (!allowed.has(family)) {
-      invalid(15, `${at} uses ${entry.spec.name}, foreign to its kind`);
+      invalid(16, `${at} uses ${entry.spec.name}, foreign to its kind`);
     }
     if (family === "string" && program.kind === ProgramKind.CANONICALIZATION) {
       if ((entry.message as { kind: StringOpKind }).kind === StringOpKind.SUBJECT) {
-        invalid(15, `${at} reads subject() in a canonicalization program`);
+        invalid(16, `${at} reads subject() in a canonicalization program`);
       }
     }
     if (family === "call") {
       const expected =
         program.kind === ProgramKind.FORMAT ? CallOpKind.FORMAT : CallOpKind.CHECKSUM;
       if ((entry.message as { kind: CallOpKind }).kind !== expected) {
-        invalid(15, `${at} calls a program of another kind`);
+        invalid(16, `${at} calls a program of another kind`);
       }
     }
     if (family === "canonicalization") {
       const kind = (entry.message as { kind: CanonicalizationOpKind }).kind;
       if (isPre && !PRE_CANONICALIZATION_OPS.has(kind)) {
         invalid(
-          15,
+          16,
           `${at} sits in a pre-canonicalization program and uses ${entry.spec.name}, which may add, replace or interpret a prefix`,
         );
       }
       if (isGlobal && kind === CanonicalizationOpKind.PREPEND_COUNTRY_IF_MISSING) {
         // A GLOBAL target has no country and no prefix, so there is nothing for
         // this step to prepend.
-        invalid(15, `${at} prepends a country in a canonicalizer of a GLOBAL definition`);
+        invalid(16, `${at} prepends a country in a canonicalizer of a GLOBAL definition`);
       }
     }
   }
@@ -173,13 +173,13 @@ function checkRoot(program: ProtoProgram, nodes: readonly ResolvedNode[]): void 
   const where = `program ${String(program.id)}`;
   const root = nodes[program.rootNode];
   if (root === undefined) {
-    invalid(15, `${where} has no root node`);
+    invalid(16, `${where} has no root node`);
   }
   if (program.kind === ProgramKind.CANONICALIZATION) {
     if (
       (root.message as { kind: CanonicalizationOpKind }).kind !== CanonicalizationOpKind.SEQUENCE
     ) {
-      invalid(15, `${where} does not root at a canonicalization sequence`);
+      invalid(16, `${where} does not root at a canonicalization sequence`);
     }
     return;
   }
@@ -188,7 +188,7 @@ function checkRoot(program: ProtoProgram, nodes: readonly ResolvedNode[]): void 
       root.operationCase !== "assertionOperation" ||
       (root.message as { kind: AssertionOpKind }).kind !== AssertionOpKind.SEQUENCE
     ) {
-      invalid(15, `${where} does not root at an assertion sequence`);
+      invalid(16, `${where} does not root at an assertion sequence`);
     }
     return;
   }
@@ -196,7 +196,7 @@ function checkRoot(program: ProtoProgram, nodes: readonly ResolvedNode[]): void 
     root.operationCase === "checksumOperation" &&
     (root.message as { kind: ChecksumOpKind }).kind === ChecksumOpKind.WHEN
   ) {
-    invalid(15, `${where} roots at a WHEN branch`);
+    invalid(16, `${where} roots at a WHEN branch`);
   }
 }
 
@@ -225,7 +225,7 @@ function checkWhenBranches(where: string, nodes: readonly ResolvedNode[]): void 
       continue;
     }
     if (byOther.has(index) || !byChoose.has(index)) {
-      invalid(15, `${where} node ${String(index)} is a WHEN branch outside a CHOOSE`);
+      invalid(16, `${where} node ${String(index)} is a WHEN branch outside a CHOOSE`);
     }
   }
 }

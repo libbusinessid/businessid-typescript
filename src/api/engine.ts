@@ -4,13 +4,6 @@ import type { CanonicalizationResult, ValidationReport } from "../domain/result.
 import * as rules from "../rules.generated.js";
 import type { RuleSet } from "../runtime/ruleset.js";
 import { execute } from "../runtime/pipeline.js";
-import {
-  type RegistryInput,
-  type RegistryLookupOptions,
-  type RegistryProvider,
-  type RegistryResult,
-  registryNotConfigured,
-} from "../registry/provider.js";
 
 /** What a bundle announces about itself. */
 /** The generated rules this package ships, seen through their contract. */
@@ -32,7 +25,9 @@ export type RulesInfo = Readonly<{
  * set goes through the generator, at build time.
  *
  * Immutable and safe to share. Ordinary user input never throws: an unusable
- * value produces a report saying why.
+ * value produces a report saying why, and every operation is synchronous —
+ * permanently, so that a later registry lookup cannot turn into a breaking
+ * change here.
  */
 export class BusinessIdEngine {
   /**
@@ -96,24 +91,5 @@ export class BusinessIdEngine {
    */
   validateChecksum(input: IdentifierInput, options?: ValidationOptions): ValidationReport {
     return execute(ruleSet, ENGINE_VERSION, "validateChecksum", input, options) as ValidationReport;
-  }
-
-  /**
-   * Asks a registry about an identifier.
-   *
-   * V1 ships no provider. Without one the answer is `registry_not_configured`,
-   * which is an absence of knowledge and never an invalidity.
-   */
-  async registryLookup(
-    input: RegistryInput,
-    provider: RegistryProvider | undefined,
-    options?: RegistryLookupOptions,
-  ): Promise<RegistryResult> {
-    if (provider?.supports(input.kind, input.countryCode) !== true) {
-      // The moment the engine answered. Validation never reads a clock; a
-      // registry answer legitimately records when it was observed.
-      return registryNotConfigured(input.canonicalValue, new Date().toISOString());
-    }
-    return provider.lookup(input, options);
   }
 }

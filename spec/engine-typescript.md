@@ -21,7 +21,7 @@ commune tout en offrant des types TypeScript naturels et sûrs.
 - TypeScript strict ;
 - cible ES2020 ou plus récente documentée ;
 - aucune API `fs`, `Buffer`, `process` ou DOM dans le cœur ;
-- `@bufbuild/protobuf` / Protobuf-ES pour décoder l’IR ;
+- `@bufbuild/protobuf` / Protobuf-ES pour décoder l’IR **dans le générateur** ; le paquet publié ne décode rien ;
 - package tree-shakeable avec `sideEffects: false` si exact ;
 - exports explicites et types inclus ;
 - bundle officiel disponible synchroniquement sans fetch réseau.
@@ -120,27 +120,27 @@ await, fetch ou lecture filesystem nécessaire au chemin par défaut.
 Il n’y a pas de fabrique acceptant un bundle en octets à l’exécution. Une version
 antérieure de ce document déclarait `static fromRules(bytes: Uint8Array)`, ce qui
 imposait de porter le validateur complet et la machine d’exécution de l’IR chez chaque
-appelant — c’est-à-dire un interpréteur, que `engine.md` section 1.1 interdit. Un jeu
+appelant — c’est-à-dire un interpréteur, que `engine.md` section 1.2 interdit. Un jeu
 de règles personnalisé passe par le générateur, à la construction.
 
-## Interface registre TypeScript
+### Registre : rien à livrer en V1
 
-Définir sans implémentation :
+Ce moteur n'expose aucun type de registre. `engine.md` section 10 diffère la
+consultation d'un registre distant à une version ultérieure, et un moteur qui n'en
+porte pas est pleinement conforme.
 
-```ts
-export interface RegistryProvider {
-  supports(kind: IdentifierKind, countryCode?: string): boolean;
-  lookup(input: RegistryInput, options?: RegistryLookupOptions): Promise<RegistryResult>;
-}
-```
+Trois choses à ne pas faire, parce qu'elles fermeraient la porte :
 
-- aucun `fetch` dans le package cœur ;
-- aucun provider concret ;
-- erreurs transport futures distinctes de `not_found` ;
-- validation locale entièrement synchrone ;
-- aucune référence à `AbortSignal` en V1 : ce type DOM contredirait le cœur
-  plateforme-agnostique. Une future intégration réseau définira sa propre stratégie
-  d’annulation dans un module séparé.
+- n'exposez aucun type de registre, même marqué expérimental : un type public est un
+  engagement que SemVer fige ;
+- ne rendez aucune méthode de validation asynchrone « au cas où » — la validation
+  locale reste synchrone définitivement ;
+- ne mettez aucune dépendance HTTP dans le paquet du cœur.
+
+Une consultation de registre porte un jeton d'API : elle ne devra jamais être possible
+depuis un navigateur, et vivra donc dans un module séparé, chargé côté serveur
+uniquement.
+
 
 ## Protobuf-ES et génération
 
@@ -192,7 +192,6 @@ Utiliser Vitest ou runner moderne équivalent. Couvrir :
 - déterminisme et absence de mutation ;
 - exécution sous Node et navigateur headless réel ;
 - bundling avec au moins Vite/Rollup ou esbuild ;
-- mock RegistryProvider sans réseau ;
 - import ESM dans un projet consommateur minimal ;
 - exports et tree shaking.
 
@@ -246,7 +245,6 @@ utile. Ajouter SECURITY, CONTRIBUTING, changelog et politique SemVer.
 - pas de locale ;
 - pas d’objets Protobuf exportés ;
 - pas de CommonJS annoncé sans tests ;
-- pas de provider registre concret ;
 - pas de cas de conformité ignoré ;
 - pas de copie naïve d’un autre langage.
 

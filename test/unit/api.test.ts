@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   BusinessIdEngine,
   isChecksumValid,
@@ -7,7 +7,6 @@ import {
   isInvalid,
   KNOWN_IDENTIFIER_KINDS,
   REASON_CODES,
-  type RegistryProvider,
   type ValidationReport,
 } from "../../src/index.js";
 
@@ -24,7 +23,7 @@ describe("BusinessIdEngine.default", () => {
   });
 
   it("reports what the bundle announces", () => {
-    expect(BusinessIdEngine.default.rulesInfo().rulesVersion).toBe("2026.08.14");
+    expect(BusinessIdEngine.default.rulesInfo().rulesVersion).toBe("2026.08.16");
     expect(BusinessIdEngine.default.capabilities()).toEqual([
       1, 2, 3, 4, 5, 10, 11, 20, 21, 30, 31, 32, 33, 34, 35, 40, 41, 42,
     ]);
@@ -76,7 +75,7 @@ describe("report helpers", () => {
       inputValue: "x",
       canonicalValue: "x",
       profile: "compatible",
-      rulesVersion: "2026.08.14",
+      rulesVersion: "2026.08.16",
       formatVersion: 1,
       engineVersion: "0.1.0",
       format: { level: "format", status: format, reasonCode: "ok" },
@@ -101,50 +100,15 @@ describe("report helpers", () => {
   });
 });
 
-describe("the registry interface", () => {
-  const engine = BusinessIdEngine.default;
-  const input = { kind: "vat", canonicalValue: "BE0123456749", countryCode: "BE" };
-
-  it("reports registry_not_configured when no provider is given", async () => {
-    const result = await engine.registryLookup(input, undefined);
-
-    expect(result).toMatchObject({
-      status: "unsupported",
-      reasonCode: "registry_not_configured",
-      canonicalValue: "BE0123456749",
-    });
-  });
-
-  it("reports registry_not_configured when the provider declines the pair", async () => {
-    const lookup = vi.fn();
-    const provider: RegistryProvider = { supports: () => false, lookup };
-
-    const result = await engine.registryLookup(input, provider);
-
-    expect(result.reasonCode).toBe("registry_not_configured");
-    expect(lookup).not.toHaveBeenCalled();
-  });
-
-  it("delegates to a provider that supports the pair", async () => {
-    const answer = {
-      status: "found" as const,
-      providerId: "test",
-      checkedAt: "2026-08-21T00:00:00Z",
-      canonicalValue: "BE0123456749",
-      reasonCode: "ok" as const,
-    };
-    const provider: RegistryProvider = {
-      supports: () => true,
-      lookup: () => Promise.resolve(answer),
-    };
-
-    await expect(engine.registryLookup(input, provider)).resolves.toEqual(answer);
-  });
-});
-
 describe("the reason code registry", () => {
   it("carries the twenty one codes of ir.md section 4", () => {
     expect(REASON_CODES).toHaveLength(21);
     expect(REASON_CODES).toContain("invalid_encoding");
+  });
+
+  it("keeps registry_not_configured reserved though nothing reports it", () => {
+    // `engine.md` section 10.1 defers the registry and keeps the code in the
+    // frozen registry. Dropping it would renumber a frozen enumeration.
+    expect(REASON_CODES).toContain("registry_not_configured");
   });
 });

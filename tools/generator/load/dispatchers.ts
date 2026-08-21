@@ -1,5 +1,5 @@
 /**
- * Checks 18 to 22: routing.
+ * Checks 18 to 23: routing.
  *
  * Kind aliases, country aliases and prefixes are three separate spaces, and
  * every ambiguity between them is resolved here rather than at validation time.
@@ -23,7 +23,7 @@ import {
   PREFIX_PATTERN,
 } from "./diagnostics.js";
 
-/** Runs checks 18 to 22 and indexes every dispatcher for selection. */
+/** Runs checks 19 to 22 and indexes every dispatcher for selection. */
 export function checkDispatchers(
   bundle: RuleBundle,
   definitions: ReadonlyMap<number, IdentifierDefinition>,
@@ -37,10 +37,10 @@ export function checkDispatchers(
     dispatchers.set(dispatcher.kind, buildDispatcher(dispatcher, definitions, claimed));
   }
 
-  /* 22. every definition referenced by exactly one dispatch target */
+  /* 23. every definition referenced by exactly one dispatch target */
   for (const id of definitions.keys()) {
     if (!claimed.has(id)) {
-      invalid(22, `definition ${String(id)} is referenced by no dispatch target`);
+      invalid(23, `definition ${String(id)} is referenced by no dispatch target`);
     }
   }
   return dispatchers;
@@ -52,32 +52,32 @@ function checkKindSpace(bundle: RuleBundle, programs: ReadonlyMap<number, ProtoP
   for (const [index, dispatcher] of bundle.dispatchers.entries()) {
     const where = `dispatcher ${JSON.stringify(dispatcher.kind)}`;
     if (!KIND_PATTERN.test(dispatcher.kind)) {
-      invalid(18, `${where} declares a malformed kind`);
+      invalid(19, `${where} declares a malformed kind`);
     }
     if (index > 0 && compareUtf8(bundle.dispatchers[index - 1]?.kind ?? "", dispatcher.kind) >= 0) {
-      invalid(18, "dispatchers are not sorted by the UTF-8 bytes of their kind");
+      invalid(19, "dispatchers are not sorted by the UTF-8 bytes of their kind");
     }
     if (kindSpace.has(dispatcher.kind)) {
-      invalid(18, `${where} collides with another kind or alias`);
+      invalid(19, `${where} collides with another kind or alias`);
     }
     kindSpace.add(dispatcher.kind);
 
     for (const [aliasIndex, alias] of dispatcher.kindAliases.entries()) {
       if (!KIND_PATTERN.test(alias)) {
-        invalid(18, `${where} declares malformed alias ${JSON.stringify(alias)}`);
+        invalid(19, `${where} declares malformed alias ${JSON.stringify(alias)}`);
       }
       if (aliasIndex > 0 && compareUtf8(dispatcher.kindAliases[aliasIndex - 1] ?? "", alias) >= 0) {
-        invalid(18, `${where} does not sort its kind aliases`);
+        invalid(19, `${where} does not sort its kind aliases`);
       }
       if (kindSpace.has(alias)) {
-        invalid(18, `${where} alias ${JSON.stringify(alias)} collides with another kind or alias`);
+        invalid(19, `${where} alias ${JSON.stringify(alias)} collides with another kind or alias`);
       }
       kindSpace.add(alias);
     }
 
     const program = programs.get(dispatcher.preCanonicalizationProgram);
     if (program?.kind !== ProgramKind.CANONICALIZATION) {
-      invalid(18, `${where} references an unusable pre-canonicalization program`);
+      invalid(19, `${where} references an unusable pre-canonicalization program`);
     }
   }
 }
@@ -98,7 +98,7 @@ function buildDispatcher(
 ): IrDispatcher {
   const where = `dispatcher ${JSON.stringify(dispatcher.kind)}`;
   if (dispatcher.targets.length === 0) {
-    invalid(20, `${where} declares no target`);
+    invalid(21, `${where} declares no target`);
   }
 
   const index: TargetIndex = {
@@ -140,17 +140,17 @@ function checkTargetOrder(
     return;
   }
   if (previous.countryCode === undefined && target.countryCode === undefined) {
-    invalid(20, `${where} declares two GLOBAL targets`);
+    invalid(21, `${where} declares two GLOBAL targets`);
   }
   if (previous.countryCode !== undefined && target.countryCode === undefined) {
-    invalid(20, `${where} does not place its GLOBAL target first`);
+    invalid(21, `${where} does not place its GLOBAL target first`);
   }
   if (
     previous.countryCode !== undefined &&
     target.countryCode !== undefined &&
     compareUtf8(previous.countryCode, target.countryCode) >= 0
   ) {
-    invalid(20, `${where} does not sort its targets by country code`);
+    invalid(21, `${where} does not sort its targets by country code`);
   }
 }
 
@@ -164,57 +164,57 @@ function resolveDefinition(
 ): IdentifierDefinition {
   const definition = definitions.get(target.identifierDefinitionId);
   if (definition === undefined) {
-    invalid(22, `${where} references unknown definition ${String(target.identifierDefinitionId)}`);
+    invalid(23, `${where} references unknown definition ${String(target.identifierDefinitionId)}`);
   }
   if (definition.kind !== dispatcher.kind) {
-    invalid(22, `${where} references a definition of kind ${JSON.stringify(definition.kind)}`);
+    invalid(23, `${where} references a definition of kind ${JSON.stringify(definition.kind)}`);
   }
   if (definition.countryCode !== target.countryCode) {
-    invalid(22, `${where} target and definition disagree on the country`);
+    invalid(23, `${where} target and definition disagree on the country`);
   }
   const owner = claimed.get(target.identifierDefinitionId);
   if (owner !== undefined) {
-    invalid(22, `definition ${String(target.identifierDefinitionId)} is claimed by ${owner} too`);
+    invalid(23, `definition ${String(target.identifierDefinitionId)} is claimed by ${owner} too`);
   }
   claimed.set(target.identifierDefinitionId, where);
   return definition;
 }
 
-/** Checks 20 and 21: a target's country, prefixes and GLOBAL exclusivity. */
+/** Checks 21 and 22: a target's country, prefixes and GLOBAL exclusivity. */
 function checkTargetShape(
   where: string,
   dispatcher: IdentifierDispatcher,
   target: IdentifierDispatcher["targets"][number],
 ): void {
   if (target.countryCode === undefined) {
-    /* 21. a GLOBAL target stands alone, without prefix and without alias */
+    /* 22. a GLOBAL target stands alone, without prefix and without alias */
     if (dispatcher.targets.length !== 1) {
-      invalid(21, `${where} mixes a GLOBAL target with country targets`);
+      invalid(22, `${where} mixes a GLOBAL target with country targets`);
     }
     if (target.acceptedPrefixes.length > 0 || target.canonicalPrefix !== undefined) {
-      invalid(21, `${where} declares a prefix on its GLOBAL target`);
+      invalid(22, `${where} declares a prefix on its GLOBAL target`);
     }
     if (dispatcher.countryAliases.length > 0) {
-      invalid(21, `${where} declares country aliases alongside a GLOBAL target`);
+      invalid(22, `${where} declares country aliases alongside a GLOBAL target`);
     }
   } else if (!COUNTRY_PATTERN.test(target.countryCode)) {
-    invalid(20, `${where} declares malformed country ${JSON.stringify(target.countryCode)}`);
+    invalid(21, `${where} declares malformed country ${JSON.stringify(target.countryCode)}`);
   }
 
   for (const [position, prefix] of target.acceptedPrefixes.entries()) {
     if (!PREFIX_PATTERN.test(prefix)) {
-      invalid(20, `${where} declares malformed prefix ${JSON.stringify(prefix)}`);
+      invalid(21, `${where} declares malformed prefix ${JSON.stringify(prefix)}`);
     }
     const before = target.acceptedPrefixes[position - 1];
     if (before !== undefined && compareUtf8(before, prefix) >= 0) {
-      invalid(20, `${where} does not sort the accepted prefixes of a target`);
+      invalid(21, `${where} does not sort the accepted prefixes of a target`);
     }
   }
   if (
     target.canonicalPrefix !== undefined &&
     !target.acceptedPrefixes.includes(target.canonicalPrefix)
   ) {
-    invalid(20, `${where} declares a canonical prefix it does not accept`);
+    invalid(21, `${where} declares a canonical prefix it does not accept`);
   }
 }
 
@@ -236,7 +236,7 @@ function addTarget(
 
   for (const prefix of target.acceptedPrefixes) {
     if (index.byPrefix.has(prefix)) {
-      invalid(20, `${where} lets two targets claim prefix ${JSON.stringify(prefix)}`);
+      invalid(21, `${where} lets two targets claim prefix ${JSON.stringify(prefix)}`);
     }
     index.byPrefix.set(prefix, entry);
     index.longestPrefix = Math.max(index.longestPrefix, codePointsOf(prefix).length);
@@ -246,14 +246,14 @@ function addTarget(
     index.globalTarget = entry;
   } else {
     if (index.byCountry.has(target.countryCode)) {
-      invalid(20, `${where} declares two targets for ${target.countryCode}`);
+      invalid(21, `${where} declares two targets for ${target.countryCode}`);
     }
     index.byCountry.set(target.countryCode, entry);
   }
 
   if (target.allowUnprefixedWithoutCountry) {
     if (index.implicitTarget !== undefined) {
-      invalid(20, `${where} declares two targets selectable without country or prefix`);
+      invalid(21, `${where} declares two targets selectable without country or prefix`);
     }
     index.implicitTarget = entry;
   }
@@ -268,17 +268,17 @@ function checkCountryAliases(
   const aliases = new Map<string, string>();
   for (const [index, alias] of dispatcher.countryAliases.entries()) {
     if (!COUNTRY_PATTERN.test(alias.alias) || !COUNTRY_PATTERN.test(alias.countryCode)) {
-      invalid(19, `${where} declares a malformed country alias`);
+      invalid(20, `${where} declares a malformed country alias`);
     }
     if (alias.alias === alias.countryCode) {
-      invalid(19, `${where} maps ${alias.alias} to itself`);
+      invalid(20, `${where} maps ${alias.alias} to itself`);
     }
     if (byCountry.has(alias.alias)) {
-      invalid(19, `${where} aliases ${alias.alias}, which already names a target`);
+      invalid(20, `${where} aliases ${alias.alias}, which already names a target`);
     }
     const before = dispatcher.countryAliases[index - 1];
     if (before !== undefined && compareUtf8(before.alias, alias.alias) >= 0) {
-      invalid(19, `${where} does not sort its country aliases`);
+      invalid(20, `${where} does not sort its country aliases`);
     }
     aliases.set(alias.alias, alias.countryCode);
   }

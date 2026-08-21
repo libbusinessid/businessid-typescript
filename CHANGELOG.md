@@ -11,17 +11,16 @@ update that changes a verdict is published as a new package version.
 ### Added
 
 - First implementation of the TypeScript engine, against rules version
-  `2026.08.14` and IR format version 1.
+  `2026.08.16` and IR format version 1.
 - A generator under `tools/generator`: it reads the attested bundle, applies the
-  twenty four load time checks of `ir.md` section 10 over a decoder that stays
+  twenty five load time checks of `ir.md` section 10 over a decoder that stays
   at the wire level, and emits `src/rules.generated.ts`. All 63 operations, the
   ten step dispatch algorithm and the tri-state checksum are emitted as code.
 - Public API: `BusinessIdEngine` with `canonicalize`, `validate`,
-  `validateFormat`, `validateChecksum`, `rulesInfo`, `capabilities`, `kinds` and
-  `registryLookup`.
-- `RegistryProvider`, declared and deliberately unimplemented.
-- All 663 shared conformance cases pass over the testee protocol, reason codes
-  and message keys alike, with the 33 `load_ruleset` cases answered by the
+  `validateFormat`, `validateChecksum`, `rulesInfo`, `capabilities` and `kinds`.
+  Every operation is synchronous and always will be.
+- All 665 shared conformance cases pass over the testee protocol, reason codes
+  and message keys alike, with the 34 `load_ruleset` cases answered by the
   generator.
 
 ### Notes
@@ -31,3 +30,7 @@ update that changes a verdict is published as a new package version.
   a DOM API or the network.
 - There is deliberately no factory taking bundle bytes. A custom rule set goes
   through the generator, at build time.
+- No register type ships, not even an experimental one. `engine.md` section 10
+  defers the lookup and reserves its place through three properties this package
+  already has: synchronous validation, no register level in the report, and no
+  HTTP dependency.

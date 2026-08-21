@@ -1,5 +1,5 @@
 /**
- * Checks 16 and 17: identifier definitions.
+ * Checks 17 and 18: identifier definitions.
  *
  * Check 16 covers identity, well formedness and the normative serialization
  * order. Check 17 covers the one rule that keeps a checksum answerable: a
@@ -34,7 +34,7 @@ export function checkDefinitions(
   const byId = new Map<number, IdentifierDefinition>();
 
   if (bundle.identifiers.length > LIMITS.identifiers) {
-    invalid(16, `bundle declares ${String(bundle.identifiers.length)} identifiers`);
+    invalid(17, `bundle declares ${String(bundle.identifiers.length)} identifiers`);
   }
   for (const definition of bundle.identifiers) {
     checkShape(definition, byId, programs);
@@ -53,23 +53,23 @@ function checkShape(
 ): void {
   const where = `definition ${String(definition.id)}`;
   if (definition.id === 0) {
-    invalid(16, "a definition declares id zero");
+    invalid(17, "a definition declares id zero");
   }
   if (seen.has(definition.id)) {
-    invalid(16, `${where} is declared twice`);
+    invalid(17, `${where} is declared twice`);
   }
   seen.set(definition.id, definition);
 
   if (!KIND_PATTERN.test(definition.kind)) {
-    invalid(16, `${where} declares malformed kind ${JSON.stringify(definition.kind)}`);
+    invalid(17, `${where} declares malformed kind ${JSON.stringify(definition.kind)}`);
   }
   // An absent country means GLOBAL. The empty string and the literal "GLOBAL"
   // are invalid, so the absence carries the meaning on its own.
   if (definition.countryCode !== undefined && !COUNTRY_PATTERN.test(definition.countryCode)) {
-    invalid(16, `${where} declares malformed country ${JSON.stringify(definition.countryCode)}`);
+    invalid(17, `${where} declares malformed country ${JSON.stringify(definition.countryCode)}`);
   }
   if (!VALIDATION_PROFILES.some((profile) => profile === definition.defaultProfile)) {
-    invalid(16, `${where} declares unknown profile ${JSON.stringify(definition.defaultProfile)}`);
+    invalid(17, `${where} declares unknown profile ${JSON.stringify(definition.defaultProfile)}`);
   }
 
   requireProgram(
@@ -98,25 +98,25 @@ function requireProgram(
 ): void {
   const program = programs.get(id);
   if (program === undefined) {
-    invalid(16, `${where} references unknown ${label} program ${String(id)}`);
+    invalid(17, `${where} references unknown ${label} program ${String(id)}`);
   }
   if (program.kind !== kind) {
-    invalid(16, `${where} references program ${String(id)}, which is not a ${label} program`);
+    invalid(17, `${where} references program ${String(id)}, which is not a ${label} program`);
   }
 }
 
 function checkSource(where: string, source: Source, previous: Source | undefined): void {
   if (source.id === "") {
-    invalid(16, `${where} declares a source without id`);
+    invalid(17, `${where} declares a source without id`);
   }
   if (previous !== undefined && compareUtf8(previous.id, source.id) >= 0) {
-    invalid(16, `${where} does not sort its sources by id`);
+    invalid(17, `${where} does not sort its sources by id`);
   }
   // A tier outside the enumeration would let two engines read the same source
   // differently. UNSPECIFIED is not refused: the field is not optional, so an
   // omitted tier and an explicit UNSPECIFIED are the same bytes.
   if (!isKnownEnumValue(SourceTier, source.tier)) {
-    invalid(16, `${where} declares source tier ${String(source.tier)}`);
+    invalid(17, `${where} declares source tier ${String(source.tier)}`);
   }
 }
 
@@ -130,7 +130,7 @@ function checkOrder(definitions: readonly IdentifierDefinition[]): void {
     }
     const byKind = compareUtf8(previous.kind, current.kind);
     if (byKind > 0) {
-      invalid(16, "identifiers are not sorted by kind");
+      invalid(17, "identifiers are not sorted by kind");
     }
     if (byKind < 0) {
       continue;
@@ -138,7 +138,7 @@ function checkOrder(definitions: readonly IdentifierDefinition[]): void {
     const rank = (value: string | undefined): number => (value === undefined ? 0 : 1);
     const byGlobal = rank(previous.countryCode) - rank(current.countryCode);
     if (byGlobal > 0) {
-      invalid(16, "identifiers do not place the GLOBAL definition first");
+      invalid(17, "identifiers do not place the GLOBAL definition first");
     }
     if (byGlobal < 0) {
       continue;
@@ -146,7 +146,7 @@ function checkOrder(definitions: readonly IdentifierDefinition[]): void {
     // Two equal sort keys are a rejected duplicate, never a tie broken by the
     // order the bundle happens to carry.
     if (compareUtf8(previous.countryCode ?? "", current.countryCode ?? "") >= 0) {
-      invalid(16, `identifiers repeat or misorder kind ${current.kind}`);
+      invalid(17, `identifiers repeat or misorder kind ${current.kind}`);
     }
   }
 }
@@ -158,7 +158,7 @@ function checkChecksumDeclaration(definition: IdentifierDefinition): void {
   const hasReason = definition.absentChecksumReason !== undefined;
   if (hasProgram === hasReason) {
     invalid(
-      17,
+      18,
       hasProgram
         ? `${where} declares both a checksum program and an absence reason`
         : `${where} declares neither a checksum program nor an absence reason`,
@@ -167,7 +167,7 @@ function checkChecksumDeclaration(definition: IdentifierDefinition): void {
   if (hasReason) {
     const reason = reasonCodeName(definition.absentChecksumReason);
     if (reason === undefined || !ABSENT_CHECKSUM_REASON_CODES.some((code) => code === reason)) {
-      invalid(17, `${where} declares an absence reason that cannot report a missing checksum`);
+      invalid(18, `${where} declares an absence reason that cannot report a missing checksum`);
     }
   }
 }

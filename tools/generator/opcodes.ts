@@ -119,7 +119,7 @@ export const CHECKSUM_PARAMETERS: readonly ParameterDefinition[] = [
 
 /**
  * `CallOperation.program_id` is not `optional` in the schema, so it carries no
- * presence: a call always states one, and check 23 is what proves it resolves.
+ * presence: a call always states one, and check 24 is what proves it resolves.
  */
 export const CALL_PARAMETERS: readonly ParameterDefinition[] = [];
 

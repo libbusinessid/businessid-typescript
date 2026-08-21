@@ -7,7 +7,7 @@ import * as support from "./runtime/support.js";
 import type { AssertionResult, ChecksumOutcome, StringValue } from "./runtime/values.js";
 
 /** The business version of the rules this module was generated from. */
-export const RULES_VERSION = "2026.08.14";
+export const RULES_VERSION = "2026.08.16";
 
 /** The structural version of the IR this module was generated from. */
 export const FORMAT_VERSION = 1;
@@ -2000,15 +2000,15 @@ function checksum121(subject: StringValue): ChecksumOutcome {
   return support.verdict(support.luhn(subject));
 }
 
-function choose122_11(subject: StringValue): ChecksumOutcome {
+function choose122_12(subject: StringValue): ChecksumOutcome {
   if ((support.startsWith(subject, K18))) {
     return support.anyCheck([support.verdict(support.luhn(subject)), support.verdict(support.comparedConstant(support.modulo(support.weightedSumCycle(support.slice(subject, 0, 14), W19, support.digitValue), 5n), 0n))]);
   }
-  return support.verdict(support.luhn(subject));
+  return support.verdict(support.luhn(subject), "fr.siret.luhn");
 }
 
 function checksum122(subject: StringValue): ChecksumOutcome {
-  return support.allChecks([checksum121(support.slice(subject, 0, 9)), choose122_11(subject)]);
+  return support.allChecks([checksum121(support.slice(subject, 0, 9)), choose122_12(subject)]);
 }
 
 function checksum123(subject: StringValue): ChecksumOutcome {

@@ -241,7 +241,7 @@ describe("check 13: provable integer widths", () => {
   });
 });
 
-describe("check 14: anchors", () => {
+describe("check 15: anchors", () => {
   const formatProgram = (
     nodes: NodeSpec[],
     rootNode: number,
@@ -249,16 +249,16 @@ describe("check 14: anchors", () => {
   ): Uint8Array => onlyPrograms([program(1, ProgramKind.FORMAT, nodes, rootNode, extras)]);
 
   it("refuses a root outside the program", () => {
-    expectCheck(formatProgram(alwaysValidFormat(), 99), 14);
+    expectCheck(formatProgram(alwaysValidFormat(), 99), 15);
   });
 
   it("refuses a root of the wrong type", () => {
-    expectCheck(formatProgram(alwaysValidFormat(), 0), 14);
+    expectCheck(formatProgram(alwaysValidFormat(), 0), 15);
   });
 
   it("refuses a subject outside the program or of the wrong type", () => {
-    expectCheck(formatProgram(alwaysValidFormat(), 4, { subjectNode: 99 }), 14);
-    expectCheck(formatProgram(alwaysValidFormat(), 4, { subjectNode: 1 }), 14);
+    expectCheck(formatProgram(alwaysValidFormat(), 4, { subjectNode: 99 }), 15);
+    expectCheck(formatProgram(alwaysValidFormat(), 4, { subjectNode: 1 }), 15);
   });
 
   it("accepts a subject naming a string node", () => {
@@ -268,7 +268,7 @@ describe("check 14: anchors", () => {
   });
 
   it("refuses an unnamed or repeated capture", () => {
-    expectCheck(formatProgram(alwaysValidFormat(), 4, { captures: [{ name: "", node: 0 }] }), 14);
+    expectCheck(formatProgram(alwaysValidFormat(), 4, { captures: [{ name: "", node: 0 }] }), 15);
     expectCheck(
       formatProgram(alwaysValidFormat(), 4, {
         captures: [
@@ -276,12 +276,12 @@ describe("check 14: anchors", () => {
           { name: "a", node: 0 },
         ],
       }),
-      14,
+      15,
     );
   });
 
   it("refuses a capture pointing outside the program", () => {
-    expectCheck(formatProgram(alwaysValidFormat(), 4, { captures: [{ name: "a", node: 99 }] }), 14);
+    expectCheck(formatProgram(alwaysValidFormat(), 4, { captures: [{ name: "a", node: 99 }] }), 15);
   });
 
   it("refuses more than 128 captures", () => {
@@ -290,7 +290,7 @@ describe("check 14: anchors", () => {
       node: 0,
     }));
 
-    expectCheck(formatProgram(alwaysValidFormat(), 4, { captures }), 14);
+    expectCheck(formatProgram(alwaysValidFormat(), 4, { captures }), 15);
   });
 
   it("accepts a capture naming a string node", () => {
@@ -300,7 +300,7 @@ describe("check 14: anchors", () => {
   });
 });
 
-describe("check 15: roots per program kind", () => {
+describe("check 16: roots per program kind", () => {
   it("refuses a canonicalization program that does not root at a sequence", () => {
     expectCheck(
       onlyPrograms([
@@ -311,12 +311,12 @@ describe("check 15: roots per program kind", () => {
           }),
         ]),
       ]),
-      15,
+      16,
     );
   });
 });
 
-describe("check 23: the call graph", () => {
+describe("check 24: the call graph", () => {
   it("refuses a call chain deeper than 32", () => {
     // Each program calls the next, so the depth is the chain length. The bound
     // is what lets a generated engine drop the step budget entirely.
@@ -347,6 +347,6 @@ describe("check 23: the call graph", () => {
       programs.push(program(index, ProgramKind.CHECKSUM, nodes));
     }
 
-    expectCheck(onlyPrograms(programs), 23);
+    expectCheck(onlyPrograms(programs), 24);
   });
 });

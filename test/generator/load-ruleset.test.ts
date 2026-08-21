@@ -16,8 +16,8 @@ import { loadCorpus } from "../conformance/corpus.js";
 const cases = loadCorpus().cases.filter((entry) => entry.operation === Operation.LOAD_RULESET);
 
 describe("load_ruleset corpus", () => {
-  it("holds the 33 published cases", () => {
-    expect(cases.length).toBe(33);
+  it("holds the 34 published cases", () => {
+    expect(cases.length).toBe(34);
   });
 
   it.each(cases.map((entry) => [entry.id, entry] as const))("%s", (_id, entry) => {

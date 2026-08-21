@@ -14,7 +14,6 @@ describe("the package exports", () => {
       "BusinessIdEngine",
       "KNOWN_IDENTIFIER_KINDS",
       "REASON_CODES",
-      "REGISTRY_STATUSES",
       "STEP_STATUSES",
       "VALIDATION_LEVELS",
       "VALIDATION_PROFILES",
@@ -40,6 +39,16 @@ describe("the package exports", () => {
     expect(names).not.toMatch(/fromRules|BundleError|loadBundle/);
   });
 
+  it("exposes no registry type, not even an experimental one", () => {
+    // `engine.md` section 10 defers the registry and forbids shipping a type
+    // for it: a public type is a commitment SemVer freezes. Its place is
+    // reserved by three properties this package already has — synchronous
+    // validation, no registry level in the report, and no HTTP dependency.
+    const names = Object.keys(surface).join(" ");
+
+    expect(names).not.toMatch(/Registry|registry/);
+  });
+
   it("names the four public operations and nothing ambiguous", () => {
     const methods = Object.getOwnPropertyNames(surface.BusinessIdEngine.prototype)
       .filter((name) => name !== "constructor")
@@ -49,7 +58,6 @@ describe("the package exports", () => {
       "canonicalize",
       "capabilities",
       "kinds",
-      "registryLookup",
       "rulesInfo",
       "validate",
       "validateChecksum",

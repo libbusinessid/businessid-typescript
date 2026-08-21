@@ -2,8 +2,8 @@
 
 ## Generator, not interpreter
 
-`engine.md` section 1.1 is the shape of this repository. A generator reads the
-bundle at build time, applies the twenty four load time checks, and emits
+`engine.md` section 1.2 is the shape of this repository. A generator reads the
+bundle at build time, applies the twenty five load time checks, and emits
 TypeScript. The engine is what ships: that emitted code, the primitives it
 calls, and a hand written API.
 
@@ -33,7 +33,7 @@ authority:
    check. Where it and another document disagree, this one wins.
 2. `spec/features.md` — the frozen content of each capability id.
 3. `spec/rules.proto`, `spec/conformance.proto`, `spec/testee.proto`.
-4. `spec/engine.md` — the contract common to every engine, section 1.1 first.
+4. `spec/engine.md` — the contract common to every engine, section 1.2 first.
 5. `spec/spec.md` — the general specification.
 
 If two of them contradict each other, **stop and get `spec` corrected**. Do not

@@ -6,7 +6,7 @@ describe("the official bundle", () => {
   const bundle = loadBundle(RULES_BUNDLE_BYTES);
 
   it("announces the attested rules version", () => {
-    expect(bundle.rulesVersion).toBe("2026.08.14");
+    expect(bundle.rulesVersion).toBe("2026.08.16");
     expect(bundle.formatVersion).toBe(1);
   });
 
@@ -32,7 +32,7 @@ describe("the official bundle", () => {
       (total, program) => total + program.nodes.length,
       0,
     );
-    expect(nodes).toBe(2375);
+    expect(nodes).toBe(2376);
   });
 
   it("routes 37 dispatchers", () => {

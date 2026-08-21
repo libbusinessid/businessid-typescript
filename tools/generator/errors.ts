@@ -36,7 +36,7 @@ export class BundleError extends Error {
 /**
  * An invariant the generator itself broke.
  *
- * Reaching this means a bundle passed all twenty four checks and then asked the
+ * Reaching this means a bundle passed all twenty five checks and then asked the
  * emitter for something those checks should have refused. It is a defect in the
  * generator, not in the bundle, which is why it is not a `BundleError`.
  */

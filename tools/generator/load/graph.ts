@@ -1,5 +1,5 @@
 /**
- * Checks 23 and 24: the call graph and declared capabilities.
+ * Checks 24 and 25: the call graph and declared capabilities.
  *
  * Check 23 is what lets a generated engine drop the step budget entirely: an
  * acyclic graph of bounded depth terminates by construction. Check 24 closes
@@ -34,7 +34,7 @@ export function checkCallGraph(
       return known;
     }
     if (onStack.has(id)) {
-      invalid(23, `program ${String(id)} takes part in a call cycle`);
+      invalid(24, `program ${String(id)} takes part in a call cycle`);
     }
     onStack.add(id);
     let deepest = 1;
@@ -48,7 +48,7 @@ export function checkCallGraph(
 
   for (const id of edges.keys()) {
     if (depthOf(id) > LIMITS.callDepth) {
-      invalid(23, `program ${String(id)} reaches a call depth above ${String(LIMITS.callDepth)}`);
+      invalid(24, `program ${String(id)} reaches a call depth above ${String(LIMITS.callDepth)}`);
     }
   }
 }
@@ -69,10 +69,10 @@ function collectEdges(
       const { programId } = entry.message as { programId: number };
       const callee = programs.get(programId);
       if (callee === undefined) {
-        invalid(23, `${where} calls unknown program ${String(programId)}`);
+        invalid(24, `${where} calls unknown program ${String(programId)}`);
       }
       if (callee.kind !== program.kind) {
-        invalid(23, `${where} calls a program of another kind`);
+        invalid(24, `${where} calls a program of another kind`);
       }
       callees.push(programId);
     }
@@ -92,7 +92,7 @@ export function checkCapabilities(
   // nothing.
   const demand = (capability: number, used: string): void => {
     if (!declared.has(capability)) {
-      invalid(24, `${used} requires capability ${String(capability)}, which the bundle omits`);
+      invalid(25, `${used} requires capability ${String(capability)}, which the bundle omits`);
     }
   };
 

@@ -13,7 +13,7 @@
  *
  * The engine interprets nothing, so `OPERATION_LOAD_RULESET` is answered by the
  * generator, exactly as the comment on field 7 of `testee.proto` describes: the
- * twenty four load time checks live there, and a bundle it refuses is a bundle
+ * twenty five load time checks live there, and a bundle it refuses is a bundle
  * no engine would ever have been built from.
  */
 import { fromBinary, toBinary } from "@bufbuild/protobuf";

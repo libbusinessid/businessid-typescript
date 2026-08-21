@@ -81,8 +81,8 @@ const comparedStep = (
 
 describe("conformance", () => {
   it("holds every published case", () => {
-    expect(corpus.cases.length).toBe(663);
-    expect(corpus.rulesVersion).toBe("2026.08.14");
+    expect(corpus.cases.length).toBe(665);
+    expect(corpus.rulesVersion).toBe("2026.08.16");
   });
 
   it("compares message keys on the cases that declare one", () => {
@@ -98,7 +98,7 @@ describe("conformance", () => {
       )
       .filter((step) => step?.messageKey !== undefined);
 
-    expect(declared.length).toBe(149);
+    expect(declared.length).toBe(150);
   });
 
   it.each(corpus.cases.map((entry) => [entry.id, entry] as const))("%s", async (_id, entry) => {

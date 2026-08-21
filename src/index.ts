@@ -12,6 +12,12 @@
  * `invalid`. Refusing a valid identifier is the most serious defect this
  * project recognises.
  *
+ * Every operation is synchronous and always will be. Consulting a company
+ * register is a different operation, deferred to a later version, and it will
+ * arrive in a separate server-only entry point rather than by making these
+ * asynchronous: a lookup carries an API token, which must never be reachable
+ * from a browser.
+ *
  * @example
  * ```ts
  * import { BusinessIdEngine } from "@libbusinessid/businessid";
@@ -50,11 +56,3 @@ export {
   type StepResult,
   type ValidationReport,
 } from "./domain/result.js";
-export {
-  REGISTRY_STATUSES,
-  type RegistryInput,
-  type RegistryLookupOptions,
-  type RegistryProvider,
-  type RegistryResult,
-  type RegistryStatus,
-} from "./registry/provider.js";

@@ -18,11 +18,14 @@ no error type of its own.
 
 **A rule bundle may be hostile, and it only ever reaches the generator.** That
 runs at build time, under the engine author's control, and applies all twenty
-four load time checks of the specification before emitting anything: the size
+five load time checks of the specification before emitting anything: the size
 bound, complete decoding at the wire level, the version and capability gates,
 the unknown field scan, the structural and arithmetic bounds, and the proof that
-the call graph is acyclic and shallower than 32. It also refuses a bundle whose
-programs would expand past the evaluation budget when inlined. A bundle failing
+the call graph is acyclic and shallower than 32. Check 14 refuses a
+bundle whose programs would expand past the evaluation budget once repeated
+operands are inlined: a DAG whose every node reads the previous one twice
+explodes exponentially while passing every other check, and would be a denial of
+service against the generator. A bundle failing
 any of them raises a `BundleError` and nothing is emitted.
 
 Moving the decoder out of the package is the point, not a side effect: an

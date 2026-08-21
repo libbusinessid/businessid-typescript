@@ -13,13 +13,13 @@ import {
 import { PredicateOpKind } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
 
 /**
- * The bound on how much code one program may expand to.
+ * Check 14: expansion within the evaluation budget.
  *
- * The emitter inlines, which keeps short-circuiting exactly where the IR puts
- * it. A bundle where each node reads the previous one twice expands
- * exponentially, passes every load time check, and would otherwise make the
- * generator emit until it ran out of memory. Refusing is the answer, and
- * generation time is where refusal belongs.
+ * `ir.md` section 2 states the bound and section 10 places it: a generated
+ * program may not carry more operation instances than an interpreter would have
+ * taken steps to run it once. A DAG whose every node reads the previous one
+ * twice expands exponentially while passing every other check, so this is the
+ * one that sees it.
  */
 describe("a bundle that expands exponentially", () => {
   it("is refused rather than emitted", () => {
@@ -49,8 +49,8 @@ describe("a bundle that expands exponentially", () => {
       expect.unreachable("the bundle was emitted");
     } catch (error) {
       expect(error).toBeInstanceOf(BundleError);
-      expect(error).toMatchObject({ reason: "invalid_ruleset", check: 9 });
-      expect((error as BundleError).message).toContain("expression instances");
+      expect(error).toMatchObject({ reason: "invalid_ruleset", check: 14 });
+      expect((error as BundleError).message).toContain("operation instances");
     }
   });
 
