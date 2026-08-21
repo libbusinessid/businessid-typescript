@@ -87,7 +87,10 @@ export function checkCapabilities(
   resolved: ResolvedPrograms,
   declared: ReadonlySet<number>,
 ): void {
-  const require = (capability: number, used: string): void => {
+  // Named `demand` rather than `require`: nothing in this package may ever
+  // reach for the CommonJS global, and a reader grepping for it should find
+  // nothing.
+  const demand = (capability: number, used: string): void => {
     if (!declared.has(capability)) {
       invalid(24, `${used} requires capability ${String(capability)}, which the bundle omits`);
     }
@@ -96,7 +99,7 @@ export function checkCapabilities(
   for (const program of bundle.programs) {
     for (const entry of resolved.get(program) ?? []) {
       for (const capability of entry.spec.capabilities) {
-        require(capability, entry.spec.name);
+        demand(capability, entry.spec.name);
       }
       if (entry.operationCase === "integerOperation") {
         const { mapping } = entry.message as { mapping?: number };
@@ -104,24 +107,24 @@ export function checkCapabilities(
           // The capability belongs to the variant, not to the operation: a
           // weighted sum over digits must not have to implement an alphabet it
           // never reads.
-          require(CAPABILITY.CHECKSUM_CUSTOM_ALPHABET_V1, "CHAR_MAPPING_CUSTOM_ALPHABET");
+          demand(CAPABILITY.CHECKSUM_CUSTOM_ALPHABET_V1, "CHAR_MAPPING_CUSTOM_ALPHABET");
         }
       }
     }
     if (program.captures.length > 0 || program.subjectNode !== undefined) {
-      require(CAPABILITY.CAPTURES_AND_CALLS_V1, "Program.captures or Program.subject_node");
+      demand(CAPABILITY.CAPTURES_AND_CALLS_V1, "Program.captures or Program.subject_node");
     }
   }
 
   for (const definition of bundle.identifiers) {
     // `default_profile` is not optional in the schema, so every definition
     // states one and the capability freezing the field is always required.
-    require(CAPABILITY.PROFILES_V1, "IdentifierDefinition.default_profile");
+    demand(CAPABILITY.PROFILES_V1, "IdentifierDefinition.default_profile");
     if (definition.absentChecksumReason !== undefined) {
-      require(CAPABILITY.CHECKSUM_TRISTATE_V1, "IdentifierDefinition.absent_checksum_reason");
+      demand(CAPABILITY.CHECKSUM_TRISTATE_V1, "IdentifierDefinition.absent_checksum_reason");
     }
     if (definition.sources.length > 0) {
-      require(CAPABILITY.PROVENANCE_V1, "IdentifierDefinition.sources");
+      demand(CAPABILITY.PROVENANCE_V1, "IdentifierDefinition.sources");
     }
     for (const source of definition.sources) {
       // `tier` is not optional either, so an omitted field and an explicit
@@ -130,12 +133,12 @@ export function checkCapabilities(
       // PROVENANCE_V1 is, which is the opposite of the independence a separate
       // id exists to give.
       if (source.tier !== SourceTier.UNSPECIFIED) {
-        require(CAPABILITY.PROVENANCE_TIER_V1, "Source.tier");
+        demand(CAPABILITY.PROVENANCE_TIER_V1, "Source.tier");
       }
     }
   }
 
   if (bundle.dispatchers.length > 0) {
-    require(CAPABILITY.IDENTIFIER_DISPATCH_V1, "IdentifierDispatcher");
+    demand(CAPABILITY.IDENTIFIER_DISPATCH_V1, "IdentifierDispatcher");
   }
 }
