@@ -18,6 +18,14 @@
  * file.
  */
 import type { LoadedBundle } from "./ir.js";
+
+/**
+ * How many checks `ir.md` section 10 enumerates.
+ *
+ * Stated here rather than copied into whatever needs it: a renumbering that
+ * left a stale bound behind in the fuzz harness is what put this constant here.
+ */
+export const LOAD_CHECK_COUNT = 25;
 import { build } from "./load/build.js";
 import { checkDefinitions } from "./load/definitions.js";
 import { checkDispatchers } from "./load/dispatchers.js";

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { RULES_BUNDLE_BYTES } from "./bundle-bytes.js";
 import { BundleError } from "../../tools/generator/errors.js";
 import { generate } from "../../tools/generator/generate.js";
+import { LOAD_CHECK_COUNT } from "../../tools/generator/load.js";
 
 /**
  * Fuzzing of the generator.
@@ -31,7 +32,7 @@ function attempt(payload: Uint8Array): void {
     if (error instanceof BundleError) {
       expect(["invalid_ruleset", "incompatible_ruleset"]).toContain(error.reason);
       expect(error.check).toBeGreaterThanOrEqual(1);
-      expect(error.check).toBeLessThanOrEqual(24);
+      expect(error.check).toBeLessThanOrEqual(LOAD_CHECK_COUNT);
       return;
     }
     throw error;

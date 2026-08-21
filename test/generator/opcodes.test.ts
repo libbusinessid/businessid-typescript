@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ValueType } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
 import { CAPABILITY_NAMES } from "../../tools/generator/capabilities.js";
+import { LOAD_CHECK_COUNT } from "../../tools/generator/load.js";
 import { OPCODE_TABLES, type OpcodeSpec } from "../../tools/generator/opcodes.js";
 
 /**
@@ -84,6 +85,16 @@ const implemented = new Map<string, OpcodeSpec>(
 
 const valueTypeName = (type: ValueType): string =>
   `VALUE_TYPE_${ValueType[type] ?? `UNKNOWN(${String(type)})`}`;
+
+describe("the load time checks", () => {
+  it("counts what ir.md section 10 enumerates", () => {
+    const text = readFileSync(new URL("../../spec/ir.md", import.meta.url), "utf8");
+    const section = text.slice(text.indexOf("## 10. Load time validation"));
+    const numbered = [...section.matchAll(/^(\d+)\. /gm)].map((match) => Number(match[1]));
+
+    expect(Math.max(...numbered)).toBe(LOAD_CHECK_COUNT);
+  });
+});
 
 describe("opcode table", () => {
   it("covers exactly the operations ir.md documents", () => {
