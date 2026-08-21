@@ -58,14 +58,25 @@ emitter inlines, which keeps the short-circuit of `ALL`, `ANY` and the assertion
 sequence where the IR puts it; a DAG whose every node reads the previous one
 twice expands exponentially while passing every other check.
 
-**Corrected** by `ir.md`, which now states the bound in section 2 and places it
-as **check 14**: a generated program may hold at most 100000 operation
-instances, counted after inlining — the evaluation budget rather than a new
-number. A generator that shares repeated operands instead of inlining them stays
-free to do so, provided the sharing preserves the short circuit.
+**Corrected** by `ir.md`, which states the bound in section 2 and places it as
+**check 14**: a generated program may hold at most 100000 operation instances,
+counted after inlining — the evaluation budget rather than a new number.
+
+Three details were then added, each of which decides whether two generators
+answer the same on the same bundle, and this engine had the first one wrong:
+
+- **the count starts at the emission roots** — the program root and each
+  capture — and follows operands. A node no root reaches is emitted by nobody.
+  This engine counted every node, so it refused bundles any generator can emit;
+  the defect is fixed and `test/generator/expansion.test.ts` proves a dead chain
+  now costs nothing.
+- **a `CALL` counts as one instance**, its callee being bounded on its own.
+- **the arithmetic saturates** rather than wrapping, because an accumulator that
+  overflows lands on a small number that passes.
 
 The published fixture `program_expansion.binpb` and case
-`loader-program-expansion-036` exercise it. This engine reports check 14 on it.
+`loader-program-expansion-036` exercise it. This engine reports check 14 on it,
+and only check 14.
 
 ### 7. Stale counts, and the copied capability registry
 

@@ -4,7 +4,7 @@ Offline canonicalization, format validation and checksum validation of business
 identifiers — VAT numbers, national company numbers, EUID, LEI and more — driven
 by the shared LibBusinessID rule bundle.
 
-**94 identifiers across 37 countries**, rules version `2026.08.16`. No network
+**94 identifiers across 37 countries**, rules version `2026.08.17`. No network
 access, no locale dependence, no regular expressions, and **no runtime
 dependencies**.
 
@@ -136,7 +136,7 @@ makes it throw.**
 
 ```ts
 BusinessIdEngine.default.rulesInfo();
-// { rulesVersion: "2026.08.16", formatVersion: 1, engineVersion: "0.1.0" }
+// { rulesVersion: "2026.08.17", formatVersion: 1, engineVersion: "0.1.0" }
 ```
 
 Three versions move independently. `engineVersion` follows SemVer for the
@@ -185,7 +185,8 @@ The bundle shaped limits are the generator's business and no longer apply once
 the code exists. The step budget does not apply at run time either: the emitted
 code terminates by construction, because the call graph is acyclic and its depth
 is bounded, both proved before a line was emitted. It bounds the generator
-instead — a program may not expand past it once repeated operands are inlined.
+instead — a program may not expand past it once repeated operands are inlined,
+counted from the roots the generator emits from.
 
 ## Conformance
 

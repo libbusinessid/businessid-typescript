@@ -6,7 +6,7 @@ describe("the official bundle", () => {
   const bundle = loadBundle(RULES_BUNDLE_BYTES);
 
   it("announces the attested rules version", () => {
-    expect(bundle.rulesVersion).toBe("2026.08.16");
+    expect(bundle.rulesVersion).toBe("2026.08.17");
     expect(bundle.formatVersion).toBe(1);
   });
 

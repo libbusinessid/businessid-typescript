@@ -23,7 +23,7 @@ describe("BusinessIdEngine.default", () => {
   });
 
   it("reports what the bundle announces", () => {
-    expect(BusinessIdEngine.default.rulesInfo().rulesVersion).toBe("2026.08.16");
+    expect(BusinessIdEngine.default.rulesInfo().rulesVersion).toBe("2026.08.17");
     expect(BusinessIdEngine.default.capabilities()).toEqual([
       1, 2, 3, 4, 5, 10, 11, 20, 21, 30, 31, 32, 33, 34, 35, 40, 41, 42,
     ]);
@@ -75,7 +75,7 @@ describe("report helpers", () => {
       inputValue: "x",
       canonicalValue: "x",
       profile: "compatible",
-      rulesVersion: "2026.08.16",
+      rulesVersion: "2026.08.17",
       formatVersion: 1,
       engineVersion: "0.1.0",
       format: { level: "format", status: format, reasonCode: "ok" },
