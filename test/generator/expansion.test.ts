@@ -10,6 +10,7 @@ import { generate } from "../../tools/generator/generate.js";
 import {
   alwaysValidFormat,
   assertionSequence,
+  constantNode,
   canonicalizationSequence,
   node,
   type NodeSpec,
@@ -179,5 +180,78 @@ describe("how the count is taken", () => {
     );
 
     expect(expansionOf(withCapture)).toBeGreaterThan(100_000);
+  });
+});
+
+describe("which nodes are emission roots", () => {
+  /**
+   * A program whose nodes 0 to 2 form a small doubling chain, and whose root
+   * reaches none of them.
+   *
+   * Costs: node 0 is 1, node 1 is 3, node 2 is 7, and the root is 4.
+   */
+  function detached(extras: {
+    subjectNode?: number;
+    captures?: { name: string; node: number }[];
+  }): ReturnType<typeof program> {
+    const nodes: NodeSpec[] = [
+      valueNode(),
+      node(
+        ValueType.STRING,
+        { case: "stringOperation", value: { kind: StringOpKind.CONCAT } },
+        [0, 0],
+      ),
+      node(
+        ValueType.STRING,
+        { case: "stringOperation", value: { kind: StringOpKind.CONCAT } },
+        [1, 1],
+      ),
+      constantNode("X"),
+      node(
+        ValueType.BOOLEAN,
+        { case: "predicateOperation", value: { kind: PredicateOpKind.IS_ABSENT } },
+        [3],
+      ),
+      requireNode(4),
+      assertionSequence([5]),
+    ];
+    return program(1, ProgramKind.FORMAT, nodes, 6, extras);
+  }
+
+  it("counts the root alone when nothing else is declared", () => {
+    expect(expansionOf(detached({}))).toBe(4);
+  });
+
+  it("counts the subject node, whose subtree a generator emits", () => {
+    // `Program.subject_node` produces the default subject of a top level
+    // invocation, so a generator emits its subtree even when the root never
+    // reaches it.
+    expect(expansionOf(detached({ subjectNode: 2 }))).toBe(4 + 7);
+  });
+
+  it("charges a capture once, not once per capture that reaches it", () => {
+    // Capture `a` names node 2, which already reaches node 1, so capture `b`
+    // is emitted inside `a` rather than beside it. Summing both would charge
+    // node 1 twice.
+    const two = detached({
+      captures: [
+        { name: "a", node: 2 },
+        { name: "b", node: 1 },
+      ],
+    });
+
+    expect(expansionOf(two)).toBe(4 + 7);
+  });
+
+  it("counts two captures that reach nothing of each other", () => {
+    const disjoint = detached({
+      captures: [
+        { name: "a", node: 1 },
+        { name: "b", node: 3 },
+      ],
+    });
+
+    // Node 1 costs 3 and node 3 costs 1; the root reaches node 3 already.
+    expect(expansionOf(disjoint)).toBe(4 + 3);
   });
 });

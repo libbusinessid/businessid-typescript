@@ -16,12 +16,21 @@
  * inlining it stays free to do so, provided the sharing preserves that short
  * circuit.
  *
- * Three details decide whether two generators agree on the same bundle, and
- * `ir.md` section 2 states all three.
+ * The count is what a generator emits, and `ir.md` section 2 turns that into
+ * four rules, each of which decides whether two generators agree on the same
+ * bundle.
  *
- * The count starts at the roots a generator emits from and follows operands. A
- * node no root reaches is emitted by nobody and counts for nothing: counting
- * every node instead would refuse bundles any generator can emit.
+ * It starts at the emission roots and follows operands, so a node no root
+ * reaches costs nothing: a generator does not emit dead code.
+ *
+ * The roots are the program root, the `subject_node` when the program declares
+ * one, and every capture no other root already reaches. A capture the root
+ * reaches is not a second emission — it is emitted inside the root's
+ * expression, and charging its subtree again would count it twice.
+ *
+ * Their costs are summed, because a generator emits all of them. Checking each
+ * root on its own would let a program carry any number of roots just below the
+ * ceiling.
  *
  * A `CALL` counts as one instance. Its callee is a separate program, emitted
  * once and reached by a function call, so the callee's own instances are
@@ -48,14 +57,23 @@ function saturatingAdd(left: number, right: number): number {
   return total > CEILING ? CEILING : total;
 }
 
-/** Adds a node and everything it reads to a set. */
-function reach(program: ProtoProgram, index: number, into: Set<number>): void {
-  if (into.has(index)) {
-    return;
-  }
-  into.add(index);
-  for (const input of program.nodes[index]?.inputNodes ?? []) {
-    reach(program, input, into);
+/**
+ * Adds a node and everything it reads to a set.
+ *
+ * Iterative: a program may hold four thousand nodes, and a chain that deep
+ * would be a recursion the generator should not depend on surviving.
+ */
+function reach(program: ProtoProgram, from: number, into: Set<number>): void {
+  const pending = [from];
+  while (pending.length > 0) {
+    const index = pending.pop();
+    if (index === undefined || into.has(index)) {
+      continue;
+    }
+    into.add(index);
+    for (const input of program.nodes[index]?.inputNodes ?? []) {
+      pending.push(input);
+    }
   }
 }
 
@@ -63,20 +81,24 @@ function reach(program: ProtoProgram, index: number, into: Set<number>): void {
  * The number of operation instances a program expands to when inlined.
  *
  * Operand indices are strictly lower than the node that reads them, proved by
- * check 11, so one ascending pass computes every cost without recursion.
+ * check 11, so one ascending pass computes every cost without recursion. The
+ * same fact orders the capture pass: a capture another capture reaches always
+ * sits at a lower index, so taking them from the highest index down decides
+ * "no other root already reaches it" in one go.
  */
 export function expansionOf(program: ProtoProgram): number {
-  const fromRoot = new Set<number>();
-  reach(program, program.rootNode, fromRoot);
-
-  const emitted = new Set<number>(fromRoot);
+  const live = new Set<number>();
+  reach(program, program.rootNode, live);
+  if (program.subjectNode !== undefined) {
+    reach(program, program.subjectNode, live);
+  }
   for (const capture of program.captures) {
-    reach(program, capture.node, emitted);
+    reach(program, capture.node, live);
   }
 
   const cost = new Array<number>(program.nodes.length).fill(0);
   for (let index = 0; index < program.nodes.length; index += 1) {
-    if (!emitted.has(index)) {
+    if (!live.has(index)) {
       continue;
     }
     let total = 1;
@@ -86,14 +108,22 @@ export function expansionOf(program: ProtoProgram): number {
     cost[index] = total;
   }
 
-  let total = cost[program.rootNode] ?? 0;
-  for (const capture of program.captures) {
-    // A capture reference is lowered to a direct node reference before the
-    // bundle exists, so a capture the root already reaches is emitted once, as
-    // part of the root. Only one the root does not reach would add anything,
-    // and no program in the shipped bundle has one.
-    if (!fromRoot.has(capture.node)) {
-      total = saturatingAdd(total, cost[capture.node] ?? 0);
+  const covered = new Set<number>();
+  let total = 0;
+  const charge = (index: number): void => {
+    total = saturatingAdd(total, cost[index] ?? 0);
+    reach(program, index, covered);
+  };
+
+  charge(program.rootNode);
+  if (program.subjectNode !== undefined) {
+    // Emitted at the call site to build the default subject of a top level
+    // invocation, beside the program body rather than inside it.
+    charge(program.subjectNode);
+  }
+  for (const capture of [...program.captures].sort((left, right) => right.node - left.node)) {
+    if (!covered.has(capture.node)) {
+      charge(capture.node);
     }
   }
   return total;
