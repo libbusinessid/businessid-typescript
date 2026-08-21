@@ -1,0 +1,14 @@
+version: 2
+updates:
+  # The workflows pin every action to a commit SHA, which is immutable but does
+  # not update itself. Dependabot reads the version comment next to each pin and
+  # is what keeps a correctly pinned workflow from becoming a frozen one.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5

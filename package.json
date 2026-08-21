@@ -1,0 +1,63 @@
+{
+  "name": "@libbusinessid/businessid",
+  "version": "0.1.0",
+  "description": "Offline canonicalization, format and checksum validation of business identifiers, driven by the LibBusinessID rule bundle.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20.11"
+  },
+  "packageManager": "pnpm@10.29.3",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "SECURITY.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "check:generated": "node scripts/generate.mjs --check",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:browser": "vitest run --project browser",
+    "test:node": "vitest run --project node",
+    "build:testee": "tsc -p tsconfig.testee.json",
+    "test:pack": "node scripts/pack-and-install.mjs",
+    "bench": "node --expose-gc scripts/bench.mjs",
+    "test:fuzz": "vitest run --project node test/security/fuzz.test.ts",
+    "mutation": "stryker run",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.10.1"
+  },
+  "devDependencies": {
+    "@bufbuild/protoc-gen-es": "^2.10.1",
+    "@eslint/js": "^9.39.1",
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/vitest-runner": "^10.0.0",
+    "@types/node": "^26.2.0",
+    "@vitest/browser": "^3.2.7",
+    "@vitest/coverage-v8": "^3.2.4",
+    "eslint": "^9.39.1",
+    "fast-check": "^4.5.0",
+    "playwright": "^1.62.1",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^3.2.4"
+  }
+}

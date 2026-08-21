@@ -1,0 +1,8 @@
+onlyBuiltDependencies:
+  - esbuild
+
+overrides:
+  # Transitive through @stryker-mutator/core > typed-rest-client. The fix is a
+  # patch release, and mutation testing is the only thing that reaches it.
+  # GHSA-q8mj-m7cp-5q26.
+  qs: ">=6.15.2"
