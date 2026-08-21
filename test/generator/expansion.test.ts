@@ -243,6 +243,41 @@ describe("which nodes are emission roots", () => {
     expect(expansionOf(two)).toBe(4 + 7);
   });
 
+  it("does not depend on the order the captures are listed in", () => {
+    // Walking the capture list in its own order would make the count depend on
+    // how the captures happen to be listed, which is not an observable
+    // property of the bundle. Taking them from the highest index down settles
+    // it: an operand always sits lower than the node reading it, so a capture
+    // reached by another is seen after the one reaching it.
+    const highFirst = detached({
+      captures: [
+        { name: "a", node: 2 },
+        { name: "b", node: 1 },
+      ],
+    });
+    const lowFirst = detached({
+      captures: [
+        { name: "b", node: 1 },
+        { name: "a", node: 2 },
+      ],
+    });
+
+    expect(expansionOf(lowFirst)).toBe(expansionOf(highFirst));
+    expect(expansionOf(lowFirst)).toBe(4 + 7);
+  });
+
+  it("excludes a capture any root reaches, not only the program root", () => {
+    // Node 2 is reached by the subject node here, never by the program root.
+    // A rule that asked only whether the *program root* reaches a capture
+    // would charge node 1 again, on top of the subject that already emits it.
+    const viaSubject = detached({
+      subjectNode: 2,
+      captures: [{ name: "b", node: 1 }],
+    });
+
+    expect(expansionOf(viaSubject)).toBe(4 + 7);
+  });
+
   it("counts two captures that reach nothing of each other", () => {
     const disjoint = detached({
       captures: [

@@ -24,9 +24,16 @@
  * reaches costs nothing: a generator does not emit dead code.
  *
  * The roots are the program root, the `subject_node` when the program declares
- * one, and every capture no other root already reaches. A capture the root
- * reaches is not a second emission — it is emitted inside the root's
- * expression, and charging its subtree again would count it twice.
+ * one, and every capture no other root already reaches. A capture *any* root
+ * reaches is not a second emission — it is emitted inside that root's
+ * expression, and charging its subtree again would count it twice. That holds
+ * for a capture reached by another capture, not only by the program root.
+ *
+ * Captures are taken from the highest index down. An operand always sits lower
+ * than the node reading it, so a capture reached by another is seen after the
+ * one reaching it and a single pass settles it. Walking the declared list in
+ * its own order would make the count depend on how the captures happen to be
+ * listed, which is not an observable property of the bundle.
  *
  * Their costs are summed, because a generator emits all of them. Checking each
  * root on its own would let a program carry any number of roots just below the
@@ -81,10 +88,8 @@ function reach(program: ProtoProgram, from: number, into: Set<number>): void {
  * The number of operation instances a program expands to when inlined.
  *
  * Operand indices are strictly lower than the node that reads them, proved by
- * check 11, so one ascending pass computes every cost without recursion. The
- * same fact orders the capture pass: a capture another capture reaches always
- * sits at a lower index, so taking them from the highest index down decides
- * "no other root already reaches it" in one go.
+ * check 11, so one ascending pass computes every cost without recursion, and
+ * the same fact is what makes the descending capture pass correct.
  */
 export function expansionOf(program: ProtoProgram): number {
   const live = new Set<number>();
