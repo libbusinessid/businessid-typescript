@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import type { IdentifierInput, ValidationOptions } from "../../src/domain/input.js";
 import type { CanonicalizationResult, ValidationReport } from "../../src/domain/result.js";
@@ -17,6 +17,11 @@ import { generate } from "../../tools/generator/generate.js";
  * the runtime together, which is the only combination that ships.
  */
 const OUT = fileURLToPath(new URL("../.generated/", import.meta.url));
+
+// Git tracks no empty directory, so a fresh checkout has none of this. Creating
+// it here rather than committing a placeholder keeps the scratch area a
+// property of the helper that uses it.
+mkdirSync(OUT, { recursive: true });
 const ENGINE_VERSION = "0.0.0-test";
 
 const cache = new Map<string, Promise<RuleSet>>();
