@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+coverage/
+*.tgz
+.consumer/
+reports/
+.stryker-tmp/
+test/.generated/

@@ -1,0 +1,11 @@
+dist
+build
+coverage
+spec
+src/assets
+src/rules.generated.ts
+generated
+test/.generated
+pnpm-lock.yaml
+reports
+.stryker-tmp
