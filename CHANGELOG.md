@@ -11,7 +11,7 @@ update that changes a verdict is published as a new package version.
 ### Added
 
 - First implementation of the TypeScript engine, against rules version
-  `2026.08.17` and IR format version 1.
+  `2026.08.18` and IR format version 1.
 - A generator under `tools/generator`: it reads the attested bundle, applies the
   twenty five load time checks of `ir.md` section 10 over a decoder that stays
   at the wire level, and emits `src/rules.generated.ts`. All 63 operations, the
@@ -19,8 +19,8 @@ update that changes a verdict is published as a new package version.
 - Public API: `BusinessIdEngine` with `canonicalize`, `validate`,
   `validateFormat`, `validateChecksum`, `rulesInfo`, `capabilities` and `kinds`.
   Every operation is synchronous and always will be.
-- All 665 shared conformance cases pass over the testee protocol, reason codes
-  and message keys alike, with the 34 `load_ruleset` cases answered by the
+- All 666 shared conformance cases pass over the testee protocol, reason codes
+  and message keys alike, with the 35 `load_ruleset` cases answered by the
   generator.
 
 ### Notes

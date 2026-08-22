@@ -350,3 +350,100 @@ describe("check 24: the call graph", () => {
     expectCheck(onlyPrograms(programs), 24);
   });
 });
+
+describe("check 15: a subject node that defines itself", () => {
+  /**
+   * `Program.subject_node` produces the subject of a top level invocation, so a
+   * subtree that reads `subject()` asks for the value it is computing. A
+   * generator emitting it recurses forever and an interpreter exhausts its
+   * budget; nothing else sees it, because the node is checked for scope and
+   * type and never walked.
+   */
+  function withSubject(subjectSubtree: NodeSpec[], subjectNode: number): Uint8Array {
+    const format: NodeSpec[] = [...subjectSubtree, ...alwaysValidFormat()];
+    // The rule itself reads nothing of the subject subtree.
+    const offset = subjectSubtree.length;
+    const shifted = format.map((entry, index) =>
+      index < offset
+        ? entry
+        : { ...entry, inputs: entry.inputs?.map((input) => input + offset) ?? [] },
+    );
+    return encode(
+      bundle({
+        programs: [
+          program(1, ProgramKind.CANONICALIZATION, [canonicalizationSequence()]),
+          program(2, ProgramKind.FORMAT, shifted, shifted.length - 1, { subjectNode }),
+        ],
+        definitions: [
+          {
+            id: 1,
+            kind: "test",
+            countryCode: "FR",
+            canonicalizationProgram: 1,
+            formatProgram: 2,
+            absentChecksumReason: ReasonCode.UNSUPPORTED_CHECKSUM,
+            defaultProfile: "compatible",
+            sources: [],
+          },
+        ],
+        dispatchers: [
+          {
+            kind: "test",
+            kindAliases: [],
+            preCanonicalizationProgram: 1,
+            countryAliases: [],
+            targets: [
+              {
+                countryCode: "FR",
+                acceptedPrefixes: [],
+                identifierDefinitionId: 1,
+                allowUnprefixedWithoutCountry: true,
+              },
+            ],
+          },
+        ],
+      }),
+    );
+  }
+
+  it("refuses a subject node that reads the subject directly", () => {
+    expectCheck(withSubject([subjectNode()], 0), 15);
+  });
+
+  it("refuses a subject node that reads it through a view", () => {
+    expectCheck(
+      withSubject(
+        [
+          subjectNode(),
+          node(
+            ValueType.STRING,
+            { case: "stringOperation", value: { kind: StringOpKind.SLICE_FROM, start: 2 } },
+            [0],
+          ),
+        ],
+        1,
+      ),
+      15,
+    );
+  });
+
+  it("accepts a subject node built from the canonical value", () => {
+    // `value()` is the identifier under validation, which exists before the
+    // subject does, so a subject built from it is not circular.
+    expect(() =>
+      loadBundle(
+        withSubject(
+          [
+            valueNode(),
+            node(
+              ValueType.STRING,
+              { case: "stringOperation", value: { kind: StringOpKind.SLICE_FROM, start: 2 } },
+              [0],
+            ),
+          ],
+          1,
+        ),
+      ),
+    ).not.toThrow();
+  });
+});

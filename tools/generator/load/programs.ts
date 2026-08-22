@@ -89,8 +89,53 @@ function checkAnchors(program: ProtoProgram, nodes: readonly ResolvedNode[]): vo
     if (nodes[program.subjectNode]?.node.outputType !== ValueType.STRING) {
       invalid(15, `${where} declares a subject that does not produce a string`);
     }
+    checkSubjectIsNotCircular(where, program.subjectNode, nodes);
   }
   checkCaptures(where, program, nodes);
+}
+
+/**
+ * A subject node may not read the subject it defines.
+ *
+ * `Program.subject_node` produces `subject()` for a top level invocation, so a
+ * subtree that reads `subject()` asks for the value it is computing. A
+ * generator emitting it recurses forever and an interpreter exhausts its
+ * budget, and nothing else sees it: the node is checked for scope and for type,
+ * and never walked.
+ *
+ * `value()` is a different matter and stays allowed. The canonical value exists
+ * before any subject does, so a subject built from it is well founded.
+ */
+function checkSubjectIsNotCircular(
+  where: string,
+  subject: number,
+  nodes: readonly ResolvedNode[],
+): void {
+  const seen = new Set<number>();
+  const pending = [subject];
+  while (pending.length > 0) {
+    const index = pending.pop();
+    if (index === undefined || seen.has(index)) {
+      continue;
+    }
+    seen.add(index);
+    const entry = nodes[index];
+    if (entry === undefined) {
+      continue;
+    }
+    if (
+      entry.operationCase === "stringOperation" &&
+      (entry.message as { kind: StringOpKind }).kind === StringOpKind.SUBJECT
+    ) {
+      invalid(
+        15,
+        `${where} builds its subject from subject(), the value that subject node defines`,
+      );
+    }
+    for (const input of entry.node.inputNodes) {
+      pending.push(input);
+    }
+  }
 }
 
 function checkCaptures(where: string, program: ProtoProgram, nodes: readonly ResolvedNode[]): void {

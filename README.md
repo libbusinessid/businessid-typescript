@@ -4,7 +4,7 @@ Offline canonicalization, format validation and checksum validation of business
 identifiers — VAT numbers, national company numbers, EUID, LEI and more — driven
 by the shared LibBusinessID rule bundle.
 
-**94 identifiers across 37 countries**, rules version `2026.08.17`. No network
+**94 identifiers across 37 countries**, rules version `2026.08.18`. No network
 access, no locale dependence, no regular expressions, and **no runtime
 dependencies**.
 
@@ -136,7 +136,7 @@ makes it throw.**
 
 ```ts
 BusinessIdEngine.default.rulesInfo();
-// { rulesVersion: "2026.08.17", formatVersion: 1, engineVersion: "0.1.0" }
+// { rulesVersion: "2026.08.18", formatVersion: 1, engineVersion: "0.1.0" }
 ```
 
 Three versions move independently. `engineVersion` follows SemVer for the
@@ -190,7 +190,7 @@ counted from the roots the generator emits from.
 
 ## Conformance
 
-Every one of the **665 shared conformance cases passes**, run over the testee
+Every one of the **666 shared conformance cases passes**, run over the testee
 protocol the specification defines: a separate process receives one request at a
 time and never sees an expected result, so the absence of cheating is
 verifiable. No case is skipped, filtered, or marked expected to fail.
