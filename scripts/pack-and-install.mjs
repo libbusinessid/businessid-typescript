@@ -64,7 +64,7 @@ try {
     format: "valid",
     checksum: "valid",
     fully: true,
-    rulesVersion: "2026.08.22",
+    rulesVersion: "2026.08.23",
     capabilities: 18,
   };
   for (const [key, value] of Object.entries(expected)) {

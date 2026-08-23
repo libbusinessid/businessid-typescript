@@ -53,9 +53,28 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build:testee
-      # Every conformance case runs. None is skipped, filtered or marked
-      # expected to fail: an incompatibility is a release blocker.
       - run: pnpm run test:node
+
+  conformance:
+    name: shared conformance suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      # The runner is a Go program from the spec repository, pinned to the
+      # commit rules.lock records. A build tool: it enters neither the published
+      # package nor its dependencies.
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: stable
+      - run: pnpm install --frozen-lockfile
+      # This repository writes no comparator. Every case is judged by the
+      # runner from `spec`, at the same commit as the corpus it reads.
+      - run: pnpm run test:conformance
 
   coverage:
     name: coverage thresholds

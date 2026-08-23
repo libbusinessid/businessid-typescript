@@ -40,7 +40,8 @@
     "test:fuzz": "vitest run --project node test/security/fuzz.test.ts",
     "mutation": "stryker run",
     "prepack": "npm run build",
-    "build:generator": "tsc -p tsconfig.generator.json"
+    "build:generator": "tsc -p tsconfig.generator.json",
+    "test:conformance": "npm run build:testee && node scripts/conformance.mjs"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.72.0",
