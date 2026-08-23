@@ -250,7 +250,6 @@ utile. Ajouter SECURITY, CONTRIBUTING, changelog et politique SemVer.
 
 ## Livrables et définition de terminé
 
-Livrer package npm complet, runtime, API, assets générés, Protobuf, interface registre,
-tests, fast-check, fuzz harness, benchmarks, CI, docs et publication. Tous les
+Livrer package npm complet, runtime, API, code émis, générateur, tests, fast-check, fuzz harness, benchmarks, CI, docs et publication. Tous les
 critères `engine.md`, TypeScript strict, lint, conformité, couverture, navigateur,
 `npm pack` et test consommateur doivent être verts, sans TODO V1 ni warning.

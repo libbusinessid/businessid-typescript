@@ -82,7 +82,7 @@ const comparedStep = (
 describe("conformance", () => {
   it("holds every published case", () => {
     expect(corpus.cases.length).toBe(666);
-    expect(corpus.rulesVersion).toBe("2026.08.18");
+    expect(corpus.rulesVersion).toBe("2026.08.22");
   });
 
   it("compares message keys on the cases that declare one", () => {
