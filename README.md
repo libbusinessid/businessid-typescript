@@ -58,6 +58,14 @@ report.checksum.status; // "valid"
 isFullyValidated(report); // true
 ```
 
+The value is the conformance corpus case `vat-be-normalization-004`, verbatim.
+It is **synthetic and belongs to no company**: the corpus classifies it that way
+and records its basis as a value produced by the generator of `DATA_POLICY.md`
+section 4, derived from no register, extract, submission or telemetry. Its
+sources — `be-fps-finance-vat` and `eu-vies-number-structure` — document the
+format, not the holder. Every example below comes from the same corpus on the
+same terms.
+
 `BusinessIdEngine.default` is the engine. Nothing is decoded, fetched or read
 from a file, so it costs nothing at start-up and the same code runs unchanged in
 a browser.
