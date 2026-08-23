@@ -95,6 +95,21 @@ function main(): void {
   const bundle = requireDigest(lock, "rules_sha256", join(root, "spec", "businessid-rules.binpb"));
   requireDigest(lock, "conformance_sha256", join(root, "spec", "businessid-conformance.binpb"));
 
+  // `rules.lock` attests seven files and PROVENANCE.md asks for all seven to be
+  // verified before starting. The two above are what this program reads; the
+  // three schemas are re-verified by CI regenerating `generated/` and diffing
+  // it, but the two documents were attested and checked by nothing. A lock
+  // entry no one reads stops being a lock entry.
+  for (const [key, name] of [
+    ["rules_proto_sha256", "rules.proto"],
+    ["conformance_proto_sha256", "conformance.proto"],
+    ["testee_proto_sha256", "testee.proto"],
+    ["ir_doc_sha256", "ir.md"],
+    ["features_doc_sha256", "features.md"],
+  ] as const) {
+    requireDigest(lock, key, join(root, "spec", name));
+  }
+
   const generated = generate(bundle);
   if (generated.rulesVersion !== lock.get("rules_version")) {
     throw new Error(

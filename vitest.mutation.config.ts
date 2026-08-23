@@ -10,7 +10,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     include: ["test/**/*.test.ts"],
-    exclude: ["test/browser/**", "test/security/fuzz.test.ts"],
+    exclude: ["test/browser/**", "test/generator/fuzz.test.ts"],
     environment: "node",
   },
 });
