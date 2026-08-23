@@ -1,8 +1,8 @@
 # Contradictions found in `spec`, and how they were resolved
 
-Found while implementing this engine, across four synchronisations. Everything
-below has been corrected upstream in `github.com/libbusinessid/spec`. Nothing is
-open as of rules `2026.08.25`.
+Found while implementing this engine, across five synchronisations. Everything
+below has been corrected upstream in `github.com/libbusinessid/spec` except the
+last entry, which is a wording refinement rather than a fault.
 
 ---
 
@@ -156,8 +156,103 @@ Two engines disagreeing about which defect they saw is the clearest possible
 signal that the fixture carried two, and neither engine was wrong about the
 answer — both said `invalid_ruleset`.
 
+### 11. Check 16 named the accepted root but not the accepted categories
+
+`ir.md` section 2 states, per program kind, both an accepted root and a set of
+accepted operation categories. Section 10's check 16 named only the root, so the
+categories belonged to no numbered check. Two engines assigned them by
+inference, and to different places: this one to the shape pass after check 13,
+the Swift engine to the per-node pass before it.
+
+The consequence was visible on `left_pad_length.binpb`, whose `LEFT_PAD` sat in
+a format program with `length: 4097` — a category fault and a bounds fault on
+one node. This engine answered 13, the Swift engine answered 16, both refused
+the bundle, and neither could say which fault the case was proving. That is what
+made the fixture's second defect invisible: two conformant engines disagreeing
+about the reason while agreeing on the answer.
+
+**Corrected** in `2026.08.26`. Check 16 now reads "the accepted root and the
+accepted operation categories of the kind, both as section 2 states them", and
+the rule moved into the shape pass where that number puts it. Nothing observable
+changes — the corpus carries `expected_engine_error` alone — but two engines
+reading the same document now reach the same conclusion about which check
+refused a bundle, which is the precondition for arguing about isolation at all.
+
+**Measured here** after the correction, in
+`test/generator/loader.test.ts`: a foreign category alone answers 16, an
+out-of-range length alone answers 13, and a node carrying both answers **13** —
+as does a bundle carrying the two faults in different programs. That is the
+documented order, and the tests fail if it drifts.
+
+### 12. `spec.md` still permitted an interpreter
+
+Entry 1 records the architecture change: `engine.md` section 1.2 forbids an
+engine to embed the bundle and interpret it. `spec.md`, in the section
+documenting `rules.lock`, still said the opposite — an engine MAY embed the
+bundle if it chooses to interpret it. That is the sentence this engine was built
+on the first time.
+
+It survived four audits because every guard here read `engine.md` and the
+per-language contract and stopped there. **Corrected** in `2026.08.26`: the
+sentence now states the prohibition and records why it lasted.
+
+Nothing changed in this engine, which has shipped no bundle and no decoder since
+entry 1; `test/unit/public-surface.test.ts` and the three tarball assertions in
+`scripts/pack-and-install.mjs` are what keep it that way.
+
+### 13. The readable corpus shipped unverified
+
+`rules.lock` attested seven files. `spec/businessid-conformance.jsonl` was not
+among them, although it is the form a human reviews and the form whose case ids
+engine tests cite as provenance — this repository's README note names
+`vat-be-normalization-004`, and nothing verified the file that defines it.
+
+Found by the Swift engine. **Corrected** in `2026.08.26` by an eighth digest,
+`conformance_jsonl_sha256`, taken on the decompressed bytes that land in
+`spec/`. The generator here verifies all eight and refuses to emit when one
+moved; appending a newline to the JSONL is refused with both digests named.
+
+### 14. Two questions the document did not answer, now answered
+
+Neither was a contradiction: both were places where two engines reached the same
+conclusion independently, which is what says the document was silent.
+
+- **Coverage.** `engine.md` section 12.2 now separates the thresholds, which
+  cover hand-written code, from the emitted code, whose coverage measures the
+  corpus rather than the engine — measure it, publish it, never gate on it. This
+  engine already gated on hand-written code only; it now also publishes the
+  emitted figure, through `pnpm run coverage:generated`, which asserts nothing.
+- **README identifiers.** Section 12.2.1 settles that a synthetic value is
+  correct in a README, because the example demonstrates an API rather than a
+  register, and requires it to say what it is — synthetic, from the documented
+  generator, preferably naming its conformance case. The note added in entry 10
+  already says all three.
+
 ---
 
 ## Open
 
-Nothing.
+### 15. The `GOTOOLCHAIN` requirement is stated more broadly than it holds
+
+`spec.md` and `engine.md` both require the runner step to set
+`GOTOOLCHAIN: auto`, because `actions/setup-go` sets it to `local` and "le module
+`spec` demande une version de Go plus récente que celle qu'un moteur épingle
+probablement pour lui-même", concluding "Mesuré : sans cela, la première
+exécution échoue sur la résolution de la toolchain".
+
+Measured here against `53fb506a`, the requirement is right and the reason is not
+quite. The module declares `go 1.25.0` and `toolchain go1.26.5`, and it is the
+first line that binds:
+
+| `GOTOOLCHAIN`            | Result                                                            |
+| ------------------------ | ----------------------------------------------------------------- |
+| `local`, local Go 1.26.5 | runner builds                                                     |
+| `go1.25.0`               | runner builds                                                     |
+| `go1.24.0`               | `requires go >= 1.25.0 (running go 1.24.0; GOTOOLCHAIN=go1.24.0)` |
+
+So the failure needs a Go older than **1.25.0**, not older than the `toolchain`
+line, and an engine whose workflow says `go-version: stable` never meets it. This
+repository sets `GOTOOLCHAIN: auto` on the runner step regardless — it costs
+nothing and removes the failure the day either number moves — but the sentence
+would be more useful stated as a condition on the engine's pinned Go than as a
+measurement that always reproduces. Reported, not blocking.
