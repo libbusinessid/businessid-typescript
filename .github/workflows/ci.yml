@@ -74,7 +74,18 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # This repository writes no comparator. Every case is judged by the
       # runner from `spec`, at the same commit as the corpus it reads.
+      #
+      # `spec.md` requires GOTOOLCHAIN: auto on this step, because setup-go sets
+      # it to `local` and the spec module asks for a newer toolchain than an
+      # engine is likely to pin. Measured here: the module declares `go 1.25.0`
+      # with `toolchain go1.26.5`, and it builds under GOTOOLCHAIN=local on any
+      # Go from 1.25.0 up — so `go-version: stable` never hits the failure. This
+      # is insurance against the day one of those two numbers moves, not a
+      # repair of something currently broken. The testee is TypeScript and owes
+      # Go nothing.
       - run: pnpm run test:conformance
+        env:
+          GOTOOLCHAIN: auto
 
   coverage:
     name: coverage thresholds
@@ -91,6 +102,11 @@ jobs:
       # The node project is what coverage measures. The browser project runs
       # the same engine and has its own job, with the toolchain that needs.
       - run: pnpm run test:coverage
+      # `engine.md` section 12.2: the emitted rules are measured and published,
+      # never gated. Their coverage is a property of the corpus rather than of
+      # the engine, so a threshold here would fail a faultless engine and the
+      # only way back to green would be to lower the number.
+      - run: pnpm run coverage:generated
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:

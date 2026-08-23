@@ -41,7 +41,8 @@
     "mutation": "stryker run",
     "prepack": "npm run build",
     "build:generator": "tsc -p tsconfig.generator.json",
-    "test:conformance": "npm run build:testee && node scripts/conformance.mjs"
+    "test:conformance": "npm run build:testee && node scripts/conformance.mjs",
+    "coverage:generated": "node scripts/coverage-generated.mjs"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.72.0",

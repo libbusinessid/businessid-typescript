@@ -95,12 +95,17 @@ function main(): void {
   const bundle = requireDigest(lock, "rules_sha256", join(root, "spec", "businessid-rules.binpb"));
   requireDigest(lock, "conformance_sha256", join(root, "spec", "businessid-conformance.binpb"));
 
-  // `rules.lock` attests seven files and PROVENANCE.md asks for all seven to be
+  // `rules.lock` attests eight files and PROVENANCE.md asks for all eight to be
   // verified before starting. The two above are what this program reads; the
   // three schemas are re-verified by CI regenerating `generated/` and diffing
-  // it, but the two documents were attested and checked by nothing. A lock
-  // entry no one reads stops being a lock entry.
+  // it, but the readable corpus and the two documents were attested and checked
+  // by nothing. A lock entry no one reads stops being a lock entry.
+  //
+  // The JSONL matters more than it looks: it is the form a human reviews, and
+  // engine tests cite its case ids as provenance. Its digest is taken on the
+  // decompressed bytes that land in `spec/`.
   for (const [key, name] of [
+    ["conformance_jsonl_sha256", "businessid-conformance.jsonl"],
     ["rules_proto_sha256", "rules.proto"],
     ["conformance_proto_sha256", "conformance.proto"],
     ["testee_proto_sha256", "testee.proto"],
