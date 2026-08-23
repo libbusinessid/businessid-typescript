@@ -722,8 +722,22 @@ La conformité partagée ne remplace pas :
 - property tests et fuzzing ;
 - benchmarks ;
 - tests de régression propres au runtime ;
-- tests prouvant que le testee ne triche pas : qu'il ne lit pas le corpus,
-  n'interprète aucun attendu et ne se comporte pas différemment selon le cas.
+- tests prouvant que le testee ne triche pas.
+
+Ce dernier point mérite d'être précisé, parce qu'une intention ne se teste pas.
+Le moteur TypeScript l'a formulé en propriétés observables, et c'est la forme
+exigée :
+
+| Ce qu'on affirme | Ce que ça exclut |
+| --- | --- |
+| le testee ne nomme ni le corpus ni rien qui en lise un | la lecture directe des attendus |
+| il n'atteint aucun système de fichiers | le corpus est un fichier ; qui n'ouvre rien ne le lit pas |
+| il répond identiquement quel que soit l'identifiant de cas — plausible, absurde, vide | la reconnaissance d'un cas |
+| il répond identiquement quel que soit l'ordre des requêtes | un comportement dépendant de l'historique |
+| il répond identiquement à une requête répétée | le non-déterminisme |
+
+Les requêtes de ces tests sont inventées sur place : le test d'honnêteté n'ouvre
+pas le corpus non plus, sinon il démontrerait le contraire de ce qu'il affirme.
 
 ## 12. Exigences qualité
 

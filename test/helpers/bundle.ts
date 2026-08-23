@@ -153,7 +153,7 @@ export interface BundleSpec {
 export function bundle(spec: BundleSpec): RuleBundle {
   return create(RuleBundleSchema, {
     formatVersion: spec.formatVersion ?? 1,
-    rulesVersion: spec.rulesVersion ?? "2026.08.23",
+    rulesVersion: spec.rulesVersion ?? "2026.08.25",
     requiredFeatureIds: [...(spec.capabilities ?? ALL_CAPABILITIES)],
     sourceDigest: new Uint8Array(32),
     programs: spec.programs,

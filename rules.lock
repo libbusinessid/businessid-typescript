@@ -5,14 +5,14 @@
 # release exists, the downstream pull request replaces this file with an
 # attested one, and the generator resolves the bundle from that release
 # instead of the local copy under spec/.
-rules_version = "2026.08.23"
+rules_version = "2026.08.25"
 format_version = 1
-rules_sha256 = "cc8712b58a4dcdc813f7477c767113417d29bdff20fbe399b0c04e5b4d6eeb5c"
-conformance_sha256 = "29701ae06ec3ed9f38d6a53236ba07314561a214d20a036f1f9b104e062a7936"
+rules_sha256 = "5ebb17a25cffe1b4639b28fa207d31b4492e8fb59310349f4e9d078ceb8335c0"
+conformance_sha256 = "f509ecaaf730d1e1d288425127776baf5aab4e29ef8eb15f6fcccffff571340c"
 rules_proto_sha256 = "40c4472007251677dfc3df287188dba177cab6ab62b6d9546e05e89291a77465"
 conformance_proto_sha256 = "600b40465a71450ca452b26beae99dafcef43cda8b4e7dbe7e32d7b70e5c2a6e"
 testee_proto_sha256 = "7209846f3dc2f2f43da537f9ef74f1beee6a02be612ab53594220e997acf3dbc"
 ir_doc_sha256 = "05292005c2cd1828fe2db67fb74e6097eebbd8ffefefd078021ff6180e7a71f4"
 features_doc_sha256 = "1cb41bff278f1606f0215ccac387c92abf7ec2bdcc7683be93b52c9291f3689a"
 stability = "alpha"
-source_commit = "3e3588066a7eadfd99fb4fa6ab29a66a58cd465b"
+source_commit = "2d001470563e841e01356e16d9eb2ed07917f8c2"

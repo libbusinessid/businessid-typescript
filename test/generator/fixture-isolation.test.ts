@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import { Operation } from "../../generated/libbusinessid/conformance/v1/conformance_pb.js";
 import {
+  CanonicalizationOpKind,
+  ProgramKind,
   RuleBundleSchema,
   StringOpKind,
   StringOperationSchema,
@@ -14,11 +16,19 @@ import { loadCorpus } from "../conformance/corpus.js";
  * A hostile fixture must carry the defect its case is named for, and nothing
  * else.
  *
- * A fixture with a second defect is answered by whichever check reaches it
- * first, so an engine missing the rule the case exists to test still passes.
- * Both `program_expansion.binpb` and `subject_node_circular.binpb` shipped that
- * way once, and this engine reported check 25 on the second rather than the
- * circularity it was written for.
+ * The runner cannot see the difference. A `load_ruleset` case declares
+ * `expected_engine_error` alone — `invalid_ruleset` or `incompatible_ruleset`,
+ * never a check number — so every one of the twenty five checks produces the
+ * same observable answer. A fixture with a second defect is therefore answered
+ * by whichever check reaches it first, and an engine that does not implement
+ * the rule the case exists to test still passes it. Nothing in the shared
+ * harness reports that; only decoding the bytes does.
+ *
+ * Three fixtures shipped that way and have since been repaired upstream:
+ * `program_expansion.binpb`, `subject_node_circular.binpb` and
+ * `left_pad_length.binpb`. Each test below repairs the named defect and nothing
+ * else, then asserts the bundle loads — which is the only way to state that the
+ * fixture holds one defect rather than two.
  *
  * Repairing is what proves isolation, and erasing is not repairing: removing
  * the `subject_node` outright would take the circular read away along with the
@@ -53,19 +63,22 @@ describe("loader-program-expansion-036", () => {
     expect(refusal.message).toContain("operation instances");
   });
 
-  it("still carries a second defect, so it does not isolate its own", () => {
-    // Repairing the expansion alone: every CONCAT of the chain reads the same
-    // node twice, and reading it once makes the growth linear while leaving
-    // every node, index and type in place.
-    //
-    // The bundle still does not load. Its program 3 roots at that CONCAT, a
-    // string node, where a checksum program must root at a checksum outcome —
-    // a defect check 15 owns and the case never claimed.
-    //
-    // `ir.md` lets an engine run 15 before 14, so an engine with no check 14 at
-    // all answers this case correctly, which is what the fixture was corrected
-    // to prevent. Reported upstream; when the fixture is repaired this test
-    // fails, which is exactly when it should.
+  it("roots its checksum program at a checksum outcome", () => {
+    // The doubling chain is a string chain, and a checksum program roots at a
+    // checksum outcome. The chain used to be the root, so the bundle failed
+    // check 15 as well and an engine with no check 14 answered the case
+    // correctly. The chain now feeds a checksum node appended after it.
+    const bundle = fromBinary(RuleBundleSchema, payload);
+    const checksum = bundle.programs.find((program) => program.kind === ProgramKind.CHECKSUM);
+
+    expect(checksum, "the fixture has no checksum program").toBeDefined();
+    expect(checksum?.nodes[checksum.rootNode]?.operation.case).toBe("checksumOperation");
+  });
+
+  it("loads once the expansion alone is repaired", () => {
+    // Every CONCAT of the chain reads the same node twice. Reading it once
+    // makes the growth linear while leaving every node, index and type in
+    // place — and the chain still reaches the checksum root.
     const bundle = fromBinary(RuleBundleSchema, payload);
     let rewired = 0;
     for (const program of bundle.programs) {
@@ -79,10 +92,7 @@ describe("loader-program-expansion-036", () => {
     }
 
     expect(rewired, "the chain no longer reads any operand twice").toBeGreaterThan(0);
-    expect(refusalOf(toBinary(RuleBundleSchema, bundle))).toMatchObject({
-      check: 15,
-      reason: "invalid_ruleset",
-    });
+    expect(() => generate(toBinary(RuleBundleSchema, bundle))).not.toThrow();
   });
 });
 
@@ -128,6 +138,57 @@ describe("loader-subject-node-circular-037", () => {
     }
 
     expect(repaired, "the fixture no longer reads subject() anywhere").toBeGreaterThan(0);
+    expect(() => generate(toBinary(RuleBundleSchema, bundle))).not.toThrow();
+  });
+});
+
+describe("loader-left-pad-length-026", () => {
+  const payload = payloadOf("loader-left-pad-length-026");
+
+  it("is refused by check 13, for the pad length", () => {
+    const refusal = refusalOf(payload);
+
+    expect(refusal).toMatchObject({ reason: "invalid_ruleset", check: 13 });
+    expect(refusal.message).toContain("4097");
+  });
+
+  it("puts its LEFT_PAD in a canonicalization program", () => {
+    // The pad used to be the root of the format program, where `ir.md` section
+    // 3 accepts string, predicate, assertion and CALL_OP_KIND_FORMAT and no
+    // canonicalization at all. Check 16 owns that, the case never claimed it,
+    // and an engine running 16 before 13 never looked at the length. It now
+    // lives in a canonicalization program of its own.
+    const bundle = fromBinary(RuleBundleSchema, payload);
+    const holder = bundle.programs.find((program) =>
+      program.nodes.some(
+        (node) =>
+          node.operation.case === "canonicalizationOperation" &&
+          node.operation.value.kind === CanonicalizationOpKind.LEFT_PAD,
+      ),
+    );
+
+    expect(holder, "the fixture has no LEFT_PAD").toBeDefined();
+    expect(holder?.kind).toBe(ProgramKind.CANONICALIZATION);
+  });
+
+  it("loads once the length alone is brought inside the bound", () => {
+    // 4097 is one past the node limit the slice bound shares. Clamping it to
+    // the bound leaves the node where it is, in the program that accepts it.
+    const bundle = fromBinary(RuleBundleSchema, payload);
+    let clamped = 0;
+    for (const program of bundle.programs) {
+      for (const node of program.nodes) {
+        if (
+          node.operation.case === "canonicalizationOperation" &&
+          node.operation.value.length === 4097
+        ) {
+          node.operation.value.length = 4096;
+          clamped += 1;
+        }
+      }
+    }
+
+    expect(clamped, "the fixture no longer declares a length of 4097").toBe(1);
     expect(() => generate(toBinary(RuleBundleSchema, bundle))).not.toThrow();
   });
 });

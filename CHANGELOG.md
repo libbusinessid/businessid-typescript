@@ -11,7 +11,7 @@ update that changes a verdict is published as a new package version.
 ### Added
 
 - First implementation of the TypeScript engine, against rules version
-  `2026.08.23` and IR format version 1.
+  `2026.08.25` and IR format version 1.
 - A generator under `tools/generator`: it reads the attested bundle, applies the
   twenty five load time checks of `ir.md` section 10 over a decoder that stays
   at the wire level, and emits `src/rules.generated.ts`. All 63 operations, the
