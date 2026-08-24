@@ -1,6 +1,7 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import { BusinessIdEngine, isInvalid } from "../../src/index.js";
+import * as support from "../../src/runtime/support.js";
 import { codePointsOf, stringOf, utf8ByteLength } from "../../src/runtime/text.js";
 
 /**
@@ -134,6 +135,84 @@ describe("determinism and immutability", () => {
         expect(engine.validate(input)).toEqual(engine.validate(input));
       }),
       { numRuns: 300 },
+    );
+  });
+});
+
+/**
+ * `prefixIn` against the definition of what it computes.
+ *
+ * This stands in for conformance cases that cannot exist. Rules 2026.09.2
+ * refuses a `prefix_in` whose elements differ in length, and all four published
+ * nodes hold a single length anyway, so the shared corpus cannot distinguish a
+ * correct search from one that asks the table once for the whole subject — the
+ * second passes every published case while being wrong on `["AB", "ABA"]`
+ * against `"ABCD"`.
+ *
+ * The reference below is the definition transcribed: some element is a prefix
+ * of the subject. It is quadratic and obviously right, which is the only thing
+ * asked of it. The search under test has to agree with it on every table
+ * fast-check can build, mixed lengths included.
+ */
+describe("prefixIn agrees with the definition of a prefix", () => {
+  const sortedTable = (values: readonly string[]): readonly (readonly number[])[] =>
+    [...new Set(values)]
+      .map((value) => codePointsOf(value))
+      .sort((left, right) => {
+        const shared = Math.min(left.length, right.length);
+        for (let index = 0; index < shared; index += 1) {
+          const a = left[index] ?? 0;
+          const b = right[index] ?? 0;
+          if (a !== b) {
+            return a - b;
+          }
+        }
+        return left.length - right.length;
+      });
+
+  /** Some element is a prefix of the subject. Quadratic, and plainly correct. */
+  const byDefinition = (
+    subject: readonly number[],
+    table: readonly (readonly number[])[],
+  ): boolean =>
+    table.some(
+      (element) =>
+        element.length <= subject.length &&
+        element.every((point, index) => subject[index] === point),
+    );
+
+  const element = fc.stringMatching(/^[AB]{1,4}$/);
+
+  it("answers every table fast-check can build", () => {
+    fc.assert(
+      fc.property(
+        fc.array(element, { minLength: 1, maxLength: 24 }),
+        fc.stringMatching(/^[AB]{0,6}$/),
+        (values, subject) => {
+          const table = sortedTable(values);
+          const lengths = [...new Set(table.map((one) => one.length))].sort((a, b) => a - b);
+          const points = codePointsOf(subject);
+
+          expect(support.prefixIn(points, table, lengths)).toBe(byDefinition(points, table));
+        },
+      ),
+      { numRuns: 400 },
+    );
+  });
+
+  it("answers a table of one length, the only shape a bundle may carry", () => {
+    fc.assert(
+      fc.property(
+        fc.array(fc.stringMatching(/^[AB]{3}$/), { minLength: 1, maxLength: 24 }),
+        fc.stringMatching(/^[AB]{0,6}$/),
+        (values, subject) => {
+          const table = sortedTable(values);
+          const points = codePointsOf(subject);
+
+          expect(support.prefixIn(points, table, [3])).toBe(byDefinition(points, table));
+        },
+      ),
+      { numRuns: 400 },
     );
   });
 });

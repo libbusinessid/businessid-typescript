@@ -59,6 +59,8 @@ const ANSWERING_CHECK = new Map<string, number>([
   ["loader-modulus-out-of-range-021", 13],
   ["loader-node-forward-reference-010", 11],
   ["loader-node-out-of-range-011", 15],
+  ["loader-prefix-in-mixed-lengths-040", 13],
+  ["loader-prefix-in-unsorted-039", 13],
   ["loader-orphan-definition-016", 23],
   ["loader-predicate-constant-028", 13],
   ["loader-program-expansion-036", 14],
@@ -81,8 +83,8 @@ const ANSWERING_CHECK = new Map<string, number>([
 ]);
 
 describe("load_ruleset corpus", () => {
-  it("holds the 36 published cases", () => {
-    expect(cases.length).toBe(36);
+  it("holds the 38 published cases", () => {
+    expect(cases.length).toBe(38);
   });
 
   it("names a check for every published case, and no case the corpus dropped", () => {

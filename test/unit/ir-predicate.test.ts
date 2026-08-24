@@ -253,19 +253,19 @@ describe("PREFIX_IN over a sorted list", () => {
     expect(await holds(prefixIn(["FR"]), "BE123")).toBe(false);
   });
 
-  it("finds a short element when a longer one sorts between it and the value", async () => {
-    // "AB" is a prefix of "ABCD"; "ABA" is not, and sorts after "AB" and before
-    // "ABCD". Asking only about the nearest element answers false here.
-    expect(await holds(prefixIn(["AB", "ABA"]), "ABCD")).toBe(true);
+  it("answers a list of one length, which is the only shape a bundle may carry", async () => {
     expect(await holds(prefixIn(["ABA", "ABB"]), "ABCD")).toBe(false);
+    expect(await holds(prefixIn(["ABA", "ABB"]), "ABBX")).toBe(true);
   });
 
-  it("searches every distinct element length, not just one", async () => {
-    // Lengths 1, 3 and 5 in one list.
-    expect(await holds(prefixIn(["A", "BBB", "CCCCC"]), "CCCCCX")).toBe(true);
-    expect(await holds(prefixIn(["A", "BBB", "CCCCC"]), "BBBX")).toBe(true);
-    expect(await holds(prefixIn(["A", "BBB", "CCCCC"]), "AX")).toBe(true);
-    expect(await holds(prefixIn(["A", "BBB", "CCCCC"]), "BBX")).toBe(false);
+  // The shapes that make the search interesting — a list mixing element
+  // lengths — are refused at load as of rules 2026.09.2, so they cannot be
+  // written as a bundle any more. `support.prefixIn` must still answer them,
+  // and does; that coverage lives in `test/unit/support.test.ts`, below the
+  // loader, together with the property test that stands in for the conformance
+  // cases the corpus can no longer carry.
+  it("refuses at load the mixed-length list this described", async () => {
+    await expect(holds(prefixIn(["AB", "ABA"]), "ABCD")).rejects.toThrow(/mixed lengths/);
   });
 });
 

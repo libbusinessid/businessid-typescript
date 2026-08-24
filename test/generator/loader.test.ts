@@ -475,10 +475,39 @@ describe("check 13: the normative order of a parameter list", () => {
     expectRefusal(payload, 13);
   });
 
-  it("orders values by code point, where a longer string follows its own prefix", () => {
-    // "B" sorts before "BE": a shorter string precedes any string it prefixes.
-    expect(() => loadBundle(withValues(["B", "BE"]))).not.toThrow();
-    expectRefusal(withValues(["BE", "B"]), 13);
+  it("orders values by code point", () => {
+    // At equal length, code point order is the whole of it.
+    expect(() => loadBundle(withValues(["AB", "AC"]))).not.toThrow();
+    expectRefusal(withValues(["AC", "AB"]), 13);
+  });
+
+  it("refuses a shorter value before the one it prefixes, for the length not the order", () => {
+    // `["B", "BE"]` is correctly ordered — a shorter string precedes what
+    // extends it — and is still refused, because the lengths differ. The
+    // ordering rule and the uniform length rule are separate, and this is the
+    // list that separates them: reversing it fails the order first.
+    const ordered = withValues(["B", "BE"]);
+
+    expectRefusal(ordered, 13);
+    expect(refusal(ordered).message).toContain("mixed lengths");
+    expect(refusal(withValues(["BE", "B"])).message).toContain("ascending");
+  });
+
+  it("accepts values that all share one length", () => {
+    expect(() => loadBundle(withValues(["AB", "CD"]))).not.toThrow();
+  });
+
+  it("refuses values of mixed lengths", () => {
+    // `["AB", "ABA"]` against `"ABCD"`: the greatest element not after the
+    // value is `ABA`, which is not a prefix, while `AB` is. At one length,
+    // starting with an element is equalling its opening of that length, so the
+    // search is exact. `ir.md` refuses the shape rather than leaving two
+    // readings of it, and mixed lengths are written as one `prefix_in` per
+    // length under an `any`.
+    const payload = withValues(["AB", "ABA"]);
+
+    expectRefusal(payload, 13);
+    expect(refusal(payload).message).toContain("length");
   });
 
   it("accepts lengths that are ascending and distinct", () => {
