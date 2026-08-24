@@ -13,7 +13,7 @@ describe("the default engine in a browser", () => {
   it("builds itself synchronously from the inlined bundle", () => {
     const engine = BusinessIdEngine.default;
 
-    expect(engine.rulesInfo()).toMatchObject({ rulesVersion: "2026.08.32", formatVersion: 1 });
+    expect(engine.rulesInfo()).toMatchObject({ rulesVersion: "2026.08.33", formatVersion: 1 });
     expect(engine.capabilities()).toHaveLength(18);
   });
 

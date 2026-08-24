@@ -9,7 +9,7 @@ describe("the official bundle", () => {
   const bundle = loadBundle(RULES_BUNDLE_BYTES);
 
   it("announces the attested rules version", () => {
-    expect(bundle.rulesVersion).toBe("2026.08.32");
+    expect(bundle.rulesVersion).toBe("2026.08.33");
     expect(bundle.formatVersion).toBe(1);
   });
 
@@ -54,7 +54,7 @@ describe("what the shipped bundle costs to emit", () => {
    * Summing every capture rather than only the ones no other root reaches gives
    * 3204 instead of 3069, because all 54 captures are reached from their roots.
    */
-  it("matches the published profile for 2026.08.32", () => {
+  it("matches the published profile for 2026.08.33", () => {
     let instances = 0;
     let worst = 0;
     let worstProgram = 0;
