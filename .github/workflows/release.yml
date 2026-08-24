@@ -1,0 +1,93 @@
+name: release
+
+# A release is published from the GitHub UI or `gh release create`. That is the
+# only trigger: a tag alone publishes nothing, so a mistyped tag can be deleted
+# rather than yanked from the registry.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: "22.x"
+
+jobs:
+  guard:
+    name: tag matches the version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      dist_tag: ${{ steps.version.outputs.dist_tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - id: version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          version="$(node --print "require('./package.json').version")"
+
+          # npm takes the version from the manifest and never looks at the tag,
+          # so a release tagged v0.2.0 would happily republish 0.1.0 — and the
+          # tarball would be a valid 0.1.0, which is what makes it silent.
+          if [ "$TAG" != "v$version" ]; then
+            echo "::error::release $TAG would publish version $version; tag the commit v$version, or correct the manifest"
+            exit 1
+          fi
+
+          # A prerelease goes out under `next`, so `npm install` keeps returning
+          # the last stable release to everyone who did not ask for this one.
+          case "$version" in
+            *-*) dist_tag="next" ;;
+            *) dist_tag="latest" ;;
+          esac
+
+          {
+            echo "version=$version"
+            echo "dist_tag=$dist_tag"
+          } >> "$GITHUB_OUTPUT"
+          echo "Publishing \`$version\` under the \`$dist_tag\` dist-tag." >> "$GITHUB_STEP_SUMMARY"
+
+  # The whole suite, at the commit being published, called rather than copied:
+  # a release that skips a check the branch runs is not a release of what was
+  # reviewed.
+  ci:
+    name: verification
+    needs: guard
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: publish to npm
+    needs: [guard, ci]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Trusted publishing. npm verifies this workflow's OIDC identity instead
+      # of a token, and signs the provenance attestation with it — which is why
+      # nothing in this repository holds a credential to leak or rotate.
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      # Trusted publishing needs npm 11.5.1 or later. Node 22 bundles npm 10,
+      # which fails with a 404 that reads as if the package did not exist.
+      - run: npm install -g npm@latest
+      - run: pnpm install --frozen-lockfile
+      # `prepack` builds `dist` from the sources at this commit, and `files` in
+      # the manifest decides the rest of the tarball. The `package` job above
+      # installed that exact tarball in a blank project before this step ran.
+      - run: npm publish --provenance --tag "$DIST_TAG"
+        env:
+          DIST_TAG: ${{ needs.guard.outputs.dist_tag }}

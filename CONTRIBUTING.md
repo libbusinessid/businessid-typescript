@@ -108,3 +108,35 @@ digests, run `pnpm generate`, review the diff of `src/rules.generated.ts` — it
 is the whole of what changed — run the full conformance suite, and publish a new
 package version. Rules are never updated at run time; they cannot be, because
 they are code.
+
+## Releasing
+
+A release is one action: publish a GitHub release whose tag is `v` followed by
+the version in `package.json`. `.github/workflows/release.yml` does the rest —
+it refuses a tag that disagrees with the manifest, runs the whole CI suite at
+that commit, and publishes.
+
+```sh
+# in a pull request
+npm version minor --no-git-tag-version   # or patch, or major
+# after it merges, from main
+gh release create v0.2.0 --generate-notes
+```
+
+A version carrying a prerelease identifier — `0.2.0-rc.1` — goes out under the
+`next` dist-tag, so `npm install` keeps returning the last stable release to
+everyone who did not ask for it.
+
+Nothing in this repository holds an npm credential. The registry trusts the
+workflow's OIDC identity instead, which is also what lets it attest the
+provenance of every tarball: the commit it was built from, and the run that
+built it, are verifiable with `npm audit signatures`.
+
+Two settings live outside the repository and are worth knowing about, because
+nothing here can assert them:
+
+- the trusted publisher on
+  `npmjs.com/package/@libbusinessid/businessid/access` — organisation
+  `libbusinessid`, repository `businessid-typescript`, workflow `release.yml`;
+- the version bump itself, which is a decision. A rules update that changes a
+  verdict is a minor version at least, never a patch.
