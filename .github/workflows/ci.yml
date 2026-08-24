@@ -15,37 +15,18 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  NODE_VERSION: "22.x"
-
 jobs:
+  # `engine.md` section 12.5: one entry point runs the whole verification, and
+  # it is what CI calls, so "green" never has two definitions — the one a
+  # developer sees and the one integration sees. Splitting this back into a job
+  # per script would recreate exactly that gap.
   verify:
-    name: lint, types and generated files
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run format:check
-      - run: pnpm run lint
-      - run: pnpm run typecheck
-      # The rules in `src/rules.generated.ts` must be what the generator emits
-      # from the bundle rules.lock attests, and the Protobuf types must match
-      # the schemas.
-      - run: pnpm run check:generated
-      - run: pnpm exec buf generate && git diff --exit-code generated
-
-  test:
-    name: tests on node ${{ matrix.node }}
+    name: verify on node ${{ matrix.node }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # The minimum this package supports and the current release.
+        # The minimum this package supports and the current releases.
         node: ["20.11", "22.x", "24.x"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -54,98 +35,28 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run build:testee
-      - run: pnpm run test:node
-
-  conformance:
-    name: shared conformance suite
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      # The runner is a Go program from the spec repository, pinned to the
-      # commit rules.lock records. A build tool: it enters neither the published
-      # package nor its dependencies.
+      # The conformance runner is a Go program from the spec repository, pinned
+      # to the commit rules.lock records. A build tool: it enters neither the
+      # published package nor its dependencies.
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: stable
       - run: pnpm install --frozen-lockfile
-      # This repository writes no comparator. Every case is judged by the
-      # runner from `spec`, at the same commit as the corpus it reads.
-      #
-      # `spec.md` requires GOTOOLCHAIN: auto on this step, because setup-go sets
-      # it to `local` and the spec module asks for a newer toolchain than an
-      # engine is likely to pin. Measured here: the module declares `go 1.25.0`
-      # with `toolchain go1.26.5`, and it builds under GOTOOLCHAIN=local on any
-      # Go from 1.25.0 up — so `go-version: stable` never hits the failure. This
-      # is insurance against the day one of those two numbers moves, not a
-      # repair of something currently broken. The testee is TypeScript and owes
-      # Go nothing.
-      - run: pnpm run test:conformance
+      # The browser project runs the same engine with no Node API in sight, and
+      # needs a real browser to do it.
+      - run: pnpm exec playwright install --with-deps chromium
+      # setup-go sets GOTOOLCHAIN to `local`. The binding condition is the `go`
+      # line of the spec module rather than its `toolchain` line, and resolving
+      # `stable` never meets it — this is insurance for the day that line moves.
+      - run: pnpm verify
         env:
           GOTOOLCHAIN: auto
-
-  coverage:
-    name: coverage thresholds
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run build:testee
-      # The node project is what coverage measures. The browser project runs
-      # the same engine and has its own job, with the toolchain that needs.
-      - run: pnpm run test:coverage
-      # `engine.md` section 12.2: the emitted rules are measured and published,
-      # never gated. Their coverage is a property of the corpus rather than of
-      # the engine, so a threshold here would fail a faultless engine and the
-      # only way back to green would be to lower the number.
-      - run: pnpm run coverage:generated
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: always()
+        if: always() && matrix.node == '22.x'
         with:
           name: coverage
           path: coverage/
           retention-days: 7
-
-  browser:
-    name: headless browser
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm run test:browser
-
-  package:
-    name: package and consumer install
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      # Builds, packs, installs the tarball in a blank project and both runs
-      # and type checks against it. Nothing else proves the exports map and
-      # the emitted declarations are right.
-      - run: pnpm run test:pack
 
   audit:
     name: dependency audit
@@ -155,7 +66,7 @@ jobs:
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: "22.x"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm audit --audit-level moderate

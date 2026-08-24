@@ -1,0 +1,183 @@
+#!/usr/bin/env node
+/**
+ * The whole verification, as one command.
+ *
+ * `engine.md` section 12.5: lock digests, regeneration, build, tests,
+ * conformance against the runner from `spec`, lint, format, coverage and
+ * thresholds, packaging — one entry point, and the contract is
+ *
+ *   - success: one line, carrying the numbers that matter and nothing else;
+ *   - failure: the output of the failing step and only that, named;
+ *   - non-zero exit as soon as a step fails, never swallowed.
+ *
+ * The reason is not tidiness. A resync round run as thirty commands puts thirty
+ * full outputs through the context of whoever drives it, twenty-nine of which
+ * say nothing but "this passes". A command that stays quiet when all is well
+ * makes the complete verification cheaper than a partial one.
+ *
+ * CI calls this too, so "green" never has two definitions.
+ *
+ * Every step declares what its output must contain. A step that runs, exits
+ * zero and did nothing — a glob matching no files, a suite that collected no
+ * tests — fails here rather than passing over. That is not hypothetical: this
+ * repository shipped a `test:fuzz` script pointing at a path that did not
+ * exist, and a scheduled workflow failed on it for weeks without anyone
+ * learning anything about the engine.
+ */
+import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const only = process.argv[2];
+
+/**
+ * Strips ANSI styling.
+ *
+ * Tools colour their output when they please, and a colour code between a label
+ * and its number is enough to make a check for that number fail. Matching — and
+ * the failure output a reader sees — both work on plain text.
+ */
+// eslint-disable-next-line no-control-regex
+const plain = (text) => text.replace(/\u001B\[[0-9;]*[A-Za-z]/g, "");
+
+/** Runs one step, capturing everything. Throws with the output on failure. */
+function run(command, args) {
+  try {
+    return plain(
+      execFileSync(command, args, {
+        cwd: root,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+        env: { ...process.env, FORCE_COLOR: "0", NO_COLOR: "1", CI: "1" },
+      }),
+    );
+  } catch (error) {
+    const output = plain(`${error.stdout ?? ""}${error.stderr ?? ""}`).trim();
+    throw new Error(output.length > 0 ? output : String(error.message));
+  }
+}
+
+const script = (name) => ["run", "--silent", name];
+
+/**
+ * `require` is what makes a silent no-op fail. Each entry is a RegExp the
+ * step's own output must match; if it does not, the step did not do what its
+ * name claims however it exited.
+ */
+const steps = [
+  {
+    name: "digests and generated code",
+    // Verifies all eight digests `rules.lock` attests, then that the emitted
+    // module is exactly what the generator writes from the attested bundle.
+    run: () => run("npm", script("check:generated")),
+    require: [/check:generated ok \(rules [^,]+, format \d+, \d+ capabilities\)/],
+  },
+  {
+    name: "protobuf types match the schemas",
+    run: () => {
+      run("npx", ["buf", "generate"]);
+      return run("git", ["diff", "--exit-code", "--stat", "generated"]) || "generated/ unchanged";
+    },
+    require: [/./],
+  },
+  {
+    name: "format",
+    run: () => run("npm", script("format:check")),
+    require: [/All matched files use Prettier code style/],
+  },
+  { name: "lint", run: () => run("npm", script("lint")), require: [/^\s*$|No issues found/] },
+  { name: "types", run: () => run("npm", script("typecheck")) || "no type errors", require: [/./] },
+  { name: "build", run: () => run("npm", script("build")) || "built", require: [/./] },
+  {
+    name: "tests (node)",
+    run: () => run("npm", script("test:node")),
+    require: [/Tests\s+(\d+) passed/, /Test Files\s+\d+ passed/],
+    counts: { tests: /Tests\s+(\d+) passed \(\d+\)/ },
+  },
+  {
+    name: "tests (browser)",
+    run: () => run("npm", script("test:browser")),
+    require: [/Tests\s+(\d+) passed/],
+    counts: { browserTests: /Tests\s+(\d+) passed \(\d+\)/ },
+  },
+  {
+    name: "conformance",
+    run: () => run("npm", script("test:conformance")),
+    require: [/^conformant$/m, /\d+ cases, \d+ matched, 0 differed/],
+    counts: { cases: /(\d+) cases, \d+ matched, 0 differed/ },
+  },
+  {
+    name: "coverage thresholds",
+    run: () => run("npm", script("test:coverage")),
+    require: [/All files\s*\|/],
+    counts: {
+      lines: /All files\s*\|\s*[\d.]+\s*\|\s*[\d.]+\s*\|\s*[\d.]+\s*\|\s*([\d.]+)/,
+      branches: /All files\s*\|\s*[\d.]+\s*\|\s*([\d.]+)/,
+    },
+  },
+  {
+    name: "coverage of the emitted rules (published, never gated)",
+    run: () => run("npm", script("coverage:generated")),
+    // The table row, not the banner above it: the banner names the file whether
+    // or not anything was measured.
+    require: [/^All files\s*\|\s*[\d.]+/m, /generated\.ts\s*\|\s*[\d.]+/],
+    counts: {
+      emitted: /^All files\s*\|\s*[\d.]+\s*\|\s*[\d.]+\s*\|\s*[\d.]+\s*\|\s*([\d.]+)/m,
+    },
+  },
+  {
+    name: "packaging and consumer install",
+    run: () => run("npm", script("test:pack")),
+    require: [/consumer project builds and runs against the tarball/],
+  },
+];
+
+const numbers = {};
+const wanted = only === undefined ? steps : steps.filter((step) => step.name.includes(only));
+if (wanted.length === 0) {
+  process.stderr.write(`no step matches ${JSON.stringify(only)}\n`);
+  process.exit(2);
+}
+
+for (const step of wanted) {
+  let output;
+  try {
+    output = step.run() ?? "";
+  } catch (error) {
+    process.stderr.write(`${step.name}\n\n${error.message}\n`);
+    process.exit(1);
+  }
+  for (const pattern of step.require ?? []) {
+    if (!pattern.test(output)) {
+      process.stderr.write(
+        `${step.name}\n\nthe step exited zero without doing its work: nothing in its output matched ${String(pattern)}\n\n${output.trim()}\n`,
+      );
+      process.exit(1);
+    }
+  }
+  for (const [key, pattern] of Object.entries(step.counts ?? {})) {
+    const found = pattern.exec(output);
+    if (found?.[1] !== undefined) {
+      numbers[key] = found[1];
+    }
+  }
+}
+
+if (wanted.length !== steps.length) {
+  process.stdout.write(`${wanted.map((step) => step.name).join(", ")}: ok\n`);
+  process.exit(0);
+}
+
+// The shipped size, which is the third figure section 12.5 names.
+const packed = JSON.parse(run("npm", ["pack", "--dry-run", "--json"]))[0];
+const lock = readFileSync(join(root, "rules.lock"), "utf8");
+const rules = /^rules_version\s*=\s*"([^"]+)"/m.exec(lock)?.[1] ?? "?";
+
+process.stdout.write(
+  `verified rules ${rules} · ${numbers.cases}/${numbers.cases} conformance · ` +
+    `${numbers.tests} node + ${numbers.browserTests} browser tests · ` +
+    `${numbers.lines}% lines ${numbers.branches}% branches, emitted ${numbers.emitted}% · ` +
+    `${String(packed.entryCount)} files ${packed.size.toLocaleString("en-US")} B packed\n`,
+);
