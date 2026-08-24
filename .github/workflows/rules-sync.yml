@@ -1,0 +1,632 @@
+name: rules-sync
+
+# `engine.md` section 11.4: when `spec` publishes a release, the engine goes and
+# fetches it — the release does not push into the engine.
+#
+# Two properties come out of that inversion, and both are why it exists:
+#
+#   - regeneration needs *this* toolchain. `spec` has no pnpm and never will, so
+#     a release that pushed a branch here would deliver a new bundle beside the
+#     previous version's emitted code. That opened four red pull requests at the
+#     first release;
+#   - no cross-repository secret. Pushing a branch into four engines meant `spec`
+#     holding a write token on four repositories. An engine that fetches writes
+#     in its own repository, with the token GitHub already hands it, and the
+#     blast radius of a compromise of `spec` stops at `spec`.
+#
+# The trigger is therefore a clock and not a pushed event: a `repository_dispatch`
+# would take back with one hand the token removed with the other. A day of
+# latency is the price of that property, and the manual trigger exists for the
+# day it costs too much.
+
+on:
+  schedule:
+    # Daily. The minute is off the hour, where every scheduled workflow on
+    # GitHub queues at once.
+    - cron: "43 6 * * *"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag of libbusinessid/spec. Empty resolves the most recently published one."
+        type: string
+        default: ""
+      dry_run:
+        description: "Download, verify, regenerate and run pnpm verify without pushing a branch or opening a pull request."
+        type: boolean
+        default: false
+      spec_sources_ref:
+        description: "Ref of libbusinessid/spec supplying the sources this workflow reads — the provenance writer and the three engine contracts. Empty means the release's own source commit, which is the only correct value in normal operation."
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rules-sync
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  SPEC_REPO: libbusinessid/spec
+  # The workflow that signs a release of `spec`. Section 11.4 asks for four
+  # identities to be verified — owner, repository, signing workflow and tag —
+  # and this is the third of them.
+  SIGNER_WORKFLOW: .github/workflows/release.yml
+  # setup-go pins GOTOOLCHAIN to `local`, which forbids fetching a toolchain.
+  # The binding condition is the `go` line of the spec module rather than its
+  # `toolchain` line, and resolving `stable` never meets it today — this is
+  # insurance for the day that line moves, and it costs nothing.
+  GOTOOLCHAIN: auto
+
+jobs:
+  sync:
+    name: fetch, verify, regenerate, open
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      # Push the synchronization branch into this repository, and nowhere else.
+      contents: write
+      # Open the pull request and arm auto-merge on it.
+      pull-requests: write
+      # A pull request opened with GITHUB_TOKEN starts no `pull_request` run:
+      # GitHub refuses to let that token trigger further workflows, which would
+      # otherwise recurse. `workflow_dispatch` is one of the two documented
+      # exceptions, so the branch's CI is asked for explicitly; the run it
+      # starts attaches its check runs to the head commit of the branch, which
+      # is the head commit of the pull request.
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history. A re-run after a fixed defect has to replace its own
+          # branch rather than be refused as non fast forward, and the safe way
+          # to do that is --force-with-lease — which needs a remote-tracking ref
+          # to compare against. In a shallow clone git refuses with "stale info"
+          # instead, which is how `spec` learned this.
+          fetch-depth: 0
+
+      # ----------------------------------------------------------------------
+      # 0. Compare, and stop here when there is nothing to do.
+      # ----------------------------------------------------------------------
+      - name: Compare the latest release of spec to rules.lock
+        id: compare
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCED_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+
+          tag="${FORCED_TAG}"
+          if [ -z "${tag}" ]; then
+            # Not `releases/latest`, and not `gh release view` with no argument:
+            # both resolve the latest *non-prerelease*, and `spec` marks every
+            # release below `stable` as a prerelease on purpose, so that no
+            # consumer picks one up by accident. With rules at `alpha` both
+            # answer 404. The most recently published non-draft release is the
+            # one this engine tracks.
+            tag="$(gh release list --repo "${SPEC_REPO}" --exclude-drafts --limit 50 \
+                     --json tagName,publishedAt \
+                     --jq 'sort_by(.publishedAt) | last | .tagName // ""')"
+          fi
+          if [ -z "${tag}" ] || [ "${tag}" = "null" ]; then
+            echo "::error::no release found on ${SPEC_REPO}"
+            exit 1
+          fi
+
+          # The tag this engine already carries is the one inside
+          # `attestation_identity`, the only field naming a release. A lock
+          # without it was produced locally from a checkout and never from a
+          # release, so it always differs.
+          held="$(sed -n 's|^attestation_identity *= *".*@refs/tags/\(.*\)"$|\1|p' rules.lock)"
+          version="$(sed -n 's/^rules_version *= *"\(.*\)"$/\1/p' rules.lock)"
+          if [ -z "${version}" ]; then
+            echo "::error::rules.lock declares no rules_version; refusing to compare against nothing"
+            exit 1
+          fi
+
+          if [ "${held}" = "${tag}" ]; then needed=false; else needed=true; fi
+
+          {
+            echo "held_tag=${held}"
+            echo "held_version=${version}"
+            echo "tag=${tag}"
+            echo "needed=${needed}"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### rules-sync"
+            echo
+            echo "| | |"
+            echo "| --- | --- |"
+            echo "| latest release of \`${SPEC_REPO}\` | \`${tag}\` |"
+            echo "| \`rules.lock\` carries | \`${held:-no attested release}\` (rules \`${version}\`) |"
+            echo "| synchronization needed | ${needed} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "spec latest=${tag}  rules.lock=${held:-none} (rules ${version})  needed=${needed}"
+
+      # ----------------------------------------------------------------------
+      # 1. Download the artifacts, into the runner's temporary directory and
+      #    never into the working tree: section 11.4 forbids a release whose
+      #    attestation does not verify from touching it at all.
+      # ----------------------------------------------------------------------
+      - name: Download the release artifacts
+        if: steps.compare.outputs.needed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.compare.outputs.tag }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/artifacts"
+          gh release download "${TAG}" --repo "${SPEC_REPO}" --dir "${RUNNER_TEMP}/artifacts" --clobber
+          ls -l "${RUNNER_TEMP}/artifacts"
+
+      # ----------------------------------------------------------------------
+      # 2a. SHA256SUMS.
+      # ----------------------------------------------------------------------
+      - name: Verify SHA256SUMS
+        id: sums
+        if: steps.compare.outputs.needed == 'true'
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP}/artifacts"
+          test -s SHA256SUMS
+
+          # The version is read back out of the sums file rather than taken on
+          # trust from a file name, and everything below is cross-checked
+          # against the attested manifest.
+          version="$(sed -n 's/^[0-9a-f]\{64\}  businessid-rules-\(.*\)\.binpb$/\1/p' SHA256SUMS)"
+          if [ -z "${version}" ]; then
+            echo "::error::SHA256SUMS lists no businessid-rules-<version>.binpb"
+            exit 1
+          fi
+
+          # `sha256sum --check` verifies what is listed and says nothing about
+          # what is not. A file this engine consumes and the sums file omits
+          # would pass this step while being unverified, so the listing is
+          # asserted before the digests are.
+          for file in \
+            "businessid-rules-${version}.binpb" \
+            "businessid-conformance-${version}.binpb" \
+            "businessid-conformance-${version}.jsonl.gz" \
+            "businessid-manifest-${version}.json" \
+            rules.proto conformance.proto testee.proto ir.md features.md coverage.md; do
+            if ! grep -qE "^[0-9a-f]{64}  ${file}\$" SHA256SUMS; then
+              echo "::error::${file} is not listed in SHA256SUMS"
+              exit 1
+            fi
+          done
+
+          sha256sum --check --strict SHA256SUMS
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      # ----------------------------------------------------------------------
+      # 2b. Then the provenance attestation, which is the gate. Nothing outside
+      #     the runner's temporary directory has been written up to here.
+      # ----------------------------------------------------------------------
+      - name: Verify the provenance attestation
+        id: attest
+        if: steps.compare.outputs.needed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.compare.outputs.tag }}
+          VERSION: ${{ steps.sums.outputs.version }}
+        run: |
+          set -euo pipefail
+          artifacts="${RUNNER_TEMP}/artifacts"
+
+          want_owner="https://github.com/${SPEC_REPO%%/*}"
+          want_repo="https://github.com/${SPEC_REPO}"
+          want_ref="refs/tags/${TAG}"
+          want_signer="${want_repo}/${SIGNER_WORKFLOW}@${want_ref}"
+
+          for file in \
+            SHA256SUMS \
+            "businessid-rules-${VERSION}.binpb" \
+            "businessid-conformance-${VERSION}.binpb" \
+            "businessid-conformance-${VERSION}.jsonl.gz" \
+            "businessid-manifest-${VERSION}.json" \
+            rules.proto conformance.proto testee.proto ir.md features.md; do
+
+            # --repo, never --repo together with --owner: gh refuses arguments
+            # from that group in pairs, and the check then fails before
+            # verifying anything. It failed loudly in `spec`, which is the only
+            # reason the first release did not ship unverified.
+            json="$(gh attestation verify "${artifacts}/${file}" \
+                      --repo "${SPEC_REPO}" \
+                      --signer-workflow "${SPEC_REPO}/${SIGNER_WORKFLOW}" \
+                      --source-ref "${want_ref}" \
+                      --format json)"
+
+            # gh exits non-zero on any mismatch and prints nothing whatsoever on
+            # success outside a terminal. Reading the four identities back out
+            # of the signing certificate is what keeps this from being a step
+            # that passes by doing nothing, and they are exactly section 11.4's
+            # list: owner, repository, signing workflow, tag.
+            if ! printf '%s' "${json}" | jq -e \
+                 --arg owner "${want_owner}" \
+                 --arg repo "${want_repo}" \
+                 --arg ref "${want_ref}" \
+                 --arg signer "${want_signer}" \
+                 --arg subject "${file}" '
+                   length > 0 and all(.[]; .verificationResult as $v
+                     | $v.signature.certificate.sourceRepositoryOwnerURI == $owner
+                     and $v.signature.certificate.sourceRepositoryURI == $repo
+                     and $v.signature.certificate.sourceRepositoryRef == $ref
+                     and $v.signature.certificate.buildSignerURI == $signer
+                     and ([$v.statement.subject[].name] | index($subject)) != null)
+                 ' > /dev/null; then
+              echo "::error::attestation identity mismatch for ${file}"
+              printf '%s' "${json}" | jq '.[].verificationResult.signature.certificate
+                | {sourceRepositoryOwnerURI, sourceRepositoryURI, sourceRepositoryRef, buildSignerURI}'
+              exit 1
+            fi
+            echo "attested ${file}"
+          done
+
+          # `attestation_identity` is written from the certificate that was just
+          # read, not from a string assembled out of this workflow's own inputs:
+          # the lock then records what was measured.
+          identity="$(printf '%s' "${json}" \
+            | jq -r '.[0].verificationResult.signature.certificate.buildSignerURI' \
+            | sed 's|^https://github.com/||')"
+
+          manifest="${artifacts}/businessid-manifest-${VERSION}.json"
+          declared="$(jq -r .rulesVersion "${manifest}")"
+          if [ "${declared}" != "${VERSION}" ]; then
+            echo "::error::the manifest declares ${declared}, the artifacts say ${VERSION}"
+            exit 1
+          fi
+          commit="$(jq -r .sourceCommit "${manifest}")"
+          if ! printf '%s' "${commit}" | grep -qE '^[0-9a-f]{40}$'; then
+            echo "::error::the manifest names no source commit"
+            exit 1
+          fi
+
+          {
+            echo "identity=${identity}"
+            echo "commit=${commit}"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo
+            echo "Attestation verified: \`${identity}\`, source commit \`${commit}\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ----------------------------------------------------------------------
+      # 3. Write. Everything below this line touches the working tree, and
+      #    nothing above it did.
+      # ----------------------------------------------------------------------
+      - name: Fetch the spec sources the attested manifest names
+        if: steps.compare.outputs.needed == 'true'
+        env:
+          COMMIT: ${{ steps.attest.outputs.commit }}
+          SOURCES_REF: ${{ inputs.spec_sources_ref }}
+        run: |
+          set -euo pipefail
+
+          # Cloned outside the workspace on purpose: actions/checkout can only
+          # write under $GITHUB_WORKSPACE, and a second repository sitting there
+          # would be walked by prettier, eslint and vitest during `pnpm verify`.
+          #
+          # `spec` is public, so no token is involved. The commit is the one the
+          # attested manifest names, which makes this checkout pinned by the
+          # attestation even though these files carry no digest of their own.
+          ref="${SOURCES_REF:-${COMMIT}}"
+          rm -rf "${RUNNER_TEMP}/spec-src"
+          git init --quiet "${RUNNER_TEMP}/spec-src"
+          git -C "${RUNNER_TEMP}/spec-src" remote add origin "https://github.com/${SPEC_REPO}.git"
+          git -C "${RUNNER_TEMP}/spec-src" fetch --quiet --depth 1 origin "${ref}"
+          git -C "${RUNNER_TEMP}/spec-src" checkout --quiet --detach FETCH_HEAD
+          echo "spec sources at $(git -C "${RUNNER_TEMP}/spec-src" rev-parse HEAD)"
+
+          if [ -n "${SOURCES_REF}" ]; then
+            echo "::warning::the provenance writer and the engine contracts are being read from ${SPEC_REPO}@${SOURCES_REF} rather than from the release's own source commit ${COMMIT}"
+          fi
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        if: steps.compare.outputs.needed == 'true'
+        with:
+          # The same resolution the conformance runner uses in `ci`. Go is not a
+          # new cost here: `pnpm verify` already needs it, because the runner
+          # that judges this engine is a Go program from `spec`. What
+          # PROVENANCE.md adds is one `go run ./cmd/businessidc inspect`.
+          go-version: stable
+
+      - name: Write spec/, rules.lock and spec/PROVENANCE.md
+        if: steps.compare.outputs.needed == 'true'
+        env:
+          VERSION: ${{ steps.sums.outputs.version }}
+          COMMIT: ${{ steps.attest.outputs.commit }}
+          IDENTITY: ${{ steps.attest.outputs.identity }}
+        run: |
+          set -euo pipefail
+          artifacts="${RUNNER_TEMP}/artifacts"
+          src="${RUNNER_TEMP}/spec-src"
+          manifest="${artifacts}/businessid-manifest-${VERSION}.json"
+
+          # The bundle is an input to this engine's generator, so it lands under
+          # spec/ beside the schemas and the corpus, never inside the published
+          # package: `engine.md` section 1.2 forbids shipping it as a resource.
+          cp "${artifacts}/businessid-rules-${VERSION}.binpb"       spec/businessid-rules.binpb
+          cp "${artifacts}/businessid-conformance-${VERSION}.binpb" spec/businessid-conformance.binpb
+          gzip -dc "${artifacts}/businessid-conformance-${VERSION}.jsonl.gz" > spec/businessid-conformance.jsonl
+          for schema in rules.proto conformance.proto testee.proto ir.md features.md; do
+            cp "${artifacts}/${schema}" "spec/${schema}"
+          done
+
+          # The three contracts this engine is written against are not release
+          # artifacts and carry no digest in the lock. They come from the source
+          # commit the attested manifest names, which is the tree the bundle was
+          # compiled from. Leaving them out is how this checkout once ended up
+          # being told to read documents it did not have.
+          cp "${src}/docs/spec/spec.md"              spec/spec.md
+          cp "${src}/docs/spec/engine.md"            spec/engine.md
+          cp "${src}/docs/spec/engine-typescript.md" spec/engine-typescript.md
+
+          jsonl_sha="$(sha256sum spec/businessid-conformance.jsonl | cut -d' ' -f1)"
+          if [ "${jsonl_sha}" != "$(jq -r .conformanceJsonlSha256 "${manifest}")" ]; then
+            echo "::error::the decompressed corpus does not match conformanceJsonlSha256"
+            exit 1
+          fi
+
+          {
+            printf 'rules_version = "%s"\n' "$(jq -r .rulesVersion "${manifest}")"
+            printf 'format_version = %s\n' "$(jq -r .formatVersion "${manifest}")"
+            printf 'rules_sha256 = "%s"\n' "$(jq -r .artifactSha256 "${manifest}")"
+            printf 'conformance_sha256 = "%s"\n' "$(jq -r .conformanceSha256 "${manifest}")"
+            printf 'conformance_jsonl_sha256 = "%s"\n' "$(jq -r .conformanceJsonlSha256 "${manifest}")"
+            printf 'rules_proto_sha256 = "%s"\n' "$(jq -r .rulesProtoSha256 "${manifest}")"
+            printf 'conformance_proto_sha256 = "%s"\n' "$(jq -r .conformanceProtoSha256 "${manifest}")"
+            printf 'testee_proto_sha256 = "%s"\n' "$(jq -r .testeeProtoSha256 "${manifest}")"
+            printf 'ir_doc_sha256 = "%s"\n' "$(jq -r .irDocSha256 "${manifest}")"
+            printf 'features_doc_sha256 = "%s"\n' "$(jq -r .featuresDocSha256 "${manifest}")"
+            printf 'stability = "%s"\n' "$(jq -r .stability "${manifest}")"
+            printf 'source_commit = "%s"\n' "$(jq -r .sourceCommit "${manifest}")"
+            printf 'attestation_identity = "%s"\n' "${IDENTITY}"
+          } > rules.lock
+          cat rules.lock
+
+          # PROVENANCE.md has one writer, in `spec`. It had two once, and they
+          # drifted: a released engine named one commit beside a lock naming
+          # another, reported independently by two engines.
+          script="${src}/tools/write_provenance.sh"
+          if [ ! -x "${script}" ]; then
+            echo "::error::${SPEC_REPO}@$(git -C "${src}" rev-parse HEAD) carries no executable tools/write_provenance.sh. A release cut before that script existed cannot be synchronized unless a newer ref is named in spec_sources_ref."
+            exit 1
+          fi
+          # The operation figures it quotes must describe *this* release rather
+          # than whatever the tooling checkout happens to carry. The release
+          # publishes coverage.md, and SHA256SUMS — itself attested — covers it.
+          cp "${artifacts}/coverage.md" "${src}/docs/generated/coverage.md"
+          "${script}" "${src}" "${artifacts}" "${VERSION}" "${COMMIT}" \
+            businessid-typescript spec/PROVENANCE.md
+
+          # `spec`'s own guard, run against what was just written.
+          "${src}/tools/check_lock.sh" rules.lock "${artifacts}" "${VERSION}"
+
+          git status --short
+
+      # ----------------------------------------------------------------------
+      # 4. Regenerate the emitted code — the whole reason this runs here and not
+      #    in `spec`, which has no pnpm and never will.
+      # ----------------------------------------------------------------------
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        if: steps.compare.outputs.needed == 'true'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        if: steps.compare.outputs.needed == 'true'
+        with:
+          node-version: "22.x"
+          cache: pnpm
+      - name: Install
+        if: steps.compare.outputs.needed == 'true'
+        run: pnpm install --frozen-lockfile
+      - name: Install chromium
+        if: steps.compare.outputs.needed == 'true'
+        # `pnpm verify` runs the browser project, which runs the same engine
+        # with no Node API in sight and needs a real browser to do it.
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Regenerate the emitted code
+        if: steps.compare.outputs.needed == 'true'
+        run: |
+          set -euo pipefail
+          # Two generators, and both are emitted code. buf reads proto/, which
+          # is a copy of the attested schemas, so the copy moves first or the
+          # Protobuf types would be regenerated from the previous release's
+          # definitions and nothing would say so.
+          cp spec/rules.proto       proto/libbusinessid/ir/v1/rules.proto
+          cp spec/conformance.proto proto/libbusinessid/conformance/v1/conformance.proto
+          cp spec/testee.proto      proto/libbusinessid/testee/v1/testee.proto
+          pnpm exec buf generate
+          pnpm generate
+          git diff --stat -- proto generated src
+
+      # ----------------------------------------------------------------------
+      # 5. The section 12.5 entry point. It decides whether the pull request is
+      #    green or red; it does not decide whether one is opened.
+      # ----------------------------------------------------------------------
+      - name: pnpm verify
+        id: verify
+        if: steps.compare.outputs.needed == 'true'
+        run: |
+          set -uo pipefail
+          if pnpm verify 2>&1 | tee "${RUNNER_TEMP}/verify.log"; then
+            echo "result=pass" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=fail" >> "$GITHUB_OUTPUT"
+            echo "::warning::pnpm verify failed on the synchronized tree; the pull request is opened red, as section 11.4 requires, and is never merged to unblock the chain"
+          fi
+          {
+            echo
+            echo '```'
+            tail -c 4000 "${RUNNER_TEMP}/verify.log"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ----------------------------------------------------------------------
+      # 6. The pull request, green or red.
+      # ----------------------------------------------------------------------
+      - name: Push the synchronization branch
+        id: push
+        if: steps.compare.outputs.needed == 'true' && inputs.dry_run != true
+        env:
+          VERSION: ${{ steps.sums.outputs.version }}
+        run: |
+          set -euo pipefail
+          branch="rules/${VERSION}"
+          git switch -c "${branch}"
+          git add spec rules.lock proto generated src
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "rules: update to ${VERSION}"
+
+          # A re-run after a fixed defect replaces its own branch rather than
+          # being refused as non fast forward, and --force-with-lease is the
+          # safe way to do that. The lease needs an expected value spelled out,
+          # so the branch is fetched first when it exists and pushed plainly
+          # when it does not.
+          if git ls-remote --exit-code --heads origin "${branch}" >/dev/null 2>&1; then
+            git fetch --quiet origin "+${branch}:refs/remotes/origin/${branch}"
+            git push "--force-with-lease=${branch}:$(git rev-parse "refs/remotes/origin/${branch}")" \
+              --set-upstream origin "${branch}"
+          else
+            git push --set-upstream origin "${branch}"
+          fi
+          echo "branch=${branch}" >> "$GITHUB_OUTPUT"
+
+      - name: Open the pull request
+        id: pr
+        if: steps.push.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.push.outputs.branch }}
+          BASE: ${{ github.ref_name }}
+          VERSION: ${{ steps.sums.outputs.version }}
+          TAG: ${{ steps.compare.outputs.tag }}
+          IDENTITY: ${{ steps.attest.outputs.identity }}
+          COMMIT: ${{ steps.attest.outputs.commit }}
+          RESULT: ${{ steps.verify.outputs.result }}
+        run: |
+          set -euo pipefail
+          {
+            echo "Synchronization of the LibBusinessID rules, fetched by this repository."
+            echo
+            echo "| | |"
+            echo "| --- | --- |"
+            echo "| rules version | \`${VERSION}\` |"
+            echo "| release tag | \`${TAG}\` |"
+            echo "| source commit | \`${COMMIT}\` |"
+            echo "| attestation identity | \`${IDENTITY}\` |"
+            echo "| \`pnpm verify\` in the sync run | **${RESULT}** |"
+            echo
+            echo "The SHA-256 of every artifact was checked, then the GitHub provenance"
+            echo "attestation of each one — owner, repository, signing workflow and tag"
+            echo "read back out of the signing certificate. Nothing reached the working"
+            echo "tree before that passed."
+            echo
+            echo "The emitted code was regenerated here, which is why this arrives from"
+            echo "the engine rather than from \`spec\`: regeneration needs pnpm, which"
+            echo "\`spec\` does not have."
+            echo
+            echo '<details><summary><code>pnpm verify</code></summary>'
+            echo
+            echo '```'
+            tail -c 30000 "${RUNNER_TEMP}/verify.log"
+            echo '```'
+            echo
+            echo '</details>'
+            echo
+            echo "This automation can neither approve nor review its own pull request."
+          } > "${RUNNER_TEMP}/pr-body.md"
+
+          # --head and --base explicitly: gh infers them from the checkout it
+          # runs in, and has refused a branch it had just pushed.
+          url="$(gh pr create \
+            --repo "${GITHUB_REPOSITORY}" \
+            --head "${BRANCH}" \
+            --base "${BASE}" \
+            --title "rules: update to ${VERSION}" \
+            --body-file "${RUNNER_TEMP}/pr-body.md")"
+          echo "url=${url}" >> "$GITHUB_OUTPUT"
+          echo "Pull request: ${url}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Ask CI to run on the branch
+        if: steps.pr.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.push.outputs.branch }}
+        run: |
+          set -euo pipefail
+          # Without this the pull request carries no checks at all, and a
+          # required check that never starts is one auto-merge would wait on
+          # forever.
+          gh workflow run ci.yml --repo "${GITHUB_REPOSITORY}" --ref "${BRANCH}"
+
+      - name: Enable auto-merge
+        id: automerge
+        if: steps.pr.outcome == 'success' && steps.verify.outputs.result == 'pass'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.push.outputs.branch }}
+        run: |
+          set -uo pipefail
+          # Armed only on a run whose own `pnpm verify` passed. Auto-merge is
+          # otherwise safe purely because branch protection requires the section
+          # 12.5 entry point, and this workflow cannot assert that protection
+          # exists — refusing to arm it on a red run is a second, independent
+          # guard rather than a substitute for the first.
+          if gh pr merge "${BRANCH}" --repo "${GITHUB_REPOSITORY}" --auto --squash; then
+            echo "armed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "armed=false" >> "$GITHUB_OUTPUT"
+            echo "::error::auto-merge could not be enabled. GITHUB_TOKEN cannot grant this: a human has to turn on Settings > General > Pull Requests > Allow auto-merge, and protect the base branch with a required status check — auto-merge with nothing required merges as soon as nothing blocks, which is not the same as on green."
+          fi
+
+      # ----------------------------------------------------------------------
+      # The verdict. Every branch of this workflow ends somewhere that says what
+      # happened, including the branch where nothing happened.
+      # ----------------------------------------------------------------------
+      - name: Verdict
+        if: always() && steps.compare.outcome == 'success'
+        env:
+          NEEDED: ${{ steps.compare.outputs.needed }}
+          HELD: ${{ steps.compare.outputs.held_tag }}
+          HELD_VERSION: ${{ steps.compare.outputs.held_version }}
+          RESULT: ${{ steps.verify.outputs.result }}
+          ARMED: ${{ steps.automerge.outputs.armed }}
+          URL: ${{ steps.pr.outputs.url }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -uo pipefail
+          if [ "${NEEDED}" != "true" ]; then
+            echo "rules.lock already carries ${HELD} (rules ${HELD_VERSION}), the latest release of ${SPEC_REPO}: nothing to do."
+            exit 0
+          fi
+
+          if [ -z "${RESULT}" ]; then
+            echo "::error::the synchronization stopped before it reached pnpm verify; the failing step above says where."
+            exit 1
+          fi
+
+          status=0
+          if [ "${RESULT}" != "pass" ]; then
+            echo "::error::pnpm verify did not pass on the synchronized tree. The pull request stays red until it is fixed, or until the release is refused with the reason written down. It is never merged to unblock the chain."
+            status=1
+          fi
+          if [ "${DRY_RUN}" = "true" ]; then
+            echo "dry run: no branch pushed and no pull request opened."
+            exit "${status}"
+          fi
+          if [ -z "${URL}" ]; then
+            echo "::error::no pull request was opened."
+            status=1
+          else
+            echo "Pull request: ${URL}"
+          fi
+          if [ "${RESULT}" = "pass" ] && [ "${ARMED}" != "true" ]; then
+            status=1
+          fi
+          exit "${status}"

@@ -4,7 +4,8 @@
  *
  * `engine.md` section 12.5: lock digests, regeneration, build, tests,
  * conformance against the runner from `spec`, lint, format, coverage and
- * thresholds, packaging — one entry point, and the contract is
+ * thresholds, packaging, the dependency audit — one entry point, and the
+ * contract is
  *
  *   - success: one line, carrying the numbers that matter and nothing else;
  *   - failure: the output of the failing step and only that, named;
@@ -25,6 +26,7 @@
  * learning anything about the engine.
  */
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -87,11 +89,39 @@ const steps = [
   },
   {
     name: "protobuf types match the schemas",
+    // buf reads `proto/`, which is a copy of the three schemas `rules.lock`
+    // attests — so the copy is compared to the attested original before buf
+    // runs. A copy a rules update left behind would regenerate the types from
+    // the previous release's definitions, and the diff below would report
+    // nothing at all: `generated/` matches `proto/`, and `proto/` is the thing
+    // that drifted.
     run: () => {
+      const copies = [
+        ["rules.proto", "proto/libbusinessid/ir/v1/rules.proto"],
+        ["conformance.proto", "proto/libbusinessid/conformance/v1/conformance.proto"],
+        ["testee.proto", "proto/libbusinessid/testee/v1/testee.proto"],
+      ];
+      const lines = copies.map(([schema, copy]) => {
+        const attested = readFileSync(join(root, "spec", schema));
+        const vendored = readFileSync(join(root, copy));
+        if (!attested.equals(vendored)) {
+          throw new Error(
+            `${copy} is not spec/${schema}\n  copy the attested schema over it, then regenerate`,
+          );
+        }
+        return `${createHash("sha256").update(attested).digest("hex").slice(0, 16)} spec/${schema} == ${copy}`;
+      });
       run("npx", ["buf", "generate"]);
-      return run("git", ["diff", "--exit-code", "--stat", "generated"]) || "generated/ unchanged";
+      lines.push(
+        run("git", ["diff", "--exit-code", "--stat", "generated"]) || "generated/ unchanged",
+      );
+      return lines.join("\n");
     },
-    require: [/./],
+    require: [
+      /^[0-9a-f]{16} spec\/rules\.proto == /m,
+      /^[0-9a-f]{16} spec\/conformance\.proto == /m,
+      /^[0-9a-f]{16} spec\/testee\.proto == /m,
+    ],
   },
   {
     name: "format",
@@ -142,6 +172,26 @@ const steps = [
     name: "packaging and consumer install",
     run: () => run("npm", script("test:pack")),
     require: [/consumer project builds and runs against the tarball/],
+  },
+  {
+    name: "dependency audit",
+    // Here rather than in a job of its own, because a job of its own is a
+    // second definition of green: auto-merge follows what branch protection
+    // requires, and anything green outside this entry point is something it
+    // would merge over. The severity floor stays the flag's, and `pnpm audit`
+    // exits non-zero on its own when the floor is crossed.
+    //
+    // The dependency count is what proves the step looked: an audit that
+    // resolved nothing exits zero and reports nothing wrong, which is exactly
+    // the shape of pass this file exists to refuse.
+    run: () => {
+      const report = JSON.parse(run("npm", script("audit")));
+      const found = Object.entries(report.metadata.vulnerabilities)
+        .map(([severity, count]) => `${severity} ${String(count)}`)
+        .join(", ");
+      return `${String(report.metadata.totalDependencies)} dependencies audited: ${found}`;
+    },
+    require: [/^[1-9]\d* dependencies audited: /],
   },
 ];
 
