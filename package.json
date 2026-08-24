@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "description": "Offline canonicalization, format and checksum validation of business identifiers, driven by the LibBusinessID rule bundle.",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/libbusinessid/businessid-typescript.git"
+  },
+  "homepage": "https://github.com/libbusinessid/businessid-typescript#readme",
+  "bugs": {
+    "url": "https://github.com/libbusinessid/businessid-typescript/issues"
+  },
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -22,6 +30,9 @@
     "SECURITY.md",
     "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "generate": "node scripts/generate.mjs",
     "check:generated": "node scripts/generate.mjs --check",
