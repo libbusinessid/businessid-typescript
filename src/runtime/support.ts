@@ -190,8 +190,78 @@ export function endsWith(value: StringValue, suffix: readonly number[]): boolean
 }
 
 /** True when the view is present and starts with one of `prefixes`. */
-export function prefixIn(value: StringValue, prefixes: readonly (readonly number[])[]): boolean {
-  return prefixes.some((prefix) => startsWith(value, prefix));
+export function prefixIn(
+  value: StringValue,
+  prefixes: readonly (readonly number[])[],
+  lengths: readonly number[],
+): boolean {
+  if (value === undefined) {
+    return false;
+  }
+  // `lengths` is the distinct element lengths of `prefixes`, ascending, so the
+  // first one past the value ends the search.
+  for (const length of lengths) {
+    if (length > value.length) {
+      return false;
+    }
+    if (holdsPrefixOfLength(value, prefixes, length)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Whether the first `length` code points of `value` are in `prefixes`.
+ *
+ * `ir.md` states `values` is sorted and deduplicated by the compiler, and check
+ * 13 refuses a bundle where it is not, so the list can be searched rather than
+ * scanned. An element is a prefix of the value exactly when it equals the
+ * value's opening of its own length, which is why the question is asked once
+ * per distinct element length rather than once for the value: over
+ * `["AB", "ABA"]` the element nearest `"ABCD"` is `"ABA"`, which is not a
+ * prefix of it, while `"AB"` is.
+ */
+function holdsPrefixOfLength(
+  value: readonly number[],
+  prefixes: readonly (readonly number[])[],
+  length: number,
+): boolean {
+  let low = 0;
+  let high = prefixes.length - 1;
+  while (low <= high) {
+    const middle = (low + high) >> 1;
+    const order = compareOpening(prefixes[middle] ?? [], value, length);
+    if (order === 0) {
+      return true;
+    }
+    if (order < 0) {
+      low = middle + 1;
+    } else {
+      high = middle - 1;
+    }
+  }
+  return false;
+}
+
+/** Orders `entry` against the first `length` code points of `value`. */
+function compareOpening(
+  entry: readonly number[],
+  value: readonly number[],
+  length: number,
+): number {
+  const shared = Math.min(entry.length, length);
+  for (let index = 0; index < shared; index += 1) {
+    const left = entry[index] ?? 0;
+    const right = value[index] ?? 0;
+    if (left !== right) {
+      return left < right ? -1 : 1;
+    }
+  }
+  if (entry.length === length) {
+    return 0;
+  }
+  return entry.length < length ? -1 : 1;
 }
 
 /** True when the view is present and contains `needle`. */

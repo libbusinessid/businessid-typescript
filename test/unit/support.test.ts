@@ -71,7 +71,7 @@ describe("predicates", () => {
     expect(support.startsWith(undefined, cp("A"))).toBe(false);
     expect(support.endsWith(undefined, cp("A"))).toBe(false);
     expect(support.contains(undefined, cp("A"))).toBe(false);
-    expect(support.prefixIn(undefined, [cp("A")])).toBe(false);
+    expect(support.prefixIn(undefined, [cp("A")], [1])).toBe(false);
     expect(support.charAtIn(undefined, 0, () => true)).toBe(false);
     expect(support.charsetAll(undefined, () => true)).toBe(false);
   });

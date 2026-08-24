@@ -157,11 +157,66 @@ function checkPredicateOperation(where: string, entry: ResolvedNode): void {
   for (const length of message.lengths) {
     checkIndex(where, "lengths", length);
   }
+  checkAscendingValues(where, message.values);
+  checkAscendingLengths(where, message.lengths);
   checkIndex(where, "length", message.length);
   checkIndex(where, "min_length", message.minLength);
   checkIndex(where, "max_length", message.maxLength);
   checkIndex(where, "index", message.index);
   checkComparisonConstant(where, message.constant);
+}
+
+/**
+ * `PredicateOperation.values`, in the normative order of `ir.md` section 9.
+ *
+ * "ascending, deduplicated", and two equal keys are a rejected duplicate rather
+ * than a tie. Ascending by code point, which for well formed text is the same
+ * sequence as ascending by UTF-8 bytes: UTF-8 preserves code point order, so
+ * the two readings of section 9 cannot disagree on a bundle that decodes.
+ *
+ * The order is not decoration. `prefix_in` is documented as sorted so that an
+ * engine can search it without sorting anything itself, and a binary search
+ * over an unsorted list returns a wrong answer rather than a slow one.
+ */
+function checkAscendingValues(where: string, values: readonly string[]): void {
+  for (let index = 1; index < values.length; index += 1) {
+    const previous = codePointsOf(values[index - 1] ?? "");
+    const current = codePointsOf(values[index] ?? "");
+    if (compareCodePoints(previous, current) >= 0) {
+      invalid(
+        13,
+        `${where} declares values that are not ascending and deduplicated: ${JSON.stringify(values[index - 1])} is not before ${JSON.stringify(values[index])}`,
+      );
+    }
+  }
+}
+
+/** `PredicateOperation.lengths`, under the same rule. */
+function checkAscendingLengths(where: string, lengths: readonly number[]): void {
+  for (let index = 1; index < lengths.length; index += 1) {
+    if ((lengths[index - 1] ?? 0) >= (lengths[index] ?? 0)) {
+      invalid(
+        13,
+        `${where} declares lengths that are not ascending and deduplicated: ${String(lengths[index - 1])} is not before ${String(lengths[index])}`,
+      );
+    }
+  }
+}
+
+/** Lexicographic order over code points; a prefix sorts before what extends it. */
+function compareCodePoints(left: readonly number[], right: readonly number[]): number {
+  const shared = Math.min(left.length, right.length);
+  for (let index = 0; index < shared; index += 1) {
+    const a = left[index] ?? 0;
+    const b = right[index] ?? 0;
+    if (a !== b) {
+      return a < b ? -1 : 1;
+    }
+  }
+  if (left.length === right.length) {
+    return 0;
+  }
+  return left.length < right.length ? -1 : 1;
 }
 
 function checkCanonicalizationOperation(where: string, entry: ResolvedNode): void {
