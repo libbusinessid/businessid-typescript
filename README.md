@@ -4,7 +4,7 @@ Offline canonicalization, format validation and checksum validation of business
 identifiers — VAT numbers, national company numbers, EUID, LEI and more — driven
 by the shared LibBusinessID rule bundle.
 
-**94 identifiers across 37 countries**, rules version `2026.08.26`. No network
+**94 identifiers across 37 countries**, rules version `2026.08.31`. No network
 access, no locale dependence, no regular expressions, and **no runtime
 dependencies**.
 
@@ -67,8 +67,10 @@ format, not the holder. Every example below comes from the same corpus on the
 same terms.
 
 `BusinessIdEngine.default` is the engine. Nothing is decoded, fetched or read
-from a file, so it costs nothing at start-up and the same code runs unchanged in
-a browser.
+from a file, and the same code runs unchanged in a browser. Start-up is the cost
+of loading one JavaScript module and no more: measured at 8 ms for the first
+`import` on a warm disk, of which the rules version bump from `2026.08.26` to
+`2026.08.31` — which nearly doubled the emitted code — accounted for 0.35 ms.
 
 ### The four operations
 
@@ -144,7 +146,7 @@ makes it throw.**
 
 ```ts
 BusinessIdEngine.default.rulesInfo();
-// { rulesVersion: "2026.08.26", formatVersion: 1, engineVersion: "0.1.0" }
+// { rulesVersion: "2026.08.31", formatVersion: 1, engineVersion: "0.1.0" }
 ```
 
 Three versions move independently. `engineVersion` follows SemVer for the
@@ -188,6 +190,22 @@ A longer input is refused without being processed, reported as
 `unsupported`/`input_too_long`. A value that is not well formed text — a lone
 surrogate, which JavaScript admits and UTF-8 cannot encode — is reported as
 `unsupported`/`invalid_encoding`.
+
+**Which of the two applies when an input is both**, `ir.md` leaves to the engine
+and requires it to say. The bound is counted before the step that refuses
+ill-formed text, and text with no UTF-8 encoding has no byte count to compare
+against, so an engine either invents one or refuses first. **This engine counts
+what its own encoder produces**: a lone surrogate is measured as the three bytes
+`TextEncoder` emits for the replacement character, so 1022 ASCII characters
+followed by one lone surrogate is 1025 bytes and answers `input_too_long`, not
+`invalid_encoding`. Both answers are `unsupported`, and no conformance case can
+carry either input.
+
+The choice happens not to be observable in JavaScript. The alternative `ir.md`
+names — counting the encoding the surrogate would have had — is also three bytes
+here (`ED A0 80`), where on a platform whose encoder emits a single replacement
+byte the two answers differ. Stated anyway, because the specification asks for
+the choice and not for its consequences.
 
 No conformance case can carry that reason: a proto3 `string` is valid UTF-8 by
 definition, and there is no portable malformed value anyway. It is pinned by a

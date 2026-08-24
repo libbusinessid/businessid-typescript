@@ -93,6 +93,46 @@ describe("the corpus", () => {
     expect(claiming.map((entry) => entry.id)).toEqual([]);
   });
 
+  /**
+   * `ir.md` step 1 counts the bound in UTF-8 bytes and runs before the step that
+   * refuses ill-formed text, so an input that is both has no byte count of its
+   * own. The specification leaves the choice to the engine and requires it to be
+   * stated; the README states it, and this pins it so the two cannot drift.
+   *
+   * This engine counts what its own encoder produces. `TextEncoder` emits three
+   * bytes for a lone surrogate — the replacement character — so a surrogate is
+   * measured as three and the bound is reached three bytes early.
+   */
+  describe("the bound and ill-formed text, where they meet", () => {
+    const LONE = "\uD800";
+
+    it("counts a lone surrogate as the three bytes the encoder emits", () => {
+      expect(new TextEncoder().encode(LONE)).toEqual(new Uint8Array([0xef, 0xbf, 0xbd]));
+    });
+
+    it("answers input_too_long when the bound is reached first", () => {
+      // 1022 ASCII plus a surrogate counted as three is 1025, past the bound.
+      const report = engine.validate({ kind: "vat", value: "A".repeat(1022) + LONE });
+
+      expect(report.format.status).toBe("unsupported");
+      expect(report.format.reasonCode).toBe("input_too_long");
+    });
+
+    it("answers invalid_encoding when the input is inside the bound", () => {
+      const report = engine.validate({ kind: "vat", value: `BE0123456749${LONE}` });
+
+      expect(report.format.status).toBe("unsupported");
+      expect(report.format.reasonCode).toBe("invalid_encoding");
+    });
+
+    it("puts the boundary exactly three bytes below the limit", () => {
+      // 1021 + 3 = 1024, the last length that still fits.
+      const inside = engine.validate({ kind: "vat", value: "A".repeat(1021) + LONE });
+
+      expect(inside.format.reasonCode).toBe("invalid_encoding");
+    });
+  });
+
   it("keeps the reason in the frozen registry all the same", () => {
     // Unreachable through the shared suite is not the same as absent: the code
     // is part of the V1 registry and renumbering it would break the enum.

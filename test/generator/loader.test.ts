@@ -568,6 +568,90 @@ describe("check 16: program shape", () => {
     );
   });
 
+  /**
+   * `WHEN` is a branch, and `ir.md` section 10 takes it only as a direct
+   * operand of a `CHOOSE`. Read as written that is a statement about the node,
+   * not about its parents — so a `WHEN` nothing references breaks it too, and
+   * section 2 permits unreachable nodes, which is exactly how one survives.
+   *
+   * A loader that answers this by looking at each node's parents has nothing to
+   * look at for a dead node and lets it through. The reference loader did, and
+   * the Kotlin engine reported it. These four cases pin the reading here.
+   */
+  const checksumWhen = (nodes: NodeSpec[]): Uint8Array =>
+    singleKindBundle({ format: alwaysValidFormat(), checksum: nodes });
+  const isAbsent = (input: number): NodeSpec =>
+    node(
+      ValueType.BOOLEAN,
+      { case: "predicateOperation", value: { kind: PredicateOpKind.IS_ABSENT } },
+      [input],
+    );
+  const unsupportedOutcome = (): NodeSpec =>
+    node(ValueType.CHECKSUM_OUTCOME, {
+      case: "checksumOperation",
+      value: { kind: ChecksumOpKind.UNSUPPORTED, reasonCode: ReasonCode.UNSUPPORTED_CHECKSUM },
+    });
+  const whenBranch = (predicate: number, outcome: number): NodeSpec =>
+    node(
+      ValueType.CHECKSUM_OUTCOME,
+      { case: "checksumOperation", value: { kind: ChecksumOpKind.WHEN } },
+      [predicate, outcome],
+    );
+  const chooseAmong = (branches: number[]): NodeSpec =>
+    node(
+      ValueType.CHECKSUM_OUTCOME,
+      { case: "checksumOperation", value: { kind: ChecksumOpKind.CHOOSE } },
+      branches,
+    );
+
+  it("accepts a WHEN that a CHOOSE reads", () => {
+    expect(() =>
+      loadBundle(
+        checksumWhen([
+          subjectNode(),
+          isAbsent(0),
+          unsupportedOutcome(),
+          whenBranch(1, 2),
+          chooseAmong([3]),
+        ]),
+      ),
+    ).not.toThrow();
+  });
+
+  it("refuses a WHEN that nothing references", () => {
+    // Node 5 is a second WHEN no CHOOSE reads and no root reaches. A check
+    // written over parents sees none and says nothing.
+    const payload = checksumWhen([
+      subjectNode(),
+      isAbsent(0),
+      unsupportedOutcome(),
+      whenBranch(1, 2),
+      chooseAmong([3]),
+      whenBranch(1, 2),
+      chooseAmong([4]),
+    ]);
+
+    expectRefusal(payload, 16);
+    expect(refusal(payload).message).toContain("node 5 is a WHEN branch outside a CHOOSE");
+  });
+
+  it("refuses a WHEN that something other than a CHOOSE reads", () => {
+    const payload = checksumWhen([
+      subjectNode(),
+      isAbsent(0),
+      unsupportedOutcome(),
+      whenBranch(1, 2),
+      node(
+        ValueType.CHECKSUM_OUTCOME,
+        { case: "checksumOperation", value: { kind: ChecksumOpKind.ALL_CHECKS } },
+        [3],
+      ),
+    ]);
+
+    expectRefusal(payload, 16);
+    expect(refusal(payload).message).toContain("node 3 is a WHEN branch outside a CHOOSE");
+  });
+
   it("refuses a checksum program rooting at a WHEN branch", () => {
     expectRefusal(
       singleKindBundle({

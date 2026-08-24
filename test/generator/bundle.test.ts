@@ -9,7 +9,7 @@ describe("the official bundle", () => {
   const bundle = loadBundle(RULES_BUNDLE_BYTES);
 
   it("announces the attested rules version", () => {
-    expect(bundle.rulesVersion).toBe("2026.08.26");
+    expect(bundle.rulesVersion).toBe("2026.08.31");
     expect(bundle.formatVersion).toBe(1);
   });
 
@@ -29,13 +29,13 @@ describe("the official bundle", () => {
     expect(countries.size).toBe(37);
   });
 
-  it("carries 250 programs holding 2375 nodes", () => {
+  it("carries 250 programs holding 2386 nodes", () => {
     expect(bundle.programs.size).toBe(250);
     const nodes = [...bundle.programs.values()].reduce(
       (total, program) => total + program.nodes.length,
       0,
     );
-    expect(nodes).toBe(2376);
+    expect(nodes).toBe(2386);
   });
 
   it("routes 37 dispatchers", () => {
@@ -54,7 +54,7 @@ describe("what the shipped bundle costs to emit", () => {
    * Summing every capture rather than only the ones no other root reaches gives
    * 3204 instead of 3069, because all 54 captures are reached from their roots.
    */
-  it("matches the published profile for 2026.08.26", () => {
+  it("matches the published profile for 2026.08.31", () => {
     let instances = 0;
     let worst = 0;
     let worstProgram = 0;
@@ -69,7 +69,7 @@ describe("what the shipped bundle costs to emit", () => {
 
     expect({ programs: bundle.programs.length, instances, worstProgram, worst }).toEqual({
       programs: 250,
-      instances: 3069,
+      instances: 3094,
       worstProgram: 152,
       worst: 118,
     });

@@ -53,6 +53,49 @@ const checksumNode = (
     inputs,
   );
 
+/**
+ * `ir.md` section 1.1 is unreserved: "Absence is never an error and never an
+ * exception." `engine.md` section 9.1 used to add, two sentences later, that an
+ * out-of-bounds access inside a checksum after a valid format had to produce an
+ * engine error — so the same bytes could be answered with an absence by one
+ * engine and an error by another. The Kotlin engine reported it and followed
+ * `ir.md`; the clause is gone as of rules 2026.08.31.
+ *
+ * The intuition behind it was sound — a format rule is expected to establish
+ * the bounds before the checksum runs — but that is a property of a rule set,
+ * nothing proves it at load time, and it was never a run-time behaviour.
+ *
+ * This engine has always read it the surviving way, and has no throw site in
+ * anything it ships. The case is pinned here because it is where two engines
+ * disagreed on a real input.
+ */
+describe("an out-of-bounds view inside a checksum, after a valid format", () => {
+  // The format accepts everything, so the checksum runs. The slice then asks
+  // for characters 50..60 of a much shorter value.
+  const pastTheEnd: NodeSpec[] = [
+    subjectNode(),
+    node(
+      ValueType.STRING,
+      { case: "stringOperation", value: { kind: StringOpKind.SLICE, start: 50, end: 60 } },
+      [0],
+    ),
+    checksumNode(ChecksumOpKind.LUHN, {}, [1]),
+  ];
+
+  it("produces an absent value rather than an exception", async () => {
+    await expect(checksum(pastTheEnd, "79927398713")).resolves.toBeDefined();
+  });
+
+  it("reports the tri-state, never an error", async () => {
+    // An indeterminate operand makes the outcome unsupported. What matters is
+    // that it is one of the three outcomes and not a thrown error.
+    const observed = await checksum(pastTheEnd, "79927398713");
+
+    expect(["valid", "invalid", "unsupported"]).toContain(observed.status);
+    expect(observed.status).toBe("unsupported");
+  });
+});
+
 describe("CHECKSUM_OP_KIND_LUHN", () => {
   const luhn = (messageKey?: string): NodeSpec[] => [
     subjectNode(),
