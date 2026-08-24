@@ -275,8 +275,11 @@ describe("prefix matching", () => {
  * while being wrong.
  *
  * So the coverage moves here, below the loader, where the function can still be
- * handed the shape. An engine that would answer such a list wrongly has nothing
- * else to catch it.
+ * handed the shape. `ir.md` requires exactly this of every engine — pin the
+ * semantics natively, against the definition transcribed, over tables of mixed
+ * lengths — and these cases together with the property in `properties.test.ts`
+ * are how this engine satisfies it. An engine that would answer such a list
+ * wrongly has nothing else to catch it.
  */
 describe("prefixIn over a table the loader would now refuse", () => {
   const table = (...values: string[]): readonly (readonly number[])[] =>

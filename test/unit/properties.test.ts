@@ -142,12 +142,19 @@ describe("determinism and immutability", () => {
 /**
  * `prefixIn` against the definition of what it computes.
  *
- * This stands in for conformance cases that cannot exist. Rules 2026.09.2
- * refuses a `prefix_in` whose elements differ in length, and all four published
- * nodes hold a single length anyway, so the shared corpus cannot distinguish a
- * correct search from one that asks the table once for the whole subject — the
- * second passes every published case while being wrong on `["AB", "ABA"]`
- * against `"ABCD"`.
+ * This is what `ir.md` requires, not a precaution taken here. Rules 2026.09.2
+ * refuses a `prefix_in` whose elements differ in length, and the refusal takes
+ * its own evidence with it: every list a bundle may now carry holds one length,
+ * so no conformance case can distinguish a search run per length from one run
+ * over the whole table — the second passes every published case while being
+ * wrong on `["AB", "ABA"]` against `"ABCD"`. An engine MUST therefore pin the
+ * semantics below its loader, by a native test comparing its search against the
+ * definition transcribed literally, over tables of mixed lengths. This test and
+ * the direct cases in `support.test.ts` are that.
+ *
+ * It is the second rule the corpus cannot carry, alongside `invalid_encoding`,
+ * and for the same kind of reason: what makes a case expressible and what makes
+ * a rule worth stating are not the same thing.
  *
  * The reference below is the definition transcribed: some element is a prefix
  * of the subject. It is quadratic and obviously right, which is the only thing

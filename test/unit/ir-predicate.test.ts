@@ -258,6 +258,17 @@ describe("PREFIX_IN over a sorted list", () => {
     expect(await holds(prefixIn(["ABA", "ABB"]), "ABBX")).toBe(true);
   });
 
+  it("searches a table of one byte length but two code point lengths", async () => {
+    // "PZ" and "é" are both two UTF-8 bytes, which is the unit the loader
+    // measures, and are two and one code points, which is the unit this engine
+    // searches in. `ir.md` permits the finer grouping: it refuses nothing the
+    // byte rule accepts. Both elements have to be findable.
+    expect(await holds(prefixIn(["PZ", "é"]), "PZ1")).toBe(true);
+    expect(await holds(prefixIn(["PZ", "é"]), "é1")).toBe(true);
+    expect(await holds(prefixIn(["PZ", "é"]), "QA1")).toBe(false);
+    expect(await holds(prefixIn(["PZ", "é"]), "P1")).toBe(false);
+  });
+
   // The shapes that make the search interesting — a list mixing element
   // lengths — are refused at load as of rules 2026.09.2, so they cannot be
   // written as a bundle any more. `support.prefixIn` must still answer them,
