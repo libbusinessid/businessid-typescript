@@ -367,9 +367,19 @@ jobs:
           cp "${src}/docs/spec/engine.md"            spec/engine.md
           cp "${src}/docs/spec/engine-typescript.md" spec/engine-typescript.md
 
+          # The digest is taken on the decompressed bytes that land in spec/,
+          # which is what the generator verifies and what a human reviews. An
+          # absent field and a wrong one are different failures and say so: the
+          # manifest only started carrying this digest at `spec@b264614`, and a
+          # release older than that cannot fill a lock entry the generator reads.
           jsonl_sha="$(sha256sum spec/businessid-conformance.jsonl | cut -d' ' -f1)"
-          if [ "${jsonl_sha}" != "$(jq -r .conformanceJsonlSha256 "${manifest}")" ]; then
-            echo "::error::the decompressed corpus does not match conformanceJsonlSha256"
+          want_jsonl="$(jq -r '.conformanceJsonlSha256 // ""' "${manifest}")"
+          if [ -z "${want_jsonl}" ]; then
+            echo "::error::the release manifest carries no conformanceJsonlSha256, so rules.lock cannot record the digest of the decompressed corpus"
+            exit 1
+          fi
+          if [ "${jsonl_sha}" != "${want_jsonl}" ]; then
+            echo "::error::the decompressed corpus does not match conformanceJsonlSha256: manifest=${want_jsonl} actual=${jsonl_sha}"
             exit 1
           fi
 
@@ -389,6 +399,15 @@ jobs:
             printf 'attestation_identity = "%s"\n' "${IDENTITY}"
           } > rules.lock
           cat rules.lock
+
+          # `jq -r` prints `null` for a field a manifest does not carry, and a
+          # lock entry reading "null" is a digest no one checks. Measured: the
+          # manifest of `v0.1.0` has no conformanceJsonlSha256, and the entry
+          # was written as the four letters rather than refused.
+          if grep -nE '= "?null"?$' rules.lock; then
+            echo "::error::the release manifest is missing a field rules.lock needs; the lines above are the ones it could not fill"
+            exit 1
+          fi
 
           # PROVENANCE.md has one writer, in `spec`. It had two once, and they
           # drifted: a released engine named one commit beside a lock naming
