@@ -54,6 +54,7 @@
     "build:generator": "tsc -p tsconfig.generator.json",
     "test:conformance": "npm run build:testee && node scripts/conformance.mjs",
     "coverage:generated": "node scripts/coverage-generated.mjs",
+    "audit": "pnpm audit --audit-level moderate --json",
     "verify": "node scripts/verify.mjs"
   },
   "devDependencies": {

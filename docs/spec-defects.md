@@ -1,8 +1,9 @@
 # Contradictions found in `spec`, and how they were resolved
 
 Found while implementing this engine, across nine synchronisations. Everything
-below has been corrected upstream in `github.com/libbusinessid/spec`. Nothing is
-open as of rules `2026.08.32`.
+under **Resolved** has been corrected upstream in
+`github.com/libbusinessid/spec`. Two entries are open as of rules `2026.08.33`,
+both in the release automation rather than in the rules.
 
 ---
 
@@ -435,4 +436,63 @@ which is in order.
 
 ## Open
 
-Nothing.
+Both were found while implementing `engine.md` section 11.4 — the synchronization
+workflow — and both are in the release automation of `spec` rather than in the
+rules. Neither blocks this engine today: the workflow works around the second and
+says so out loud when it does.
+
+### 24. "The latest release" of `spec` cannot be resolved as the latest release
+
+Section 11.4 says the engine compares **the latest release** of `spec` to its own
+`rules.lock`. `spec` marks every release below `stable` as a prerelease, on
+purpose, so that "a consumer or a downstream script never picks it up by
+accident" — and rules are `alpha`.
+
+A prerelease is excluded from the endpoint that answers _the_ latest release, so
+with both published releases marked that way:
+
+```
+$ gh api repos/libbusinessid/spec/releases/latest
+gh: Not Found (HTTP 404)
+$ gh release view --repo libbusinessid/spec
+release not found
+```
+
+Measured on `v0.1.0` and `v0.1.1`, 2026-08-24. The workflow here therefore lists
+releases and takes the most recently published non-draft one, which is what the
+section means and not what it says. Worth stating in section 11.4, because the
+obvious implementation of that sentence resolves nothing and an engine writing it
+would find out only on the day of a release.
+
+### 25. Both published releases predate the script that assembles `PROVENANCE.md`
+
+`tools/write_provenance.sh` is the single writer of an engine's
+`spec/PROVENANCE.md`, introduced to end a drift where two writers named different
+commits. Section 11.4 step 3 has the engine write that file, and the reproducible
+place to take the writer from is the source commit the attested manifest names —
+the same tree the bundle was compiled from.
+
+That script does not exist at either of them:
+
+| release  | source commit | carries `tools/write_provenance.sh` |
+| -------- | ------------- | ----------------------------------- |
+| `v0.1.0` | `4bf7699`     | no                                  |
+| `v0.1.1` | `b264614`     | no                                  |
+
+It was added at `51aad4c`, after both tags. `spec`'s own `downstream.yml` calls
+it from the release checkout, so the same gap sat in the mechanism this workflow
+replaces: the step could not have run for either release.
+
+**Here**: the workflow fetches the spec sources at the attested source commit and
+refuses to continue when the writer is not there, naming the commit. A
+`workflow_dispatch` input, `provenance_tooling_ref`, names a newer ref for the
+writer alone; it exists for these two releases, it warns when it is used, and it
+is empty in normal operation. The first release cut from `51aad4c` or later needs
+none of it.
+
+**And one thing the writer reads is not release-pinned.** It takes the operation
+counts from `docs/generated/coverage.md` in whatever checkout it runs from, while
+every other figure it quotes comes from the release bundle. The release publishes
+`coverage.md` as an asset covered by the attested `SHA256SUMS`, so this workflow
+copies that over the checkout's before invoking it. Taking it from the release
+directly would remove the last unpinned input.

@@ -7,6 +7,13 @@ on:
   # The release workflow runs this whole suite at the commit it publishes,
   # rather than repeating a subset of it.
   workflow_call:
+  # `rules-sync` asks for this explicitly on the branch it just pushed. A pull
+  # request opened with GITHUB_TOKEN starts no `pull_request` run — GitHub
+  # refuses to let that token trigger further workflows — and `workflow_dispatch`
+  # is one of the two documented exceptions. The run it starts attaches its check
+  # runs to the head commit of the branch, so they land on the pull request like
+  # any other.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -81,16 +88,3 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm verify "tests (node)" "packaging"
-
-  audit:
-    name: dependency audit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: "22.x"
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm audit --audit-level moderate

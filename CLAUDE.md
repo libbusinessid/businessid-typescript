@@ -10,7 +10,7 @@ That runs the whole verification: the eight digests `rules.lock` attests, the
 emitted code matching the bundle, the Protobuf types matching the schemas,
 format, lint, types, build, the node and browser suites, conformance against the
 runner from `spec`, coverage and its thresholds, the coverage of the emitted
-rules, and packaging.
+rules, packaging, and the dependency audit.
 
 It is quiet when everything passes — **one line**, carrying the conformance
 count, the test counts, coverage and the shipped size. When a step fails it
@@ -35,6 +35,11 @@ cannot be part of that: its toolchain calls `crypto.hash`, added in Node 20.12,
 so `vite` will not start on 20.11 and running it there would measure the
 toolchain rather than the engine.
 
+Every CI job is therefore this entry point, in full or scoped, and nothing else.
+The dependency audit used to be a job of its own; it is a step here now. The
+reason is `rules-sync`: auto-merge follows what branch protection requires, so
+anything green outside the entry point is something it would merge over.
+
 ### A step must never pass by doing nothing
 
 Every step declares what its own output has to contain, and a step that exits
@@ -57,6 +62,14 @@ the log of those, with what was measured.
 no upper bound, so `2026.08.31` is followed by `2026.08.32`. It is never compared
 for order — nothing in this repository does, and nothing should. Integrity comes
 from the digests.
+
+It also arrives on its own. `.github/workflows/rules-sync.yml` compares the
+latest release of `spec` to `rules.lock` daily, and on a difference verifies the
+digests and the provenance attestation before anything reaches the working tree,
+writes `spec/`, regenerates, runs `pnpm verify` and opens a pull request — green
+or red. `engine.md` section 11.4 is where that comes from. A red one is fixed or
+the release is refused with the reason written down; it is never merged to
+unblock the chain.
 
 ## What ships
 

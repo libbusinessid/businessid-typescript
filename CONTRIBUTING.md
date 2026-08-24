@@ -103,11 +103,29 @@ An optimisation must demonstrate by test that it changes no result.
 
 ## Updating the rules
 
-A rules update arrives as a change to `spec/` and `rules.lock`. Verify the
-digests, run `pnpm generate`, review the diff of `src/rules.generated.ts` — it
-is the whole of what changed — run the full conformance suite, and publish a new
-package version. Rules are never updated at run time; they cannot be, because
-they are code.
+A rules update arrives on its own, as a pull request from
+`.github/workflows/rules-sync.yml`. `engine.md` section 11.4: when `spec`
+publishes a release, **the engine goes and fetches it** — the release does not
+push into the engine. On a clock and on demand, the workflow compares the latest
+release of `spec` to `rules.lock` and does nothing when they agree. Otherwise it
+downloads the artifacts, checks their SHA-256 and then their provenance
+attestation — owner, repository, signing workflow and tag, read back out of the
+signing certificate — writes `spec/`, `rules.lock` and `spec/PROVENANCE.md`,
+regenerates the emitted code, runs `pnpm verify`, and opens a pull request with
+the result. Nothing reaches the working tree before the attestation passes.
+
+Two consequences are the point of doing it this way. Regeneration needs pnpm,
+which `spec` does not have and never will, so a release that pushed a branch here
+would deliver a new bundle beside the previous version's emitted code. And no
+repository outside this one needs a write token here: the workflow uses the
+`GITHUB_TOKEN` GitHub already hands it.
+
+Your part is the review. Read the diff of `src/rules.generated.ts` — it is the
+whole of what changed — and decide the version bump. A red pull request means the
+release brought something this engine cannot do yet; it is fixed, or the release
+is refused with the reason written down in `docs/spec-defects.md`. It is never
+merged to unblock the chain. Rules are never updated at run time; they cannot be,
+because they are code.
 
 ## Releasing
 
@@ -140,3 +158,26 @@ nothing here can assert them:
   `libbusinessid`, repository `businessid-typescript`, workflow `release.yml`;
 - the version bump itself, which is a decision. A rules update that changes a
   verdict is a minor version at least, never a patch.
+
+## Repository settings `rules-sync` needs
+
+Three more live outside the repository, and `GITHUB_TOKEN` can grant none of
+them. Reaching for a wider secret instead would give back exactly the blast
+radius section 11.4 removes, so they are written here rather than worked around:
+
+- **Settings > Actions > General > Workflow permissions > Allow GitHub Actions to
+  create and approve pull requests.** Without it `gh pr create` is refused and
+  the workflow stops one step short of its purpose. The organisation carries the
+  same switch, and the stricter of the two wins.
+- **Settings > General > Pull Requests > Allow auto-merge.**
+- **A branch protection rule or ruleset on `main` requiring the section 12.5
+  entry point** — the `verify on node …` checks. Auto-merge without a required
+  check merges as soon as nothing _blocks_, which is not the same as on green.
+  Require the entry point and nothing beside it: a second required check that is
+  not reachable through `pnpm verify` is a second definition of green, and
+  auto-merge would follow the weaker one. This is why the dependency audit became
+  a step of `pnpm verify` instead of a CI job of its own.
+
+Publishing stays manual regardless. `release.yml` triggers on a published GitHub
+release and on nothing else, so a merged rules pull request updates the engine and
+publishes nothing.
