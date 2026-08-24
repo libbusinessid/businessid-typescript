@@ -7,7 +7,7 @@ import * as support from "./runtime/support.js";
 import type { AssertionResult, ChecksumOutcome, StringValue } from "./runtime/values.js";
 
 /** The business version of the rules this module was generated from. */
-export const RULES_VERSION = "2026.08.26";
+export const RULES_VERSION = "2026.08.31";
 
 /** The structural version of the IR this module was generated from. */
 export const FORMAT_VERSION = 1;
@@ -62,109 +62,2825 @@ const K40: readonly number[] = [66, 71];
 const K41: readonly number[] = [67, 89];
 const K42: readonly number[] = [67, 90];
 const K43: readonly number[] = [68, 69];
-const K44: readonly number[] = [68, 75];
-const K45: readonly number[] = [69, 69];
-const K46: readonly number[] = [69, 83];
-const K47: readonly number[] = [70, 73];
-const K48: readonly number[] = [70, 82];
-const K49: readonly number[] = [72, 82];
-const K50: readonly number[] = [72, 85];
-const K51: readonly number[] = [73, 69];
-const K52: readonly number[] = [73, 84];
-const K53: readonly number[] = [76, 84];
-const K54: readonly number[] = [76, 85];
-const K55: readonly number[] = [76, 86];
-const K56: readonly number[] = [77, 84];
-const K57: readonly number[] = [78, 76];
-const K58: readonly number[] = [80, 76];
-const K59: readonly number[] = [80, 84];
-const K60: readonly number[] = [82, 79];
-const K61: readonly number[] = [83, 69];
-const K62: readonly number[] = [83, 73];
-const K63: readonly number[] = [83, 75];
-const K64: readonly number[] = [65, 67];
-const K65: readonly number[] = [67, 69];
-const K66: readonly number[] = [67, 83];
-const K67: readonly number[] = [69, 78];
-const K68: readonly number[] = [70, 67];
-const K69: readonly number[] = [70, 69];
-const K70: readonly number[] = [71, 69];
-const K71: readonly number[] = [71, 78];
-const K72: readonly number[] = [71, 83];
-const K73: readonly number[] = [73, 67];
-const K74: readonly number[] = [73, 80];
-const K75: readonly number[] = [76, 80];
-const K76: readonly number[] = [78, 65];
-const K77: readonly number[] = [78, 67];
-const K78: readonly number[] = [78, 70];
-const K79: readonly number[] = [78, 73];
-const K80: readonly number[] = [78, 79];
-const K81: readonly number[] = [78, 80];
-const K82: readonly number[] = [78, 82];
-const K83: readonly number[] = [78, 86];
-const K84: readonly number[] = [78, 90];
-const K85: readonly number[] = [79, 67];
-const K86: readonly number[] = [79, 69];
-const K87: readonly number[] = [80, 67];
-const K88: readonly number[] = [82, 48];
-const K89: readonly number[] = [82, 67];
-const K90: readonly number[] = [82, 83];
-const K91: readonly number[] = [83, 65];
-const K92: readonly number[] = [83, 67];
-const K93: readonly number[] = [83, 70];
-const K94: readonly number[] = [83, 71];
-const K95: readonly number[] = [83, 76];
-const K96: readonly number[] = [83, 79];
-const K97: readonly number[] = [83, 80];
-const K98: readonly number[] = [83, 82];
-const K99: readonly number[] = [83, 90];
-const K100: readonly number[] = [90, 67];
-const X101: readonly (readonly number[])[] = [K64, K65, K66, K67, K46, K68, K69, K70, K71, K72, K73, K74, K75, K76, K77, K78, K79, K57, K80, K81, K82, K83, K84, K85, K86, K87, K88, K89, K90, K91, K92, K61, K93, K94, K62, K95, K96, K97, K98, K99, K100];
-const K102: readonly number[] = [66];
-const K103: readonly number[] = [67];
-const K104: readonly number[] = [71, 66];
-const K105: readonly number[] = [73, 83];
-const K106: readonly number[] = [76, 73];
-const K107: readonly number[] = [88, 73];
-const X108: readonly (readonly number[])[] = [];
-const X109: readonly (readonly number[])[] = [K38];
-const X110: readonly (readonly number[])[] = [K39];
-const X111: readonly (readonly number[])[] = [K40];
-const X112: readonly (readonly number[])[] = [K41];
-const X113: readonly (readonly number[])[] = [K42];
-const X114: readonly (readonly number[])[] = [K43];
-const X115: readonly (readonly number[])[] = [K44];
-const X116: readonly (readonly number[])[] = [K45];
-const X117: readonly (readonly number[])[] = [K1];
-const X118: readonly (readonly number[])[] = [K46];
-const X119: readonly (readonly number[])[] = [K47];
-const X120: readonly (readonly number[])[] = [K48];
-const X121: readonly (readonly number[])[] = [K49];
-const X122: readonly (readonly number[])[] = [K50];
-const X123: readonly (readonly number[])[] = [K51];
-const X124: readonly (readonly number[])[] = [K52];
-const X125: readonly (readonly number[])[] = [K53];
-const X126: readonly (readonly number[])[] = [K54];
-const X127: readonly (readonly number[])[] = [K55];
-const X128: readonly (readonly number[])[] = [K56];
-const X129: readonly (readonly number[])[] = [K57];
-const X130: readonly (readonly number[])[] = [K58];
-const X131: readonly (readonly number[])[] = [K59];
-const X132: readonly (readonly number[])[] = [K60];
-const X133: readonly (readonly number[])[] = [K61];
-const X134: readonly (readonly number[])[] = [K62];
-const X135: readonly (readonly number[])[] = [K63];
-const X136: readonly (readonly number[])[] = [K104];
-const X137: readonly (readonly number[])[] = [K1, K2];
-const X138: readonly (readonly number[])[] = [K105];
-const X139: readonly (readonly number[])[] = [K106];
-const X140: readonly (readonly number[])[] = [K80];
-const X141: readonly (readonly number[])[] = [K107];
-const K142: readonly number[] = [66, 82];
-const K143: readonly number[] = [74, 80];
-const K144: readonly number[] = [85, 83];
-const K145: readonly number[] = [67, 78];
-const K146: readonly number[] = [];
+const K44: readonly number[] = [65, 49, 48, 48, 48];
+const K45: readonly number[] = [66, 49, 48, 48, 48];
+const K46: readonly number[] = [66, 49, 48, 48, 49];
+const K47: readonly number[] = [66, 49, 49, 48, 48];
+const K48: readonly number[] = [66, 49, 49, 48, 49];
+const K49: readonly number[] = [66, 49, 49, 48, 50];
+const K50: readonly number[] = [66, 49, 49, 48, 51];
+const K51: readonly number[] = [66, 49, 49, 48, 52];
+const K52: readonly number[] = [66, 49, 49, 48, 53];
+const K53: readonly number[] = [66, 49, 50, 48, 48];
+const K54: readonly number[] = [66, 49, 50, 48, 49];
+const K55: readonly number[] = [66, 49, 50, 48, 50];
+const K56: readonly number[] = [66, 49, 50, 48, 51];
+const K57: readonly number[] = [66, 49, 50, 48, 52];
+const K58: readonly number[] = [66, 49, 50, 48, 53];
+const K59: readonly number[] = [66, 49, 50, 48, 54];
+const K60: readonly number[] = [66, 49, 50, 48, 55];
+const K61: readonly number[] = [66, 49, 50, 48, 56];
+const K62: readonly number[] = [66, 49, 50, 48, 57];
+const K63: readonly number[] = [66, 49, 50, 49, 48];
+const K64: readonly number[] = [66, 49, 51, 48, 48];
+const K65: readonly number[] = [66, 49, 51, 48, 49];
+const K66: readonly number[] = [66, 49, 51, 48, 50];
+const K67: readonly number[] = [66, 49, 51, 48, 51];
+const K68: readonly number[] = [66, 49, 51, 48, 52];
+const K69: readonly number[] = [66, 49, 51, 48, 53];
+const K70: readonly number[] = [66, 49, 52, 48, 48];
+const K71: readonly number[] = [66, 49, 52, 48, 49];
+const K72: readonly number[] = [66, 49, 52, 48, 50];
+const K73: readonly number[] = [66, 49, 52, 48, 51];
+const K74: readonly number[] = [66, 49, 52, 48, 52];
+const K75: readonly number[] = [66, 49, 52, 48, 53];
+const K76: readonly number[] = [66, 49, 52, 48, 54];
+const K77: readonly number[] = [66, 49, 52, 48, 55];
+const K78: readonly number[] = [66, 49, 52, 48, 56];
+const K79: readonly number[] = [66, 49, 53, 48, 48];
+const K80: readonly number[] = [66, 49, 53, 48, 49];
+const K81: readonly number[] = [66, 49, 53, 48, 50];
+const K82: readonly number[] = [66, 49, 53, 48, 51];
+const K83: readonly number[] = [66, 49, 53, 48, 52];
+const K84: readonly number[] = [66, 49, 53, 48, 53];
+const K85: readonly number[] = [66, 49, 53, 48, 54];
+const K86: readonly number[] = [66, 49, 53, 48, 55];
+const K87: readonly number[] = [66, 49, 53, 48, 56];
+const K88: readonly number[] = [66, 49, 53, 48, 57];
+const K89: readonly number[] = [66, 49, 53, 49, 48];
+const K90: readonly number[] = [66, 49, 53, 49, 49];
+const K91: readonly number[] = [66, 49, 53, 49, 50];
+const K92: readonly number[] = [66, 49, 54, 48, 48];
+const K93: readonly number[] = [66, 49, 54, 48, 49];
+const K94: readonly number[] = [66, 49, 54, 48, 50];
+const K95: readonly number[] = [66, 49, 54, 48, 51];
+const K96: readonly number[] = [66, 49, 55, 48, 48];
+const K97: readonly number[] = [66, 49, 55, 48, 49];
+const K98: readonly number[] = [66, 49, 55, 48, 50];
+const K99: readonly number[] = [66, 49, 55, 48, 51];
+const K100: readonly number[] = [66, 49, 55, 48, 52];
+const K101: readonly number[] = [66, 49, 55, 48, 53];
+const K102: readonly number[] = [66, 49, 55, 48, 54];
+const K103: readonly number[] = [66, 49, 55, 48, 55];
+const K104: readonly number[] = [66, 49, 56, 48, 48];
+const K105: readonly number[] = [66, 49, 56, 48, 49];
+const K106: readonly number[] = [66, 49, 56, 48, 50];
+const K107: readonly number[] = [66, 49, 56, 48, 51];
+const K108: readonly number[] = [66, 49, 56, 48, 52];
+const K109: readonly number[] = [66, 49, 56, 48, 53];
+const K110: readonly number[] = [66, 49, 56, 48, 54];
+const K111: readonly number[] = [66, 49, 57, 48, 48];
+const K112: readonly number[] = [66, 49, 57, 48, 49];
+const K113: readonly number[] = [66, 49, 57, 48, 50];
+const K114: readonly number[] = [66, 49, 57, 48, 51];
+const K115: readonly number[] = [66, 49, 57, 48, 52];
+const K116: readonly number[] = [66, 49, 57, 48, 53];
+const K117: readonly number[] = [66, 49, 57, 48, 54];
+const K118: readonly number[] = [66, 50, 48, 48, 48];
+const K119: readonly number[] = [66, 50, 49, 48, 48];
+const K120: readonly number[] = [66, 50, 49, 48, 49];
+const K121: readonly number[] = [66, 50, 49, 48, 50];
+const K122: readonly number[] = [66, 50, 49, 48, 51];
+const K123: readonly number[] = [66, 50, 49, 48, 52];
+const K124: readonly number[] = [66, 50, 49, 48, 53];
+const K125: readonly number[] = [66, 50, 49, 48, 54];
+const K126: readonly number[] = [66, 50, 49, 48, 55];
+const K127: readonly number[] = [66, 50, 49, 48, 56];
+const K128: readonly number[] = [66, 50, 50, 48, 48];
+const K129: readonly number[] = [66, 50, 50, 48, 49];
+const K130: readonly number[] = [66, 50, 50, 48, 50];
+const K131: readonly number[] = [66, 50, 50, 48, 51];
+const K132: readonly number[] = [66, 50, 50, 48, 52];
+const K133: readonly number[] = [66, 50, 50, 48, 53];
+const K134: readonly number[] = [66, 50, 51, 48, 48];
+const K135: readonly number[] = [66, 50, 51, 48, 49];
+const K136: readonly number[] = [66, 50, 51, 48, 50];
+const K137: readonly number[] = [66, 50, 51, 48, 51];
+const K138: readonly number[] = [66, 50, 51, 48, 52];
+const K139: readonly number[] = [66, 50, 51, 48, 53];
+const K140: readonly number[] = [66, 50, 51, 48, 54];
+const K141: readonly number[] = [66, 50, 51, 48, 55];
+const K142: readonly number[] = [66, 50, 51, 48, 56];
+const K143: readonly number[] = [66, 50, 51, 48, 57];
+const K144: readonly number[] = [66, 50, 52, 48, 48];
+const K145: readonly number[] = [66, 50, 52, 48, 49];
+const K146: readonly number[] = [66, 50, 52, 48, 50];
+const K147: readonly number[] = [66, 50, 52, 48, 51];
+const K148: readonly number[] = [66, 50, 52, 48, 52];
+const K149: readonly number[] = [66, 50, 52, 48, 53];
+const K150: readonly number[] = [66, 50, 52, 48, 54];
+const K151: readonly number[] = [66, 50, 52, 48, 55];
+const K152: readonly number[] = [66, 50, 52, 48, 56];
+const K153: readonly number[] = [66, 50, 53, 48, 48];
+const K154: readonly number[] = [66, 50, 53, 48, 49];
+const K155: readonly number[] = [66, 50, 53, 48, 50];
+const K156: readonly number[] = [66, 50, 53, 48, 51];
+const K157: readonly number[] = [66, 50, 53, 48, 52];
+const K158: readonly number[] = [66, 50, 53, 48, 53];
+const K159: readonly number[] = [66, 50, 53, 48, 54];
+const K160: readonly number[] = [66, 50, 54, 48, 48];
+const K161: readonly number[] = [66, 50, 54, 48, 49];
+const K162: readonly number[] = [66, 50, 54, 48, 50];
+const K163: readonly number[] = [66, 50, 54, 48, 51];
+const K164: readonly number[] = [66, 50, 54, 48, 52];
+const K165: readonly number[] = [66, 50, 54, 48, 53];
+const K166: readonly number[] = [66, 50, 54, 48, 54];
+const K167: readonly number[] = [66, 50, 54, 48, 55];
+const K168: readonly number[] = [66, 50, 54, 48, 56];
+const K169: readonly number[] = [66, 50, 54, 48, 57];
+const K170: readonly number[] = [66, 50, 54, 49, 48];
+const K171: readonly number[] = [66, 50, 54, 49, 49];
+const K172: readonly number[] = [66, 50, 55, 48, 48];
+const K173: readonly number[] = [66, 50, 55, 48, 49];
+const K174: readonly number[] = [66, 50, 55, 48, 50];
+const K175: readonly number[] = [66, 50, 55, 48, 51];
+const K176: readonly number[] = [66, 50, 55, 48, 53];
+const K177: readonly number[] = [66, 50, 55, 48, 54];
+const K178: readonly number[] = [66, 50, 55, 48, 55];
+const K179: readonly number[] = [66, 50, 55, 48, 56];
+const K180: readonly number[] = [66, 50, 56, 48, 48];
+const K181: readonly number[] = [66, 50, 56, 48, 49];
+const K182: readonly number[] = [66, 50, 56, 48, 50];
+const K183: readonly number[] = [66, 50, 56, 48, 51];
+const K184: readonly number[] = [66, 50, 56, 48, 52];
+const K185: readonly number[] = [66, 50, 56, 48, 53];
+const K186: readonly number[] = [66, 50, 57, 48, 48];
+const K187: readonly number[] = [66, 54, 49, 48, 51];
+const K188: readonly number[] = [66, 54, 49, 53, 53];
+const K189: readonly number[] = [66, 54, 50, 50, 53];
+const K190: readonly number[] = [66, 54, 50, 50, 54];
+const K191: readonly number[] = [66, 54, 50, 50, 55];
+const K192: readonly number[] = [66, 54, 50, 50, 56];
+const K193: readonly number[] = [66, 54, 50, 50, 57];
+const K194: readonly number[] = [66, 54, 50, 51, 48];
+const K195: readonly number[] = [66, 54, 50, 51, 49];
+const K196: readonly number[] = [66, 54, 50, 51, 50];
+const K197: readonly number[] = [66, 54, 50, 51, 51];
+const K198: readonly number[] = [66, 54, 50, 51, 52];
+const K199: readonly number[] = [66, 54, 50, 51, 53];
+const K200: readonly number[] = [66, 54, 50, 51, 54];
+const K201: readonly number[] = [66, 54, 50, 51, 55];
+const K202: readonly number[] = [66, 54, 50, 51, 56];
+const K203: readonly number[] = [66, 54, 50, 51, 57];
+const K204: readonly number[] = [66, 54, 50, 52, 48];
+const K205: readonly number[] = [66, 54, 50, 52, 49];
+const K206: readonly number[] = [66, 54, 50, 52, 50];
+const K207: readonly number[] = [66, 54, 50, 52, 51];
+const K208: readonly number[] = [66, 54, 50, 52, 52];
+const K209: readonly number[] = [66, 54, 50, 52, 53];
+const K210: readonly number[] = [66, 54, 50, 52, 54];
+const K211: readonly number[] = [66, 54, 50, 53, 48];
+const K212: readonly number[] = [66, 54, 52, 54, 49];
+const K213: readonly number[] = [66, 54, 53, 49, 56];
+const K214: readonly number[] = [66, 54, 53, 49, 57];
+const K215: readonly number[] = [66, 54, 53, 52, 55];
+const K216: readonly number[] = [66, 54, 53, 53, 48];
+const K217: readonly number[] = [66, 54, 53, 53, 49];
+const K218: readonly number[] = [66, 54, 53, 55, 55];
+const K219: readonly number[] = [66, 54, 53, 55, 57];
+const K220: readonly number[] = [66, 55, 53, 53, 52];
+const K221: readonly number[] = [66, 55, 54, 57, 49];
+const K222: readonly number[] = [66, 55, 54, 57, 50];
+const K223: readonly number[] = [66, 55, 54, 57, 54];
+const K224: readonly number[] = [66, 55, 56, 50, 48];
+const K225: readonly number[] = [66, 56, 53, 51, 52];
+const K226: readonly number[] = [66, 56, 53, 51, 53];
+const K227: readonly number[] = [66, 56, 53, 51, 54];
+const K228: readonly number[] = [66, 56, 53, 51, 55];
+const K229: readonly number[] = [66, 56, 57, 52, 48];
+const K230: readonly number[] = [66, 56, 57, 52, 49];
+const K231: readonly number[] = [66, 57, 48, 50, 51];
+const K232: readonly number[] = [66, 57, 48, 50, 52];
+const K233: readonly number[] = [66, 57, 48, 50, 53];
+const K234: readonly number[] = [66, 57, 48, 50, 54];
+const K235: readonly number[] = [66, 57, 48, 50, 55];
+const K236: readonly number[] = [66, 57, 48, 50, 56];
+const K237: readonly number[] = [66, 57, 48, 50, 57];
+const K238: readonly number[] = [67, 54, 48, 56, 55];
+const K239: readonly number[] = [68, 49, 48, 48, 48];
+const K240: readonly number[] = [68, 50, 48, 48, 48];
+const K241: readonly number[] = [68, 50, 49, 48, 48];
+const K242: readonly number[] = [68, 50, 49, 48, 49];
+const K243: readonly number[] = [68, 50, 49, 48, 50];
+const K244: readonly number[] = [68, 50, 49, 48, 51];
+const K245: readonly number[] = [68, 50, 49, 48, 52];
+const K246: readonly number[] = [68, 50, 49, 48, 53];
+const K247: readonly number[] = [68, 50, 49, 48, 54];
+const K248: readonly number[] = [68, 50, 49, 48, 56];
+const K249: readonly number[] = [68, 50, 49, 48, 57];
+const K250: readonly number[] = [68, 50, 49, 49, 48];
+const K251: readonly number[] = [68, 50, 49, 49, 49];
+const K252: readonly number[] = [68, 50, 49, 50, 48];
+const K253: readonly number[] = [68, 50, 49, 51, 48];
+const K254: readonly number[] = [68, 50, 49, 52, 48];
+const K255: readonly number[] = [68, 50, 50, 48, 48];
+const K256: readonly number[] = [68, 50, 50, 48, 49];
+const K257: readonly number[] = [68, 50, 50, 48, 50];
+const K258: readonly number[] = [68, 50, 50, 48, 51];
+const K259: readonly number[] = [68, 50, 50, 48, 52];
+const K260: readonly number[] = [68, 50, 50, 48, 53];
+const K261: readonly number[] = [68, 50, 51, 48, 48];
+const K262: readonly number[] = [68, 50, 51, 48, 49];
+const K263: readonly number[] = [68, 50, 51, 48, 50];
+const K264: readonly number[] = [68, 50, 51, 48, 51];
+const K265: readonly number[] = [68, 50, 51, 48, 52];
+const K266: readonly number[] = [68, 50, 51, 48, 53];
+const K267: readonly number[] = [68, 50, 51, 48, 54];
+const K268: readonly number[] = [68, 50, 51, 48, 55];
+const K269: readonly number[] = [68, 50, 51, 48, 56];
+const K270: readonly number[] = [68, 50, 51, 48, 57];
+const K271: readonly number[] = [68, 50, 52, 48, 48];
+const K272: readonly number[] = [68, 50, 52, 48, 49];
+const K273: readonly number[] = [68, 50, 52, 48, 50];
+const K274: readonly number[] = [68, 50, 52, 48, 51];
+const K275: readonly number[] = [68, 50, 52, 48, 52];
+const K276: readonly number[] = [68, 50, 52, 48, 53];
+const K277: readonly number[] = [68, 50, 52, 48, 54];
+const K278: readonly number[] = [68, 50, 52, 48, 55];
+const K279: readonly number[] = [68, 50, 52, 48, 56];
+const K280: readonly number[] = [68, 50, 52, 48, 57];
+const K281: readonly number[] = [68, 50, 52, 49, 48];
+const K282: readonly number[] = [68, 50, 52, 49, 49];
+const K283: readonly number[] = [68, 50, 52, 49, 50];
+const K284: readonly number[] = [68, 50, 52, 50, 48];
+const K285: readonly number[] = [68, 50, 53, 48, 48];
+const K286: readonly number[] = [68, 50, 53, 48, 49];
+const K287: readonly number[] = [68, 50, 53, 48, 50];
+const K288: readonly number[] = [68, 50, 53, 48, 51];
+const K289: readonly number[] = [68, 50, 53, 48, 52];
+const K290: readonly number[] = [68, 50, 53, 48, 53];
+const K291: readonly number[] = [68, 50, 53, 48, 54];
+const K292: readonly number[] = [68, 50, 53, 48, 55];
+const K293: readonly number[] = [68, 50, 53, 48, 56];
+const K294: readonly number[] = [68, 50, 53, 48, 57];
+const K295: readonly number[] = [68, 50, 53, 50, 48];
+const K296: readonly number[] = [68, 50, 54, 48, 48];
+const K297: readonly number[] = [68, 50, 54, 48, 49];
+const K298: readonly number[] = [68, 50, 55, 48, 48];
+const K299: readonly number[] = [68, 50, 55, 48, 49];
+const K300: readonly number[] = [68, 50, 55, 48, 50];
+const K301: readonly number[] = [68, 50, 55, 48, 51];
+const K302: readonly number[] = [68, 50, 55, 48, 54];
+const K303: readonly number[] = [68, 50, 55, 48, 55];
+const K304: readonly number[] = [68, 50, 55, 48, 56];
+const K305: readonly number[] = [68, 50, 55, 49, 48];
+const K306: readonly number[] = [68, 50, 55, 49, 50];
+const K307: readonly number[] = [68, 50, 55, 49, 51];
+const K308: readonly number[] = [68, 50, 55, 49, 52];
+const K309: readonly number[] = [68, 50, 55, 49, 53];
+const K310: readonly number[] = [68, 50, 55, 50, 48];
+const K311: readonly number[] = [68, 50, 56, 48, 48];
+const K312: readonly number[] = [68, 50, 56, 48, 49];
+const K313: readonly number[] = [68, 50, 56, 48, 50];
+const K314: readonly number[] = [68, 50, 56, 48, 51];
+const K315: readonly number[] = [68, 50, 56, 48, 52];
+const K316: readonly number[] = [68, 50, 56, 48, 53];
+const K317: readonly number[] = [68, 50, 56, 48, 54];
+const K318: readonly number[] = [68, 50, 56, 48, 55];
+const K319: readonly number[] = [68, 50, 56, 48, 56];
+const K320: readonly number[] = [68, 50, 56, 48, 57];
+const K321: readonly number[] = [68, 50, 57, 48, 48];
+const K322: readonly number[] = [68, 50, 57, 48, 49];
+const K323: readonly number[] = [68, 50, 57, 48, 50];
+const K324: readonly number[] = [68, 50, 57, 48, 51];
+const K325: readonly number[] = [68, 50, 57, 48, 52];
+const K326: readonly number[] = [68, 50, 57, 48, 53];
+const K327: readonly number[] = [68, 50, 57, 48, 54];
+const K328: readonly number[] = [68, 50, 57, 48, 55];
+const K329: readonly number[] = [68, 50, 57, 48, 56];
+const K330: readonly number[] = [68, 50, 57, 48, 57];
+const K331: readonly number[] = [68, 50, 57, 49, 48];
+const K332: readonly number[] = [68, 50, 57, 49, 49];
+const K333: readonly number[] = [68, 50, 57, 49, 50];
+const K334: readonly number[] = [68, 50, 57, 50, 48];
+const K335: readonly number[] = [68, 51, 48, 48, 48];
+const K336: readonly number[] = [68, 51, 49, 48, 48];
+const K337: readonly number[] = [68, 51, 49, 48, 49];
+const K338: readonly number[] = [68, 51, 49, 48, 51];
+const K339: readonly number[] = [68, 51, 49, 48, 52];
+const K340: readonly number[] = [68, 51, 49, 48, 53];
+const K341: readonly number[] = [68, 51, 49, 48, 54];
+const K342: readonly number[] = [68, 51, 49, 48, 55];
+const K343: readonly number[] = [68, 51, 49, 48, 56];
+const K344: readonly number[] = [68, 51, 50, 48, 48];
+const K345: readonly number[] = [68, 51, 50, 48, 49];
+const K346: readonly number[] = [68, 51, 50, 48, 50];
+const K347: readonly number[] = [68, 51, 50, 48, 51];
+const K348: readonly number[] = [68, 51, 50, 48, 52];
+const K349: readonly number[] = [68, 51, 50, 48, 53];
+const K350: readonly number[] = [68, 51, 50, 48, 54];
+const K351: readonly number[] = [68, 51, 50, 48, 56];
+const K352: readonly number[] = [68, 51, 51, 48, 48];
+const K353: readonly number[] = [68, 51, 51, 48, 49];
+const K354: readonly number[] = [68, 51, 51, 48, 50];
+const K355: readonly number[] = [68, 51, 51, 48, 51];
+const K356: readonly number[] = [68, 51, 51, 48, 52];
+const K357: readonly number[] = [68, 51, 51, 48, 53];
+const K358: readonly number[] = [68, 51, 51, 48, 54];
+const K359: readonly number[] = [68, 51, 51, 48, 55];
+const K360: readonly number[] = [68, 51, 51, 48, 56];
+const K361: readonly number[] = [68, 51, 51, 48, 57];
+const K362: readonly number[] = [68, 51, 51, 49, 48];
+const K363: readonly number[] = [68, 51, 51, 49, 49];
+const K364: readonly number[] = [68, 51, 51, 49, 50];
+const K365: readonly number[] = [68, 51, 51, 49, 51];
+const K366: readonly number[] = [68, 51, 51, 49, 53];
+const K367: readonly number[] = [68, 51, 51, 49, 54];
+const K368: readonly number[] = [68, 51, 52, 48, 48];
+const K369: readonly number[] = [68, 51, 52, 48, 49];
+const K370: readonly number[] = [68, 51, 52, 48, 50];
+const K371: readonly number[] = [68, 51, 52, 48, 51];
+const K372: readonly number[] = [68, 51, 52, 48, 52];
+const K373: readonly number[] = [68, 51, 52, 48, 53];
+const K374: readonly number[] = [68, 51, 52, 48, 54];
+const K375: readonly number[] = [68, 51, 52, 48, 55];
+const K376: readonly number[] = [68, 51, 52, 48, 56];
+const K377: readonly number[] = [68, 51, 52, 48, 57];
+const K378: readonly number[] = [68, 51, 52, 49, 48];
+const K379: readonly number[] = [68, 51, 52, 49, 49];
+const K380: readonly number[] = [68, 51, 52, 49, 50];
+const K381: readonly number[] = [68, 51, 52, 49, 51];
+const K382: readonly number[] = [68, 51, 52, 49, 52];
+const K383: readonly number[] = [68, 51, 52, 49, 53];
+const K384: readonly number[] = [68, 51, 52, 50, 48];
+const K385: readonly number[] = [68, 51, 53, 48, 48];
+const K386: readonly number[] = [68, 51, 53, 48, 49];
+const K387: readonly number[] = [68, 51, 53, 48, 50];
+const K388: readonly number[] = [68, 51, 53, 48, 51];
+const K389: readonly number[] = [68, 51, 53, 48, 52];
+const K390: readonly number[] = [68, 51, 53, 48, 53];
+const K391: readonly number[] = [68, 51, 53, 48, 54];
+const K392: readonly number[] = [68, 51, 53, 48, 55];
+const K393: readonly number[] = [68, 51, 53, 48, 56];
+const K394: readonly number[] = [68, 51, 53, 48, 57];
+const K395: readonly number[] = [68, 52, 48, 48, 48];
+const K396: readonly number[] = [68, 52, 49, 48, 48];
+const K397: readonly number[] = [68, 52, 49, 48, 49];
+const K398: readonly number[] = [68, 52, 49, 48, 50];
+const K399: readonly number[] = [68, 52, 49, 48, 51];
+const K400: readonly number[] = [68, 52, 49, 48, 52];
+const K401: readonly number[] = [68, 52, 49, 48, 53];
+const K402: readonly number[] = [68, 52, 50, 48, 48];
+const K403: readonly number[] = [68, 52, 50, 48, 49];
+const K404: readonly number[] = [68, 52, 50, 48, 50];
+const K405: readonly number[] = [68, 52, 50, 48, 51];
+const K406: readonly number[] = [68, 52, 50, 48, 52];
+const K407: readonly number[] = [68, 52, 50, 48, 53];
+const K408: readonly number[] = [68, 52, 50, 48, 54];
+const K409: readonly number[] = [68, 52, 50, 48, 55];
+const K410: readonly number[] = [68, 52, 50, 48, 56];
+const K411: readonly number[] = [68, 52, 51, 48, 48];
+const K412: readonly number[] = [68, 52, 51, 48, 49];
+const K413: readonly number[] = [68, 52, 51, 48, 50];
+const K414: readonly number[] = [68, 52, 51, 48, 51];
+const K415: readonly number[] = [68, 52, 51, 48, 52];
+const K416: readonly number[] = [68, 52, 52, 48, 48];
+const K417: readonly number[] = [68, 52, 52, 48, 49];
+const K418: readonly number[] = [68, 52, 52, 48, 50];
+const K419: readonly number[] = [68, 52, 52, 48, 51];
+const K420: readonly number[] = [68, 52, 52, 48, 52];
+const K421: readonly number[] = [68, 52, 52, 48, 53];
+const K422: readonly number[] = [68, 52, 52, 48, 54];
+const K423: readonly number[] = [68, 52, 52, 50, 48];
+const K424: readonly number[] = [68, 52, 53, 48, 48];
+const K425: readonly number[] = [68, 52, 53, 48, 49];
+const K426: readonly number[] = [68, 52, 53, 48, 50];
+const K427: readonly number[] = [68, 52, 53, 48, 51];
+const K428: readonly number[] = [68, 52, 53, 48, 52];
+const K429: readonly number[] = [68, 52, 53, 48, 53];
+const K430: readonly number[] = [68, 52, 53, 48, 54];
+const K431: readonly number[] = [68, 52, 54, 48, 48];
+const K432: readonly number[] = [68, 52, 54, 48, 49];
+const K433: readonly number[] = [68, 52, 54, 48, 50];
+const K434: readonly number[] = [68, 52, 54, 48, 51];
+const K435: readonly number[] = [68, 52, 54, 48, 52];
+const K436: readonly number[] = [68, 52, 54, 48, 53];
+const K437: readonly number[] = [68, 52, 54, 48, 54];
+const K438: readonly number[] = [68, 52, 54, 48, 55];
+const K439: readonly number[] = [68, 52, 54, 48, 56];
+const K440: readonly number[] = [68, 52, 54, 50, 48];
+const K441: readonly number[] = [68, 52, 55, 48, 48];
+const K442: readonly number[] = [68, 52, 55, 48, 49];
+const K443: readonly number[] = [68, 52, 55, 48, 50];
+const K444: readonly number[] = [68, 52, 55, 48, 51];
+const K445: readonly number[] = [68, 52, 55, 48, 52];
+const K446: readonly number[] = [68, 52, 55, 48, 53];
+const K447: readonly number[] = [68, 52, 55, 48, 54];
+const K448: readonly number[] = [68, 52, 55, 48, 55];
+const K449: readonly number[] = [68, 52, 55, 48, 56];
+const K450: readonly number[] = [68, 53, 55, 48, 48];
+const K451: readonly number[] = [68, 53, 55, 48, 49];
+const K452: readonly number[] = [68, 53, 55, 48, 50];
+const K453: readonly number[] = [68, 53, 55, 48, 51];
+const K454: readonly number[] = [68, 53, 55, 50, 48];
+const K455: readonly number[] = [68, 54, 49, 50, 50];
+const K456: readonly number[] = [68, 54, 50, 52, 56];
+const K457: readonly number[] = [68, 54, 50, 52, 57];
+const K458: readonly number[] = [68, 54, 50, 53, 48];
+const K459: readonly number[] = [68, 54, 50, 53, 49];
+const K460: readonly number[] = [68, 54, 50, 53, 50];
+const K461: readonly number[] = [68, 54, 50, 53, 51];
+const K462: readonly number[] = [68, 54, 50, 53, 53];
+const K463: readonly number[] = [68, 54, 50, 53, 54];
+const K464: readonly number[] = [68, 54, 50, 53, 55];
+const K465: readonly number[] = [68, 54, 50, 53, 56];
+const K466: readonly number[] = [68, 54, 50, 53, 57];
+const K467: readonly number[] = [68, 54, 50, 54, 48];
+const K468: readonly number[] = [68, 54, 50, 54, 49];
+const K469: readonly number[] = [68, 54, 50, 54, 50];
+const K470: readonly number[] = [68, 54, 50, 54, 51];
+const K471: readonly number[] = [68, 54, 50, 54, 52];
+const K472: readonly number[] = [68, 54, 50, 54, 53];
+const K473: readonly number[] = [68, 54, 50, 54, 54];
+const K474: readonly number[] = [68, 54, 50, 54, 55];
+const K475: readonly number[] = [68, 54, 50, 54, 56];
+const K476: readonly number[] = [68, 54, 50, 54, 57];
+const K477: readonly number[] = [68, 54, 50, 55, 48];
+const K478: readonly number[] = [68, 54, 50, 55, 49];
+const K479: readonly number[] = [68, 54, 50, 55, 50];
+const K480: readonly number[] = [68, 54, 53, 51, 57];
+const K481: readonly number[] = [68, 54, 53, 52, 48];
+const K482: readonly number[] = [68, 54, 53, 52, 49];
+const K483: readonly number[] = [68, 54, 53, 52, 50];
+const K484: readonly number[] = [68, 54, 53, 55, 53];
+const K485: readonly number[] = [68, 54, 53, 55, 55];
+const K486: readonly number[] = [68, 54, 53, 55, 56];
+const K487: readonly number[] = [68, 54, 53, 55, 57];
+const K488: readonly number[] = [68, 54, 54, 53, 55];
+const K489: readonly number[] = [68, 54, 54, 53, 56];
+const K490: readonly number[] = [68, 56, 48, 52, 55];
+const K491: readonly number[] = [68, 56, 54, 52, 50];
+const K492: readonly number[] = [68, 56, 54, 56, 54];
+const K493: readonly number[] = [68, 56, 57, 48, 50];
+const K494: readonly number[] = [68, 57, 51, 57, 53];
+const K495: readonly number[] = [68, 57, 51, 57, 54];
+const K496: readonly number[] = [68, 57, 51, 57, 55];
+const K497: readonly number[] = [68, 57, 51, 57, 56];
+const K498: readonly number[] = [68, 57, 51, 57, 57];
+const K499: readonly number[] = [68, 57, 52, 48, 48];
+const K500: readonly number[] = [68, 57, 52, 48, 49];
+const K501: readonly number[] = [68, 57, 52, 48, 50];
+const K502: readonly number[] = [68, 57, 52, 48, 51];
+const K503: readonly number[] = [68, 57, 52, 48, 52];
+const K504: readonly number[] = [68, 57, 52, 48, 53];
+const K505: readonly number[] = [70, 49, 48, 48, 48];
+const K506: readonly number[] = [70, 49, 49, 48, 48];
+const K507: readonly number[] = [70, 49, 49, 48, 49];
+const K508: readonly number[] = [70, 49, 49, 48, 50];
+const K509: readonly number[] = [70, 49, 49, 48, 51];
+const K510: readonly number[] = [70, 49, 49, 48, 52];
+const K511: readonly number[] = [70, 49, 49, 48, 53];
+const K512: readonly number[] = [70, 49, 49, 48, 54];
+const K513: readonly number[] = [70, 49, 49, 48, 55];
+const K514: readonly number[] = [70, 49, 49, 48, 56];
+const K515: readonly number[] = [70, 49, 49, 48, 57];
+const K516: readonly number[] = [70, 49, 49, 49, 48];
+const K517: readonly number[] = [70, 49, 49, 49, 49];
+const K518: readonly number[] = [70, 49, 49, 49, 50];
+const K519: readonly number[] = [70, 49, 49, 49, 51];
+const K520: readonly number[] = [70, 49, 49, 49, 52];
+const K521: readonly number[] = [70, 54, 48, 53, 51];
+const K522: readonly number[] = [70, 54, 48, 54, 49];
+const K523: readonly number[] = [70, 54, 48, 56, 48];
+const K524: readonly number[] = [70, 54, 48, 56, 49];
+const K525: readonly number[] = [70, 54, 48, 56, 50];
+const K526: readonly number[] = [70, 54, 48, 56, 51];
+const K527: readonly number[] = [70, 54, 48, 56, 52];
+const K528: readonly number[] = [70, 54, 48, 56, 53];
+const K529: readonly number[] = [70, 54, 48, 56, 55];
+const K530: readonly number[] = [70, 54, 49, 48, 52];
+const K531: readonly number[] = [70, 54, 49, 52, 53];
+const K532: readonly number[] = [70, 54, 49, 52, 57];
+const K533: readonly number[] = [70, 54, 49, 56, 53];
+const K534: readonly number[] = [70, 54, 52, 48, 50];
+const K535: readonly number[] = [70, 54, 52, 57, 54];
+const K536: readonly number[] = [70, 54, 53, 50, 57];
+const K537: readonly number[] = [70, 54, 53, 52, 52];
+const K538: readonly number[] = [70, 54, 53, 52, 53];
+const K539: readonly number[] = [70, 54, 53, 53, 50];
+const K540: readonly number[] = [70, 54, 53, 53, 51];
+const K541: readonly number[] = [71, 49, 48, 48, 48];
+const K542: readonly number[] = [71, 49, 49, 48, 48];
+const K543: readonly number[] = [71, 49, 49, 48, 49];
+const K544: readonly number[] = [71, 49, 49, 48, 50];
+const K545: readonly number[] = [71, 49, 49, 48, 51];
+const K546: readonly number[] = [71, 49, 49, 48, 53];
+const K547: readonly number[] = [71, 49, 49, 48, 54];
+const K548: readonly number[] = [71, 49, 49, 48, 55];
+const K549: readonly number[] = [71, 49, 49, 48, 56];
+const K550: readonly number[] = [71, 49, 49, 48, 57];
+const K551: readonly number[] = [71, 49, 49, 49, 48];
+const K552: readonly number[] = [71, 49, 49, 49, 49];
+const K553: readonly number[] = [71, 49, 49, 49, 50];
+const K554: readonly number[] = [71, 49, 50, 48, 48];
+const K555: readonly number[] = [71, 49, 50, 48, 49];
+const K556: readonly number[] = [71, 49, 50, 48, 50];
+const K557: readonly number[] = [71, 49, 50, 48, 51];
+const K558: readonly number[] = [71, 49, 50, 48, 52];
+const K559: readonly number[] = [71, 49, 50, 48, 53];
+const K560: readonly number[] = [71, 49, 50, 48, 54];
+const K561: readonly number[] = [71, 49, 50, 48, 55];
+const K562: readonly number[] = [71, 49, 50, 48, 56];
+const K563: readonly number[] = [71, 49, 50, 48, 57];
+const K564: readonly number[] = [71, 49, 50, 49, 48];
+const K565: readonly number[] = [71, 49, 50, 49, 49];
+const K566: readonly number[] = [71, 49, 50, 49, 50];
+const K567: readonly number[] = [71, 49, 50, 49, 51];
+const K568: readonly number[] = [71, 49, 51, 48, 48];
+const K569: readonly number[] = [71, 49, 51, 48, 49];
+const K570: readonly number[] = [71, 49, 51, 48, 50];
+const K571: readonly number[] = [71, 49, 51, 48, 51];
+const K572: readonly number[] = [71, 49, 51, 48, 52];
+const K573: readonly number[] = [71, 49, 51, 48, 53];
+const K574: readonly number[] = [71, 49, 51, 48, 54];
+const K575: readonly number[] = [71, 49, 51, 48, 55];
+const K576: readonly number[] = [71, 49, 51, 48, 56];
+const K577: readonly number[] = [71, 49, 51, 48, 57];
+const K578: readonly number[] = [71, 49, 51, 49, 48];
+const K579: readonly number[] = [71, 49, 51, 49, 49];
+const K580: readonly number[] = [71, 49, 51, 49, 50];
+const K581: readonly number[] = [71, 49, 51, 49, 52];
+const K582: readonly number[] = [71, 49, 51, 49, 53];
+const K583: readonly number[] = [71, 49, 51, 49, 54];
+const K584: readonly number[] = [71, 49, 51, 49, 55];
+const K585: readonly number[] = [71, 49, 51, 49, 56];
+const K586: readonly number[] = [71, 49, 52, 48, 48];
+const K587: readonly number[] = [71, 54, 48, 48, 50];
+const K588: readonly number[] = [71, 54, 48, 48, 56];
+const K589: readonly number[] = [71, 54, 48, 55, 54];
+const K590: readonly number[] = [71, 54, 53, 57, 48];
+const K591: readonly number[] = [71, 54, 54, 53, 55];
+const K592: readonly number[] = [71, 54, 54, 54, 52];
+const K593: readonly number[] = [71, 54, 54, 54, 57];
+const K594: readonly number[] = [71, 54, 54, 55, 50];
+const K595: readonly number[] = [71, 54, 54, 55, 51];
+const K596: readonly number[] = [71, 54, 54, 55, 52];
+const K597: readonly number[] = [71, 54, 54, 55, 53];
+const K598: readonly number[] = [71, 54, 54, 55, 54];
+const K599: readonly number[] = [71, 54, 54, 55, 55];
+const K600: readonly number[] = [71, 54, 54, 55, 56];
+const K601: readonly number[] = [71, 54, 54, 55, 57];
+const K602: readonly number[] = [71, 54, 54, 56, 48];
+const K603: readonly number[] = [71, 54, 54, 56, 49];
+const K604: readonly number[] = [71, 54, 54, 56, 50];
+const K605: readonly number[] = [71, 54, 54, 57, 54];
+const K606: readonly number[] = [72, 49, 48, 48, 48];
+const K607: readonly number[] = [72, 49, 49, 48, 48];
+const K608: readonly number[] = [72, 49, 49, 48, 49];
+const K609: readonly number[] = [72, 49, 49, 48, 50];
+const K610: readonly number[] = [72, 49, 49, 48, 51];
+const K611: readonly number[] = [72, 54, 48, 50, 54];
+const K612: readonly number[] = [72, 54, 48, 51, 50];
+const K613: readonly number[] = [72, 54, 48, 51, 51];
+const K614: readonly number[] = [72, 54, 48, 51, 52];
+const K615: readonly number[] = [72, 54, 48, 51, 53];
+const K616: readonly number[] = [72, 54, 48, 51, 54];
+const K617: readonly number[] = [72, 54, 48, 51, 55];
+const K618: readonly number[] = [72, 54, 48, 51, 56];
+const K619: readonly number[] = [72, 54, 48, 51, 57];
+const K620: readonly number[] = [72, 54, 48, 52, 48];
+const K621: readonly number[] = [72, 54, 49, 56, 52];
+const K622: readonly number[] = [72, 54, 50, 51, 51];
+const K623: readonly number[] = [72, 54, 50, 51, 52];
+const K624: readonly number[] = [75, 49, 48, 48, 48];
+const K625: readonly number[] = [75, 49, 49, 48, 48];
+const K626: readonly number[] = [75, 49, 49, 48, 49];
+const K627: readonly number[] = [75, 49, 49, 48, 50];
+const K628: readonly number[] = [75, 49, 49, 48, 51];
+const K629: readonly number[] = [75, 49, 49, 48, 52];
+const K630: readonly number[] = [75, 49, 49, 48, 53];
+const K631: readonly number[] = [75, 49, 49, 48, 54];
+const K632: readonly number[] = [75, 49, 49, 48, 55];
+const K633: readonly number[] = [75, 49, 49, 48, 56];
+const K634: readonly number[] = [75, 54, 48, 52, 54];
+const K635: readonly number[] = [75, 54, 48, 53, 49];
+const K636: readonly number[] = [75, 54, 48, 53, 50];
+const K637: readonly number[] = [75, 54, 48, 53, 51];
+const K638: readonly number[] = [75, 54, 48, 53, 52];
+const K639: readonly number[] = [75, 54, 48, 53, 53];
+const K640: readonly number[] = [75, 54, 48, 55, 56];
+const K641: readonly number[] = [75, 54, 48, 55, 57];
+const K642: readonly number[] = [75, 54, 48, 56, 51];
+const K643: readonly number[] = [75, 54, 49, 54, 53];
+const K644: readonly number[] = [75, 54, 50, 48, 57];
+const K645: readonly number[] = [77, 49, 48, 48, 48];
+const K646: readonly number[] = [77, 49, 49, 48, 48];
+const K647: readonly number[] = [77, 49, 49, 48, 49];
+const K648: readonly number[] = [77, 49, 49, 48, 50];
+const K649: readonly number[] = [77, 49, 49, 48, 51];
+const K650: readonly number[] = [77, 49, 49, 48, 52];
+const K651: readonly number[] = [77, 49, 49, 48, 53];
+const K652: readonly number[] = [77, 49, 49, 48, 54];
+const K653: readonly number[] = [77, 49, 49, 48, 55];
+const K654: readonly number[] = [77, 49, 49, 48, 56];
+const K655: readonly number[] = [77, 49, 49, 48, 57];
+const K656: readonly number[] = [77, 49, 49, 49, 48];
+const K657: readonly number[] = [77, 49, 49, 49, 49];
+const K658: readonly number[] = [77, 49, 49, 49, 50];
+const K659: readonly number[] = [77, 49, 49, 49, 51];
+const K660: readonly number[] = [77, 49, 49, 49, 52];
+const K661: readonly number[] = [77, 49, 49, 49, 53];
+const K662: readonly number[] = [77, 49, 49, 49, 54];
+const K663: readonly number[] = [77, 49, 49, 49, 55];
+const K664: readonly number[] = [77, 49, 49, 49, 56];
+const K665: readonly number[] = [77, 49, 50, 48, 48];
+const K666: readonly number[] = [77, 49, 50, 48, 49];
+const K667: readonly number[] = [77, 49, 50, 48, 50];
+const K668: readonly number[] = [77, 49, 50, 48, 51];
+const K669: readonly number[] = [77, 49, 50, 48, 52];
+const K670: readonly number[] = [77, 49, 50, 48, 53];
+const K671: readonly number[] = [77, 49, 50, 48, 54];
+const K672: readonly number[] = [77, 49, 51, 48, 48];
+const K673: readonly number[] = [77, 49, 51, 48, 49];
+const K674: readonly number[] = [77, 49, 51, 48, 50];
+const K675: readonly number[] = [77, 49, 51, 48, 51];
+const K676: readonly number[] = [77, 49, 51, 48, 52];
+const K677: readonly number[] = [77, 49, 51, 48, 53];
+const K678: readonly number[] = [77, 49, 51, 48, 55];
+const K679: readonly number[] = [77, 49, 51, 48, 56];
+const K680: readonly number[] = [77, 49, 51, 49, 48];
+const K681: readonly number[] = [77, 49, 52, 48, 48];
+const K682: readonly number[] = [77, 49, 52, 48, 49];
+const K683: readonly number[] = [77, 49, 52, 48, 50];
+const K684: readonly number[] = [77, 49, 52, 48, 52];
+const K685: readonly number[] = [77, 49, 52, 48, 53];
+const K686: readonly number[] = [77, 49, 52, 48, 54];
+const K687: readonly number[] = [77, 49, 52, 48, 55];
+const K688: readonly number[] = [77, 49, 52, 48, 56];
+const K689: readonly number[] = [77, 49, 52, 48, 57];
+const K690: readonly number[] = [77, 49, 52, 49, 48];
+const K691: readonly number[] = [77, 49, 52, 49, 49];
+const K692: readonly number[] = [77, 49, 52, 49, 50];
+const K693: readonly number[] = [77, 49, 52, 49, 51];
+const K694: readonly number[] = [77, 49, 52, 50, 48];
+const K695: readonly number[] = [77, 49, 53, 48, 48];
+const K696: readonly number[] = [77, 49, 53, 48, 49];
+const K697: readonly number[] = [77, 49, 53, 48, 50];
+const K698: readonly number[] = [77, 49, 53, 48, 52];
+const K699: readonly number[] = [77, 49, 53, 48, 53];
+const K700: readonly number[] = [77, 49, 53, 48, 54];
+const K701: readonly number[] = [77, 49, 53, 48, 55];
+const K702: readonly number[] = [77, 49, 53, 48, 56];
+const K703: readonly number[] = [77, 49, 53, 48, 57];
+const K704: readonly number[] = [77, 49, 54, 48, 48];
+const K705: readonly number[] = [77, 49, 54, 48, 49];
+const K706: readonly number[] = [77, 49, 54, 48, 50];
+const K707: readonly number[] = [77, 49, 54, 48, 51];
+const K708: readonly number[] = [77, 49, 54, 48, 53];
+const K709: readonly number[] = [77, 49, 54, 48, 54];
+const K710: readonly number[] = [77, 49, 54, 48, 55];
+const K711: readonly number[] = [77, 49, 54, 48, 56];
+const K712: readonly number[] = [77, 49, 54, 48, 57];
+const K713: readonly number[] = [77, 49, 54, 49, 50];
+const K714: readonly number[] = [77, 49, 54, 49, 51];
+const K715: readonly number[] = [77, 49, 54, 49, 52];
+const K716: readonly number[] = [77, 49, 54, 49, 53];
+const K717: readonly number[] = [77, 49, 54, 49, 54];
+const K718: readonly number[] = [77, 49, 54, 49, 57];
+const K719: readonly number[] = [77, 49, 55, 48, 48];
+const K720: readonly number[] = [77, 49, 55, 48, 49];
+const K721: readonly number[] = [77, 49, 55, 48, 50];
+const K722: readonly number[] = [77, 49, 55, 48, 51];
+const K723: readonly number[] = [77, 49, 55, 48, 52];
+const K724: readonly number[] = [77, 49, 55, 48, 53];
+const K725: readonly number[] = [77, 49, 55, 48, 54];
+const K726: readonly number[] = [77, 49, 55, 48, 56];
+const K727: readonly number[] = [77, 49, 55, 48, 57];
+const K728: readonly number[] = [77, 49, 55, 49, 48];
+const K729: readonly number[] = [77, 49, 56, 48, 48];
+const K730: readonly number[] = [77, 49, 56, 48, 49];
+const K731: readonly number[] = [77, 49, 56, 48, 50];
+const K732: readonly number[] = [77, 49, 56, 48, 51];
+const K733: readonly number[] = [77, 49, 56, 48, 53];
+const K734: readonly number[] = [77, 49, 56, 48, 55];
+const K735: readonly number[] = [77, 49, 56, 48, 56];
+const K736: readonly number[] = [77, 49, 56, 48, 57];
+const K737: readonly number[] = [77, 49, 56, 49, 48];
+const K738: readonly number[] = [77, 49, 56, 49, 50];
+const K739: readonly number[] = [77, 49, 57, 48, 48];
+const K740: readonly number[] = [77, 49, 57, 48, 49];
+const K741: readonly number[] = [77, 49, 57, 48, 50];
+const K742: readonly number[] = [77, 49, 57, 48, 51];
+const K743: readonly number[] = [77, 49, 57, 48, 52];
+const K744: readonly number[] = [77, 49, 57, 48, 53];
+const K745: readonly number[] = [77, 49, 57, 48, 54];
+const K746: readonly number[] = [77, 54, 48, 53, 55];
+const K747: readonly number[] = [77, 54, 48, 56, 54];
+const K748: readonly number[] = [77, 54, 48, 56, 55];
+const K749: readonly number[] = [77, 54, 48, 56, 56];
+const K750: readonly number[] = [77, 54, 48, 56, 57];
+const K751: readonly number[] = [77, 54, 48, 57, 48];
+const K752: readonly number[] = [77, 54, 48, 57, 49];
+const K753: readonly number[] = [77, 54, 48, 57, 51];
+const K754: readonly number[] = [77, 54, 48, 57, 52];
+const K755: readonly number[] = [77, 54, 48, 57, 53];
+const K756: readonly number[] = [77, 54, 48, 57, 54];
+const K757: readonly number[] = [77, 54, 48, 57, 55];
+const K758: readonly number[] = [77, 54, 48, 57, 56];
+const K759: readonly number[] = [77, 54, 48, 57, 57];
+const K760: readonly number[] = [77, 54, 49, 48, 48];
+const K761: readonly number[] = [77, 54, 49, 48, 50];
+const K762: readonly number[] = [77, 54, 49, 48, 51];
+const K763: readonly number[] = [77, 54, 49, 48, 52];
+const K764: readonly number[] = [77, 54, 49, 48, 53];
+const K765: readonly number[] = [77, 54, 49, 48, 54];
+const K766: readonly number[] = [77, 54, 49, 48, 55];
+const K767: readonly number[] = [77, 54, 49, 48, 56];
+const K768: readonly number[] = [77, 54, 50, 51, 48];
+const K769: readonly number[] = [77, 54, 50, 51, 49];
+const K770: readonly number[] = [77, 54, 50, 51, 50];
+const K771: readonly number[] = [77, 54, 50, 51, 51];
+const K772: readonly number[] = [77, 54, 50, 52, 54];
+const K773: readonly number[] = [77, 54, 50, 54, 53];
+const K774: readonly number[] = [77, 54, 50, 55, 54];
+const K775: readonly number[] = [77, 54, 50, 55, 57];
+const K776: readonly number[] = [77, 54, 51, 48, 48];
+const K777: readonly number[] = [77, 54, 51, 49, 56];
+const K778: readonly number[] = [77, 54, 51, 50, 48];
+const K779: readonly number[] = [77, 54, 51, 54, 49];
+const K780: readonly number[] = [77, 55, 48, 57, 53];
+const K781: readonly number[] = [77, 55, 51, 51, 51];
+const K782: readonly number[] = [78, 49, 48, 48, 48];
+const K783: readonly number[] = [78, 49, 49, 48, 48];
+const K784: readonly number[] = [78, 49, 49, 48, 49];
+const K785: readonly number[] = [78, 49, 49, 48, 50];
+const K786: readonly number[] = [78, 49, 49, 48, 51];
+const K787: readonly number[] = [78, 49, 49, 48, 52];
+const K788: readonly number[] = [78, 49, 49, 48, 53];
+const K789: readonly number[] = [78, 49, 49, 48, 54];
+const K790: readonly number[] = [78, 49, 49, 48, 55];
+const K791: readonly number[] = [78, 49, 49, 48, 56];
+const K792: readonly number[] = [78, 49, 49, 48, 57];
+const K793: readonly number[] = [78, 49, 49, 49, 48];
+const K794: readonly number[] = [78, 49, 49, 49, 49];
+const K795: readonly number[] = [78, 49, 49, 49, 50];
+const K796: readonly number[] = [78, 49, 49, 49, 51];
+const K797: readonly number[] = [78, 49, 49, 49, 52];
+const K798: readonly number[] = [78, 49, 49, 49, 53];
+const K799: readonly number[] = [78, 49, 50, 48, 48];
+const K800: readonly number[] = [78, 49, 50, 48, 49];
+const K801: readonly number[] = [78, 49, 50, 48, 50];
+const K802: readonly number[] = [78, 49, 50, 48, 51];
+const K803: readonly number[] = [78, 49, 50, 48, 52];
+const K804: readonly number[] = [78, 49, 50, 48, 53];
+const K805: readonly number[] = [78, 49, 50, 48, 54];
+const K806: readonly number[] = [78, 49, 50, 48, 56];
+const K807: readonly number[] = [78, 49, 50, 48, 57];
+const K808: readonly number[] = [78, 49, 50, 49, 48];
+const K809: readonly number[] = [78, 49, 50, 49, 49];
+const K810: readonly number[] = [78, 49, 51, 48, 48];
+const K811: readonly number[] = [78, 49, 51, 48, 49];
+const K812: readonly number[] = [78, 49, 51, 48, 50];
+const K813: readonly number[] = [78, 49, 51, 48, 51];
+const K814: readonly number[] = [78, 49, 51, 48, 52];
+const K815: readonly number[] = [78, 49, 51, 48, 53];
+const K816: readonly number[] = [78, 49, 51, 48, 54];
+const K817: readonly number[] = [78, 49, 51, 48, 55];
+const K818: readonly number[] = [78, 49, 51, 48, 56];
+const K819: readonly number[] = [78, 49, 51, 48, 57];
+const K820: readonly number[] = [78, 49, 51, 49, 48];
+const K821: readonly number[] = [78, 49, 51, 49, 49];
+const K822: readonly number[] = [78, 49, 52, 48, 48];
+const K823: readonly number[] = [78, 49, 52, 48, 49];
+const K824: readonly number[] = [78, 54, 48, 48, 49];
+const K825: readonly number[] = [78, 54, 50, 48, 54];
+const K826: readonly number[] = [78, 54, 50, 48, 56];
+const K827: readonly number[] = [78, 54, 50, 48, 57];
+const K828: readonly number[] = [78, 54, 50, 49, 50];
+const K829: readonly number[] = [78, 54, 50, 50, 52];
+const K830: readonly number[] = [78, 54, 50, 51, 53];
+const K831: readonly number[] = [78, 54, 50, 52, 55];
+const K832: readonly number[] = [78, 54, 50, 54, 57];
+const K833: readonly number[] = [78, 54, 50, 57, 56];
+const K834: readonly number[] = [78, 54, 51, 49, 50];
+const K835: readonly number[] = [78, 54, 51, 49, 51];
+const K836: readonly number[] = [78, 54, 51, 50, 53];
+const K837: readonly number[] = [78, 54, 51, 50, 54];
+const K838: readonly number[] = [78, 54, 51, 51, 57];
+const K839: readonly number[] = [78, 54, 52, 52, 49];
+const K840: readonly number[] = [78, 54, 52, 55, 51];
+const K841: readonly number[] = [78, 54, 53, 49, 49];
+const K842: readonly number[] = [78, 54, 53, 49, 54];
+const K843: readonly number[] = [78, 54, 53, 49, 55];
+const K844: readonly number[] = [80, 49, 48, 48, 48];
+const K845: readonly number[] = [80, 49, 49, 48, 48];
+const K846: readonly number[] = [80, 49, 49, 48, 49];
+const K847: readonly number[] = [80, 49, 49, 48, 50];
+const K848: readonly number[] = [80, 49, 49, 48, 51];
+const K849: readonly number[] = [80, 49, 49, 48, 52];
+const K850: readonly number[] = [80, 49, 49, 48, 53];
+const K851: readonly number[] = [80, 49, 49, 48, 54];
+const K852: readonly number[] = [80, 49, 49, 48, 55];
+const K853: readonly number[] = [80, 49, 49, 48, 56];
+const K854: readonly number[] = [80, 49, 49, 48, 57];
+const K855: readonly number[] = [80, 49, 49, 49, 48];
+const K856: readonly number[] = [80, 49, 49, 49, 49];
+const K857: readonly number[] = [80, 49, 49, 49, 50];
+const K858: readonly number[] = [80, 49, 49, 49, 51];
+const K859: readonly number[] = [80, 49, 49, 49, 52];
+const K860: readonly number[] = [80, 49, 49, 49, 53];
+const K861: readonly number[] = [80, 49, 49, 49, 54];
+const K862: readonly number[] = [80, 50, 48, 48, 48];
+const K863: readonly number[] = [80, 50, 49, 48, 48];
+const K864: readonly number[] = [80, 50, 49, 48, 49];
+const K865: readonly number[] = [80, 50, 49, 48, 50];
+const K866: readonly number[] = [80, 50, 49, 48, 51];
+const K867: readonly number[] = [80, 50, 49, 48, 52];
+const K868: readonly number[] = [80, 50, 49, 48, 53];
+const K869: readonly number[] = [80, 50, 49, 48, 54];
+const K870: readonly number[] = [80, 50, 50, 48, 48];
+const K871: readonly number[] = [80, 50, 50, 48, 49];
+const K872: readonly number[] = [80, 50, 50, 48, 50];
+const K873: readonly number[] = [80, 50, 50, 48, 51];
+const K874: readonly number[] = [80, 50, 50, 48, 52];
+const K875: readonly number[] = [80, 50, 50, 48, 53];
+const K876: readonly number[] = [80, 50, 50, 48, 54];
+const K877: readonly number[] = [80, 50, 50, 48, 55];
+const K878: readonly number[] = [80, 50, 50, 48, 56];
+const K879: readonly number[] = [80, 50, 50, 48, 57];
+const K880: readonly number[] = [80, 50, 50, 49, 48];
+const K881: readonly number[] = [80, 50, 50, 49, 49];
+const K882: readonly number[] = [80, 50, 51, 48, 48];
+const K883: readonly number[] = [80, 50, 51, 48, 49];
+const K884: readonly number[] = [80, 50, 51, 48, 50];
+const K885: readonly number[] = [80, 50, 51, 48, 51];
+const K886: readonly number[] = [80, 50, 51, 48, 52];
+const K887: readonly number[] = [80, 50, 51, 48, 53];
+const K888: readonly number[] = [80, 50, 51, 48, 54];
+const K889: readonly number[] = [80, 50, 51, 48, 55];
+const K890: readonly number[] = [80, 50, 51, 48, 56];
+const K891: readonly number[] = [80, 50, 51, 48, 57];
+const K892: readonly number[] = [80, 50, 52, 48, 48];
+const K893: readonly number[] = [80, 50, 52, 48, 49];
+const K894: readonly number[] = [80, 50, 52, 48, 50];
+const K895: readonly number[] = [80, 50, 52, 48, 51];
+const K896: readonly number[] = [80, 50, 52, 48, 52];
+const K897: readonly number[] = [80, 50, 52, 48, 53];
+const K898: readonly number[] = [80, 50, 52, 48, 54];
+const K899: readonly number[] = [80, 50, 52, 48, 55];
+const K900: readonly number[] = [80, 50, 52, 48, 56];
+const K901: readonly number[] = [80, 50, 52, 48, 57];
+const K902: readonly number[] = [80, 50, 52, 49, 48];
+const K903: readonly number[] = [80, 50, 52, 49, 49];
+const K904: readonly number[] = [80, 50, 52, 49, 50];
+const K905: readonly number[] = [80, 50, 52, 49, 51];
+const K906: readonly number[] = [80, 50, 53, 48, 48];
+const K907: readonly number[] = [80, 50, 53, 48, 49];
+const K908: readonly number[] = [80, 50, 53, 48, 50];
+const K909: readonly number[] = [80, 50, 53, 48, 51];
+const K910: readonly number[] = [80, 50, 53, 48, 52];
+const K911: readonly number[] = [80, 50, 53, 48, 53];
+const K912: readonly number[] = [80, 50, 53, 48, 54];
+const K913: readonly number[] = [80, 50, 53, 48, 55];
+const K914: readonly number[] = [80, 50, 53, 48, 56];
+const K915: readonly number[] = [80, 50, 53, 48, 57];
+const K916: readonly number[] = [80, 50, 53, 49, 48];
+const K917: readonly number[] = [80, 50, 53, 49, 49];
+const K918: readonly number[] = [80, 50, 54, 48, 48];
+const K919: readonly number[] = [80, 50, 54, 48, 49];
+const K920: readonly number[] = [80, 50, 54, 48, 50];
+const K921: readonly number[] = [80, 50, 54, 48, 51];
+const K922: readonly number[] = [80, 50, 54, 48, 52];
+const K923: readonly number[] = [80, 50, 54, 48, 53];
+const K924: readonly number[] = [80, 50, 54, 48, 54];
+const K925: readonly number[] = [80, 50, 54, 48, 55];
+const K926: readonly number[] = [80, 50, 54, 48, 56];
+const K927: readonly number[] = [80, 50, 54, 48, 57];
+const K928: readonly number[] = [80, 50, 54, 49, 48];
+const K929: readonly number[] = [80, 50, 54, 49, 49];
+const K930: readonly number[] = [80, 50, 54, 49, 50];
+const K931: readonly number[] = [80, 50, 54, 49, 51];
+const K932: readonly number[] = [80, 50, 54, 49, 52];
+const K933: readonly number[] = [80, 50, 54, 50, 48];
+const K934: readonly number[] = [80, 50, 55, 48, 48];
+const K935: readonly number[] = [80, 50, 55, 48, 49];
+const K936: readonly number[] = [80, 50, 55, 48, 50];
+const K937: readonly number[] = [80, 50, 55, 48, 51];
+const K938: readonly number[] = [80, 50, 55, 48, 52];
+const K939: readonly number[] = [80, 50, 55, 48, 53];
+const K940: readonly number[] = [80, 50, 55, 48, 54];
+const K941: readonly number[] = [80, 50, 55, 48, 55];
+const K942: readonly number[] = [80, 50, 55, 48, 56];
+const K943: readonly number[] = [80, 50, 55, 48, 57];
+const K944: readonly number[] = [80, 50, 55, 49, 48];
+const K945: readonly number[] = [80, 50, 55, 49, 49];
+const K946: readonly number[] = [80, 50, 55, 49, 50];
+const K947: readonly number[] = [80, 50, 55, 49, 51];
+const K948: readonly number[] = [80, 50, 55, 49, 52];
+const K949: readonly number[] = [80, 50, 55, 49, 53];
+const K950: readonly number[] = [80, 50, 55, 49, 54];
+const K951: readonly number[] = [80, 50, 56, 48, 48];
+const K952: readonly number[] = [80, 51, 48, 48, 48];
+const K953: readonly number[] = [80, 51, 49, 48, 48];
+const K954: readonly number[] = [80, 51, 49, 48, 49];
+const K955: readonly number[] = [80, 51, 49, 48, 50];
+const K956: readonly number[] = [80, 51, 49, 48, 51];
+const K957: readonly number[] = [80, 51, 49, 48, 52];
+const K958: readonly number[] = [80, 51, 49, 48, 53];
+const K959: readonly number[] = [80, 51, 49, 48, 54];
+const K960: readonly number[] = [80, 51, 49, 48, 55];
+const K961: readonly number[] = [80, 51, 49, 49, 48];
+const K962: readonly number[] = [80, 51, 50, 48, 48];
+const K963: readonly number[] = [80, 51, 50, 48, 49];
+const K964: readonly number[] = [80, 51, 50, 48, 50];
+const K965: readonly number[] = [80, 51, 50, 48, 51];
+const K966: readonly number[] = [80, 51, 50, 48, 52];
+const K967: readonly number[] = [80, 51, 50, 48, 53];
+const K968: readonly number[] = [80, 51, 50, 48, 54];
+const K969: readonly number[] = [80, 51, 50, 48, 55];
+const K970: readonly number[] = [80, 51, 50, 48, 56];
+const K971: readonly number[] = [80, 51, 50, 48, 57];
+const K972: readonly number[] = [80, 51, 50, 49, 48];
+const K973: readonly number[] = [80, 51, 50, 49, 49];
+const K974: readonly number[] = [80, 51, 50, 49, 50];
+const K975: readonly number[] = [80, 51, 50, 49, 51];
+const K976: readonly number[] = [80, 51, 50, 49, 52];
+const K977: readonly number[] = [80, 51, 50, 49, 53];
+const K978: readonly number[] = [80, 51, 51, 48, 48];
+const K979: readonly number[] = [80, 51, 51, 48, 49];
+const K980: readonly number[] = [80, 51, 51, 48, 50];
+const K981: readonly number[] = [80, 51, 51, 48, 51];
+const K982: readonly number[] = [80, 51, 51, 48, 52];
+const K983: readonly number[] = [80, 51, 51, 48, 53];
+const K984: readonly number[] = [80, 51, 51, 48, 54];
+const K985: readonly number[] = [80, 51, 51, 48, 55];
+const K986: readonly number[] = [80, 51, 51, 48, 56];
+const K987: readonly number[] = [80, 51, 51, 48, 57];
+const K988: readonly number[] = [80, 51, 51, 49, 48];
+const K989: readonly number[] = [80, 51, 51, 49, 49];
+const K990: readonly number[] = [80, 51, 51, 49, 50];
+const K991: readonly number[] = [80, 51, 51, 49, 51];
+const K992: readonly number[] = [80, 51, 51, 49, 52];
+const K993: readonly number[] = [80, 51, 51, 49, 53];
+const K994: readonly number[] = [80, 51, 51, 49, 54];
+const K995: readonly number[] = [80, 51, 52, 48, 48];
+const K996: readonly number[] = [80, 51, 53, 48, 48];
+const K997: readonly number[] = [80, 51, 54, 48, 48];
+const K998: readonly number[] = [80, 51, 55, 48, 48];
+const K999: readonly number[] = [80, 54, 48, 57, 56];
+const K1000: readonly number[] = [80, 54, 49, 49, 55];
+const K1001: readonly number[] = [80, 54, 49, 49, 56];
+const K1002: readonly number[] = [80, 54, 49, 49, 57];
+const K1003: readonly number[] = [80, 54, 49, 50, 48];
+const K1004: readonly number[] = [80, 54, 49, 50, 49];
+const K1005: readonly number[] = [80, 54, 49, 50, 50];
+const K1006: readonly number[] = [80, 54, 49, 50, 51];
+const K1007: readonly number[] = [80, 54, 49, 50, 52];
+const K1008: readonly number[] = [80, 54, 49, 50, 53];
+const K1009: readonly number[] = [80, 54, 49, 50, 54];
+const K1010: readonly number[] = [80, 54, 49, 50, 55];
+const K1011: readonly number[] = [80, 54, 49, 50, 56];
+const K1012: readonly number[] = [80, 54, 49, 50, 57];
+const K1013: readonly number[] = [80, 54, 49, 51, 48];
+const K1014: readonly number[] = [80, 54, 49, 51, 49];
+const K1015: readonly number[] = [80, 54, 49, 51, 50];
+const K1016: readonly number[] = [80, 54, 49, 51, 51];
+const K1017: readonly number[] = [80, 54, 49, 51, 52];
+const K1018: readonly number[] = [80, 54, 49, 51, 53];
+const K1019: readonly number[] = [80, 54, 49, 51, 54];
+const K1020: readonly number[] = [80, 54, 49, 51, 55];
+const K1021: readonly number[] = [80, 54, 49, 51, 56];
+const K1022: readonly number[] = [80, 54, 49, 51, 57];
+const K1023: readonly number[] = [80, 54, 49, 52, 48];
+const K1024: readonly number[] = [80, 54, 49, 52, 49];
+const K1025: readonly number[] = [80, 54, 49, 52, 50];
+const K1026: readonly number[] = [80, 54, 49, 52, 51];
+const K1027: readonly number[] = [80, 54, 50, 57, 54];
+const K1028: readonly number[] = [80, 54, 51, 51, 48];
+const K1029: readonly number[] = [80, 54, 51, 52, 56];
+const K1030: readonly number[] = [80, 54, 51, 57, 53];
+const K1031: readonly number[] = [80, 54, 52, 51, 54];
+const K1032: readonly number[] = [80, 54, 52, 52, 50];
+const K1033: readonly number[] = [80, 54, 52, 52, 53];
+const K1034: readonly number[] = [80, 54, 52, 52, 55];
+const K1035: readonly number[] = [80, 55, 54, 50, 54];
+const K1036: readonly number[] = [80, 55, 55, 55, 49];
+const K1037: readonly number[] = [80, 55, 55, 55, 50];
+const K1038: readonly number[] = [80, 55, 55, 55, 51];
+const K1039: readonly number[] = [80, 55, 57, 50, 48];
+const K1040: readonly number[] = [82, 49, 48, 48, 48];
+const K1041: readonly number[] = [82, 49, 48, 48, 49];
+const K1042: readonly number[] = [82, 49, 49, 48, 48];
+const K1043: readonly number[] = [82, 49, 49, 48, 49];
+const K1044: readonly number[] = [82, 49, 49, 48, 50];
+const K1045: readonly number[] = [82, 49, 49, 48, 51];
+const K1046: readonly number[] = [82, 49, 49, 48, 52];
+const K1047: readonly number[] = [82, 49, 49, 48, 53];
+const K1048: readonly number[] = [82, 49, 50, 48, 48];
+const K1049: readonly number[] = [82, 49, 50, 48, 49];
+const K1050: readonly number[] = [82, 49, 50, 48, 50];
+const K1051: readonly number[] = [82, 49, 50, 48, 51];
+const K1052: readonly number[] = [82, 49, 50, 48, 52];
+const K1053: readonly number[] = [82, 49, 50, 48, 53];
+const K1054: readonly number[] = [82, 49, 50, 48, 54];
+const K1055: readonly number[] = [82, 49, 50, 48, 55];
+const K1056: readonly number[] = [82, 49, 50, 48, 56];
+const K1057: readonly number[] = [82, 49, 51, 48, 48];
+const K1058: readonly number[] = [82, 49, 51, 48, 49];
+const K1059: readonly number[] = [82, 49, 51, 48, 50];
+const K1060: readonly number[] = [82, 49, 51, 48, 51];
+const K1061: readonly number[] = [82, 49, 51, 48, 52];
+const K1062: readonly number[] = [82, 49, 51, 48, 53];
+const K1063: readonly number[] = [82, 49, 51, 48, 54];
+const K1064: readonly number[] = [82, 49, 51, 48, 55];
+const K1065: readonly number[] = [82, 49, 51, 49, 48];
+const K1066: readonly number[] = [82, 49, 52, 48, 48];
+const K1067: readonly number[] = [82, 49, 52, 48, 49];
+const K1068: readonly number[] = [82, 49, 52, 48, 50];
+const K1069: readonly number[] = [82, 49, 52, 48, 51];
+const K1070: readonly number[] = [82, 49, 52, 48, 52];
+const K1071: readonly number[] = [82, 49, 53, 48, 48];
+const K1072: readonly number[] = [82, 49, 53, 48, 49];
+const K1073: readonly number[] = [82, 49, 53, 48, 50];
+const K1074: readonly number[] = [82, 49, 53, 48, 51];
+const K1075: readonly number[] = [82, 49, 53, 48, 52];
+const K1076: readonly number[] = [82, 49, 53, 48, 53];
+const K1077: readonly number[] = [82, 49, 53, 48, 54];
+const K1078: readonly number[] = [82, 49, 53, 48, 55];
+const K1079: readonly number[] = [82, 49, 54, 48, 48];
+const K1080: readonly number[] = [82, 49, 54, 48, 49];
+const K1081: readonly number[] = [82, 49, 54, 48, 50];
+const K1082: readonly number[] = [82, 49, 54, 48, 51];
+const K1083: readonly number[] = [82, 49, 54, 48, 52];
+const K1084: readonly number[] = [82, 49, 54, 48, 53];
+const K1085: readonly number[] = [82, 49, 54, 48, 54];
+const K1086: readonly number[] = [82, 49, 54, 48, 56];
+const K1087: readonly number[] = [82, 49, 57, 48, 48];
+const K1088: readonly number[] = [82, 49, 57, 48, 49];
+const K1089: readonly number[] = [82, 49, 57, 48, 50];
+const K1090: readonly number[] = [82, 49, 57, 48, 51];
+const K1091: readonly number[] = [82, 49, 57, 48, 52];
+const K1092: readonly number[] = [82, 49, 57, 48, 53];
+const K1093: readonly number[] = [82, 49, 57, 48, 54];
+const K1094: readonly number[] = [82, 49, 57, 48, 55];
+const K1095: readonly number[] = [82, 49, 57, 48, 56];
+const K1096: readonly number[] = [82, 49, 57, 48, 57];
+const K1097: readonly number[] = [82, 49, 57, 49, 48];
+const K1098: readonly number[] = [82, 49, 57, 49, 49];
+const K1099: readonly number[] = [82, 49, 57, 49, 50];
+const K1100: readonly number[] = [82, 49, 57, 49, 51];
+const K1101: readonly number[] = [82, 50, 48, 48, 48];
+const K1102: readonly number[] = [82, 50, 49, 48, 48];
+const K1103: readonly number[] = [82, 50, 49, 48, 49];
+const K1104: readonly number[] = [82, 50, 49, 48, 50];
+const K1105: readonly number[] = [82, 50, 49, 48, 51];
+const K1106: readonly number[] = [82, 50, 49, 48, 52];
+const K1107: readonly number[] = [82, 50, 49, 48, 53];
+const K1108: readonly number[] = [82, 50, 49, 48, 54];
+const K1109: readonly number[] = [82, 50, 49, 48, 55];
+const K1110: readonly number[] = [82, 50, 49, 48, 56];
+const K1111: readonly number[] = [82, 50, 49, 48, 57];
+const K1112: readonly number[] = [82, 50, 49, 49, 48];
+const K1113: readonly number[] = [82, 50, 49, 49, 49];
+const K1114: readonly number[] = [82, 50, 49, 49, 50];
+const K1115: readonly number[] = [82, 50, 49, 49, 51];
+const K1116: readonly number[] = [82, 50, 50, 48, 48];
+const K1117: readonly number[] = [82, 50, 50, 48, 49];
+const K1118: readonly number[] = [82, 50, 50, 48, 50];
+const K1119: readonly number[] = [82, 50, 50, 48, 51];
+const K1120: readonly number[] = [82, 50, 50, 48, 52];
+const K1121: readonly number[] = [82, 50, 50, 48, 53];
+const K1122: readonly number[] = [82, 50, 50, 48, 54];
+const K1123: readonly number[] = [82, 50, 50, 48, 55];
+const K1124: readonly number[] = [82, 50, 50, 49, 48];
+const K1125: readonly number[] = [82, 50, 51, 48, 48];
+const K1126: readonly number[] = [82, 50, 51, 48, 49];
+const K1127: readonly number[] = [82, 50, 51, 48, 50];
+const K1128: readonly number[] = [82, 50, 51, 48, 51];
+const K1129: readonly number[] = [82, 50, 51, 48, 52];
+const K1130: readonly number[] = [82, 50, 51, 48, 53];
+const K1131: readonly number[] = [82, 50, 51, 48, 54];
+const K1132: readonly number[] = [82, 50, 51, 48, 55];
+const K1133: readonly number[] = [82, 50, 51, 48, 56];
+const K1134: readonly number[] = [82, 50, 51, 48, 57];
+const K1135: readonly number[] = [82, 50, 52, 48, 48];
+const K1136: readonly number[] = [82, 50, 52, 48, 49];
+const K1137: readonly number[] = [82, 50, 52, 48, 50];
+const K1138: readonly number[] = [82, 50, 52, 48, 51];
+const K1139: readonly number[] = [82, 50, 52, 48, 52];
+const K1140: readonly number[] = [82, 50, 52, 48, 53];
+const K1141: readonly number[] = [82, 50, 52, 48, 54];
+const K1142: readonly number[] = [82, 50, 52, 48, 55];
+const K1143: readonly number[] = [82, 50, 52, 48, 56];
+const K1144: readonly number[] = [82, 50, 53, 48, 48];
+const K1145: readonly number[] = [82, 50, 53, 48, 49];
+const K1146: readonly number[] = [82, 50, 53, 48, 50];
+const K1147: readonly number[] = [82, 50, 53, 48, 51];
+const K1148: readonly number[] = [82, 50, 53, 48, 52];
+const K1149: readonly number[] = [82, 50, 53, 48, 53];
+const K1150: readonly number[] = [82, 50, 53, 48, 54];
+const K1151: readonly number[] = [82, 50, 53, 48, 55];
+const K1152: readonly number[] = [82, 50, 53, 48, 56];
+const K1153: readonly number[] = [82, 50, 53, 48, 57];
+const K1154: readonly number[] = [82, 50, 53, 49, 48];
+const K1155: readonly number[] = [82, 50, 53, 49, 49];
+const K1156: readonly number[] = [82, 50, 53, 49, 50];
+const K1157: readonly number[] = [82, 50, 54, 48, 48];
+const K1158: readonly number[] = [82, 50, 54, 48, 49];
+const K1159: readonly number[] = [82, 50, 54, 48, 50];
+const K1160: readonly number[] = [82, 50, 54, 48, 51];
+const K1161: readonly number[] = [82, 50, 54, 48, 52];
+const K1162: readonly number[] = [82, 50, 54, 48, 53];
+const K1163: readonly number[] = [82, 50, 54, 48, 54];
+const K1164: readonly number[] = [82, 50, 54, 48, 55];
+const K1165: readonly number[] = [82, 50, 54, 48, 56];
+const K1166: readonly number[] = [82, 50, 54, 48, 57];
+const K1167: readonly number[] = [82, 50, 54, 49, 48];
+const K1168: readonly number[] = [82, 50, 55, 48, 48];
+const K1169: readonly number[] = [82, 50, 55, 48, 49];
+const K1170: readonly number[] = [82, 50, 55, 48, 50];
+const K1171: readonly number[] = [82, 50, 55, 48, 51];
+const K1172: readonly number[] = [82, 50, 55, 48, 52];
+const K1173: readonly number[] = [82, 50, 55, 48, 53];
+const K1174: readonly number[] = [82, 50, 55, 48, 54];
+const K1175: readonly number[] = [82, 50, 55, 48, 55];
+const K1176: readonly number[] = [82, 50, 55, 48, 56];
+const K1177: readonly number[] = [82, 50, 55, 48, 57];
+const K1178: readonly number[] = [82, 50, 55, 49, 48];
+const K1179: readonly number[] = [82, 50, 55, 49, 49];
+const K1180: readonly number[] = [82, 50, 55, 49, 50];
+const K1181: readonly number[] = [82, 50, 55, 49, 51];
+const K1182: readonly number[] = [82, 50, 55, 49, 52];
+const K1183: readonly number[] = [82, 50, 55, 49, 53];
+const K1184: readonly number[] = [82, 50, 55, 49, 54];
+const K1185: readonly number[] = [82, 50, 55, 49, 55];
+const K1186: readonly number[] = [82, 50, 55, 49, 56];
+const K1187: readonly number[] = [82, 50, 56, 48, 48];
+const K1188: readonly number[] = [82, 50, 56, 48, 49];
+const K1189: readonly number[] = [82, 50, 56, 48, 50];
+const K1190: readonly number[] = [82, 50, 56, 48, 51];
+const K1191: readonly number[] = [82, 50, 56, 48, 52];
+const K1192: readonly number[] = [82, 50, 56, 48, 53];
+const K1193: readonly number[] = [82, 50, 56, 48, 54];
+const K1194: readonly number[] = [82, 50, 56, 48, 55];
+const K1195: readonly number[] = [82, 50, 56, 48, 56];
+const K1196: readonly number[] = [82, 50, 56, 48, 57];
+const K1197: readonly number[] = [82, 50, 56, 49, 48];
+const K1198: readonly number[] = [82, 50, 56, 49, 49];
+const K1199: readonly number[] = [82, 50, 56, 49, 50];
+const K1200: readonly number[] = [82, 50, 56, 49, 51];
+const K1201: readonly number[] = [82, 50, 57, 48, 48];
+const K1202: readonly number[] = [82, 50, 57, 48, 49];
+const K1203: readonly number[] = [82, 50, 57, 48, 50];
+const K1204: readonly number[] = [82, 50, 57, 48, 51];
+const K1205: readonly number[] = [82, 50, 57, 48, 52];
+const K1206: readonly number[] = [82, 50, 57, 48, 53];
+const K1207: readonly number[] = [82, 50, 57, 48, 54];
+const K1208: readonly number[] = [82, 50, 57, 48, 55];
+const K1209: readonly number[] = [82, 50, 57, 48, 56];
+const K1210: readonly number[] = [82, 50, 57, 48, 57];
+const K1211: readonly number[] = [82, 51, 48, 48, 48];
+const K1212: readonly number[] = [82, 51, 49, 48, 48];
+const K1213: readonly number[] = [82, 51, 49, 48, 49];
+const K1214: readonly number[] = [82, 51, 49, 48, 50];
+const K1215: readonly number[] = [82, 51, 49, 48, 51];
+const K1216: readonly number[] = [82, 51, 49, 48, 52];
+const K1217: readonly number[] = [82, 51, 49, 48, 53];
+const K1218: readonly number[] = [82, 51, 49, 48, 54];
+const K1219: readonly number[] = [82, 51, 49, 48, 55];
+const K1220: readonly number[] = [82, 51, 49, 48, 56];
+const K1221: readonly number[] = [82, 51, 49, 48, 57];
+const K1222: readonly number[] = [82, 51, 49, 49, 48];
+const K1223: readonly number[] = [82, 51, 50, 48, 48];
+const K1224: readonly number[] = [82, 51, 50, 48, 49];
+const K1225: readonly number[] = [82, 51, 50, 48, 50];
+const K1226: readonly number[] = [82, 51, 50, 48, 51];
+const K1227: readonly number[] = [82, 51, 50, 48, 52];
+const K1228: readonly number[] = [82, 51, 50, 48, 53];
+const K1229: readonly number[] = [82, 51, 50, 48, 55];
+const K1230: readonly number[] = [82, 51, 50, 48, 56];
+const K1231: readonly number[] = [82, 51, 50, 48, 57];
+const K1232: readonly number[] = [82, 51, 50, 57, 57];
+const K1233: readonly number[] = [82, 51, 51, 48, 48];
+const K1234: readonly number[] = [82, 51, 51, 48, 49];
+const K1235: readonly number[] = [82, 51, 51, 48, 50];
+const K1236: readonly number[] = [82, 51, 51, 48, 51];
+const K1237: readonly number[] = [82, 51, 51, 48, 52];
+const K1238: readonly number[] = [82, 51, 51, 48, 53];
+const K1239: readonly number[] = [82, 51, 51, 48, 54];
+const K1240: readonly number[] = [82, 51, 51, 48, 55];
+const K1241: readonly number[] = [82, 51, 51, 48, 56];
+const K1242: readonly number[] = [82, 51, 51, 48, 57];
+const K1243: readonly number[] = [82, 51, 51, 49, 48];
+const K1244: readonly number[] = [82, 51, 51, 49, 49];
+const K1245: readonly number[] = [82, 51, 51, 49, 50];
+const K1246: readonly number[] = [82, 54, 50, 48, 53];
+const K1247: readonly number[] = [82, 54, 50, 53, 52];
+const K1248: readonly number[] = [82, 54, 50, 57, 51];
+const K1249: readonly number[] = [82, 54, 50, 57, 52];
+const K1250: readonly number[] = [82, 54, 50, 57, 53];
+const K1251: readonly number[] = [82, 54, 50, 57, 54];
+const K1252: readonly number[] = [82, 54, 50, 57, 55];
+const K1253: readonly number[] = [82, 54, 50, 57, 56];
+const K1254: readonly number[] = [82, 54, 50, 57, 57];
+const K1255: readonly number[] = [82, 54, 51, 48, 48];
+const K1256: readonly number[] = [82, 54, 51, 48, 49];
+const K1257: readonly number[] = [82, 54, 51, 48, 50];
+const K1258: readonly number[] = [82, 54, 51, 48, 51];
+const K1259: readonly number[] = [82, 54, 51, 48, 52];
+const K1260: readonly number[] = [82, 54, 51, 48, 53];
+const K1261: readonly number[] = [82, 54, 51, 48, 54];
+const K1262: readonly number[] = [82, 54, 51, 48, 55];
+const K1263: readonly number[] = [82, 54, 51, 48, 56];
+const K1264: readonly number[] = [82, 54, 51, 48, 57];
+const K1265: readonly number[] = [82, 54, 51, 49, 48];
+const K1266: readonly number[] = [82, 54, 51, 49, 49];
+const K1267: readonly number[] = [82, 54, 51, 49, 50];
+const K1268: readonly number[] = [82, 54, 51, 49, 51];
+const K1269: readonly number[] = [82, 54, 51, 49, 52];
+const K1270: readonly number[] = [82, 54, 51, 49, 53];
+const K1271: readonly number[] = [82, 54, 51, 49, 54];
+const K1272: readonly number[] = [82, 54, 51, 49, 55];
+const K1273: readonly number[] = [82, 54, 51, 49, 56];
+const K1274: readonly number[] = [82, 54, 51, 49, 57];
+const K1275: readonly number[] = [82, 54, 51, 50, 48];
+const K1276: readonly number[] = [82, 54, 51, 50, 49];
+const K1277: readonly number[] = [82, 54, 51, 50, 50];
+const K1278: readonly number[] = [82, 54, 51, 50, 51];
+const K1279: readonly number[] = [82, 54, 51, 50, 52];
+const K1280: readonly number[] = [82, 54, 51, 50, 53];
+const K1281: readonly number[] = [82, 54, 51, 50, 54];
+const K1282: readonly number[] = [82, 54, 51, 50, 55];
+const K1283: readonly number[] = [82, 54, 51, 50, 56];
+const K1284: readonly number[] = [82, 54, 51, 50, 57];
+const K1285: readonly number[] = [82, 54, 53, 54, 56];
+const K1286: readonly number[] = [82, 54, 53, 55, 56];
+const K1287: readonly number[] = [82, 54, 54, 53, 55];
+const K1288: readonly number[] = [82, 54, 54, 55, 53];
+const K1289: readonly number[] = [82, 54, 55, 50, 53];
+const K1290: readonly number[] = [82, 54, 55, 50, 54];
+const K1291: readonly number[] = [82, 54, 55, 50, 55];
+const K1292: readonly number[] = [82, 54, 55, 50, 56];
+const K1293: readonly number[] = [82, 54, 55, 50, 57];
+const K1294: readonly number[] = [82, 54, 55, 51, 48];
+const K1295: readonly number[] = [82, 54, 55, 51, 49];
+const K1296: readonly number[] = [82, 54, 55, 51, 50];
+const K1297: readonly number[] = [82, 54, 55, 51, 51];
+const K1298: readonly number[] = [82, 54, 55, 51, 52];
+const K1299: readonly number[] = [82, 54, 55, 53, 55];
+const K1300: readonly number[] = [82, 54, 56, 48, 50];
+const K1301: readonly number[] = [82, 54, 56, 48, 51];
+const K1302: readonly number[] = [82, 54, 56, 48, 52];
+const K1303: readonly number[] = [82, 54, 56, 51, 53];
+const K1304: readonly number[] = [82, 54, 56, 51, 54];
+const K1305: readonly number[] = [82, 57, 57, 57, 57];
+const K1306: readonly number[] = [84, 50, 48, 48, 48];
+const K1307: readonly number[] = [84, 50, 49, 48, 48];
+const K1308: readonly number[] = [84, 50, 49, 48, 49];
+const K1309: readonly number[] = [84, 50, 49, 48, 50];
+const K1310: readonly number[] = [84, 50, 49, 48, 51];
+const K1311: readonly number[] = [84, 50, 49, 48, 52];
+const K1312: readonly number[] = [84, 50, 49, 48, 53];
+const K1313: readonly number[] = [84, 50, 49, 48, 54];
+const K1314: readonly number[] = [84, 50, 49, 48, 55];
+const K1315: readonly number[] = [84, 50, 49, 48, 56];
+const K1316: readonly number[] = [84, 50, 49, 48, 57];
+const K1317: readonly number[] = [84, 50, 49, 49, 48];
+const K1318: readonly number[] = [84, 50, 50, 48, 48];
+const K1319: readonly number[] = [84, 50, 50, 48, 49];
+const K1320: readonly number[] = [84, 50, 50, 48, 50];
+const K1321: readonly number[] = [84, 50, 50, 48, 51];
+const K1322: readonly number[] = [84, 50, 50, 48, 52];
+const K1323: readonly number[] = [84, 50, 50, 48, 53];
+const K1324: readonly number[] = [84, 50, 50, 48, 54];
+const K1325: readonly number[] = [84, 50, 50, 48, 55];
+const K1326: readonly number[] = [84, 50, 50, 48, 56];
+const K1327: readonly number[] = [84, 50, 50, 48, 57];
+const K1328: readonly number[] = [84, 50, 50, 49, 48];
+const K1329: readonly number[] = [84, 50, 50, 49, 49];
+const K1330: readonly number[] = [84, 50, 50, 49, 50];
+const K1331: readonly number[] = [84, 50, 50, 49, 51];
+const K1332: readonly number[] = [84, 50, 50, 49, 52];
+const K1333: readonly number[] = [84, 50, 50, 49, 53];
+const K1334: readonly number[] = [84, 50, 50, 49, 54];
+const K1335: readonly number[] = [84, 50, 50, 49, 55];
+const K1336: readonly number[] = [84, 50, 50, 49, 56];
+const K1337: readonly number[] = [84, 50, 50, 49, 57];
+const K1338: readonly number[] = [84, 50, 50, 50, 48];
+const K1339: readonly number[] = [84, 50, 50, 50, 49];
+const K1340: readonly number[] = [84, 50, 50, 50, 50];
+const K1341: readonly number[] = [84, 50, 50, 50, 51];
+const K1342: readonly number[] = [84, 50, 50, 50, 52];
+const K1343: readonly number[] = [84, 50, 50, 50, 53];
+const K1344: readonly number[] = [84, 50, 50, 50, 54];
+const K1345: readonly number[] = [84, 50, 50, 50, 55];
+const K1346: readonly number[] = [84, 50, 50, 50, 56];
+const K1347: readonly number[] = [84, 50, 50, 50, 57];
+const K1348: readonly number[] = [84, 50, 50, 51, 48];
+const K1349: readonly number[] = [84, 50, 50, 51, 49];
+const K1350: readonly number[] = [84, 50, 50, 51, 50];
+const K1351: readonly number[] = [84, 50, 50, 51, 51];
+const K1352: readonly number[] = [84, 50, 50, 51, 52];
+const K1353: readonly number[] = [84, 50, 50, 51, 53];
+const K1354: readonly number[] = [84, 50, 50, 51, 54];
+const K1355: readonly number[] = [84, 50, 51, 48, 48];
+const K1356: readonly number[] = [84, 50, 51, 48, 49];
+const K1357: readonly number[] = [84, 50, 51, 48, 50];
+const K1358: readonly number[] = [84, 50, 51, 48, 51];
+const K1359: readonly number[] = [84, 50, 51, 48, 52];
+const K1360: readonly number[] = [84, 50, 51, 48, 53];
+const K1361: readonly number[] = [84, 50, 51, 48, 54];
+const K1362: readonly number[] = [84, 50, 51, 48, 55];
+const K1363: readonly number[] = [84, 50, 51, 48, 56];
+const K1364: readonly number[] = [84, 50, 52, 48, 48];
+const K1365: readonly number[] = [84, 50, 52, 48, 49];
+const K1366: readonly number[] = [84, 50, 52, 48, 50];
+const K1367: readonly number[] = [84, 50, 52, 48, 51];
+const K1368: readonly number[] = [84, 50, 52, 48, 52];
+const K1369: readonly number[] = [84, 50, 52, 48, 53];
+const K1370: readonly number[] = [84, 50, 52, 48, 54];
+const K1371: readonly number[] = [84, 50, 52, 48, 55];
+const K1372: readonly number[] = [84, 50, 52, 48, 56];
+const K1373: readonly number[] = [84, 50, 52, 48, 57];
+const K1374: readonly number[] = [84, 50, 52, 49, 48];
+const K1375: readonly number[] = [84, 50, 52, 49, 49];
+const K1376: readonly number[] = [84, 50, 52, 49, 50];
+const K1377: readonly number[] = [84, 50, 52, 49, 51];
+const K1378: readonly number[] = [84, 51, 48, 48, 48];
+const K1379: readonly number[] = [84, 51, 49, 48, 48];
+const K1380: readonly number[] = [84, 51, 49, 48, 49];
+const K1381: readonly number[] = [84, 51, 49, 48, 50];
+const K1382: readonly number[] = [84, 51, 49, 48, 51];
+const K1383: readonly number[] = [84, 51, 49, 48, 52];
+const K1384: readonly number[] = [84, 51, 49, 48, 53];
+const K1385: readonly number[] = [84, 51, 49, 48, 54];
+const K1386: readonly number[] = [84, 51, 50, 48, 48];
+const K1387: readonly number[] = [84, 51, 50, 48, 49];
+const K1388: readonly number[] = [84, 51, 50, 48, 50];
+const K1389: readonly number[] = [84, 51, 50, 48, 51];
+const K1390: readonly number[] = [84, 51, 50, 48, 52];
+const K1391: readonly number[] = [84, 51, 50, 48, 53];
+const K1392: readonly number[] = [84, 51, 50, 48, 54];
+const K1393: readonly number[] = [84, 51, 50, 48, 55];
+const K1394: readonly number[] = [84, 51, 50, 48, 56];
+const K1395: readonly number[] = [84, 51, 51, 48, 48];
+const K1396: readonly number[] = [84, 51, 51, 48, 49];
+const K1397: readonly number[] = [84, 51, 51, 48, 50];
+const K1398: readonly number[] = [84, 51, 51, 48, 51];
+const K1399: readonly number[] = [84, 51, 51, 48, 52];
+const K1400: readonly number[] = [84, 51, 51, 48, 53];
+const K1401: readonly number[] = [84, 51, 51, 48, 54];
+const K1402: readonly number[] = [84, 51, 52, 48, 48];
+const K1403: readonly number[] = [84, 51, 52, 48, 49];
+const K1404: readonly number[] = [84, 51, 52, 48, 50];
+const K1405: readonly number[] = [84, 51, 52, 48, 51];
+const K1406: readonly number[] = [84, 51, 52, 48, 52];
+const K1407: readonly number[] = [84, 51, 52, 48, 53];
+const K1408: readonly number[] = [84, 51, 52, 48, 54];
+const K1409: readonly number[] = [84, 54, 48, 55, 50];
+const K1410: readonly number[] = [84, 54, 48, 55, 51];
+const K1411: readonly number[] = [84, 54, 48, 55, 52];
+const K1412: readonly number[] = [84, 54, 48, 55, 53];
+const K1413: readonly number[] = [84, 54, 48, 55, 54];
+const K1414: readonly number[] = [84, 54, 48, 55, 55];
+const K1415: readonly number[] = [84, 54, 48, 55, 56];
+const K1416: readonly number[] = [84, 54, 48, 55, 57];
+const K1417: readonly number[] = [84, 54, 48, 56, 48];
+const K1418: readonly number[] = [84, 54, 48, 56, 49];
+const K1419: readonly number[] = [84, 54, 48, 56, 50];
+const K1420: readonly number[] = [84, 54, 48, 56, 51];
+const K1421: readonly number[] = [84, 54, 48, 56, 52];
+const K1422: readonly number[] = [84, 54, 48, 56, 53];
+const K1423: readonly number[] = [84, 54, 48, 56, 54];
+const K1424: readonly number[] = [84, 54, 49, 50, 49];
+const K1425: readonly number[] = [84, 54, 49, 55, 54];
+const K1426: readonly number[] = [84, 54, 49, 56, 50];
+const K1427: readonly number[] = [84, 54, 49, 56, 51];
+const K1428: readonly number[] = [84, 54, 50, 50, 49];
+const K1429: readonly number[] = [84, 54, 50, 53, 50];
+const K1430: readonly number[] = [84, 54, 56, 52, 48];
+const K1431: readonly number[] = [84, 54, 56, 52, 49];
+const K1432: readonly number[] = [84, 54, 56, 52, 50];
+const K1433: readonly number[] = [85, 49, 48, 48, 48];
+const K1434: readonly number[] = [85, 49, 49, 48, 48];
+const K1435: readonly number[] = [85, 49, 49, 48, 49];
+const K1436: readonly number[] = [85, 49, 49, 48, 50];
+const K1437: readonly number[] = [85, 49, 49, 48, 51];
+const K1438: readonly number[] = [85, 49, 49, 48, 52];
+const K1439: readonly number[] = [85, 49, 49, 48, 53];
+const K1440: readonly number[] = [85, 49, 49, 48, 54];
+const K1441: readonly number[] = [85, 49, 49, 48, 55];
+const K1442: readonly number[] = [85, 49, 49, 48, 56];
+const K1443: readonly number[] = [85, 49, 49, 48, 57];
+const K1444: readonly number[] = [85, 49, 49, 49, 48];
+const K1445: readonly number[] = [85, 49, 49, 49, 49];
+const K1446: readonly number[] = [85, 49, 49, 49, 50];
+const K1447: readonly number[] = [85, 49, 49, 49, 51];
+const K1448: readonly number[] = [85, 49, 49, 49, 52];
+const K1449: readonly number[] = [85, 49, 49, 49, 53];
+const K1450: readonly number[] = [85, 49, 49, 49, 54];
+const K1451: readonly number[] = [85, 49, 49, 49, 55];
+const K1452: readonly number[] = [85, 49, 49, 49, 56];
+const K1453: readonly number[] = [85, 49, 49, 49, 57];
+const K1454: readonly number[] = [85, 49, 49, 51, 48];
+const K1455: readonly number[] = [85, 49, 50, 48, 48];
+const K1456: readonly number[] = [85, 49, 50, 48, 49];
+const K1457: readonly number[] = [85, 49, 50, 48, 50];
+const K1458: readonly number[] = [85, 49, 50, 48, 51];
+const K1459: readonly number[] = [85, 49, 50, 48, 52];
+const K1460: readonly number[] = [85, 49, 50, 48, 53];
+const K1461: readonly number[] = [85, 49, 50, 48, 54];
+const K1462: readonly number[] = [85, 49, 50, 48, 55];
+const K1463: readonly number[] = [85, 49, 50, 48, 56];
+const K1464: readonly number[] = [85, 49, 50, 48, 57];
+const K1465: readonly number[] = [85, 49, 50, 49, 48];
+const K1466: readonly number[] = [85, 49, 50, 49, 49];
+const K1467: readonly number[] = [85, 49, 50, 49, 50];
+const K1468: readonly number[] = [85, 49, 50, 49, 51];
+const K1469: readonly number[] = [85, 49, 50, 49, 52];
+const K1470: readonly number[] = [85, 49, 50, 49, 53];
+const K1471: readonly number[] = [85, 49, 50, 49, 54];
+const K1472: readonly number[] = [85, 49, 50, 49, 55];
+const K1473: readonly number[] = [85, 49, 50, 49, 56];
+const K1474: readonly number[] = [85, 49, 50, 49, 57];
+const K1475: readonly number[] = [85, 49, 50, 50, 48];
+const K1476: readonly number[] = [85, 49, 50, 50, 49];
+const K1477: readonly number[] = [85, 49, 50, 50, 50];
+const K1478: readonly number[] = [85, 49, 50, 50, 51];
+const K1479: readonly number[] = [85, 49, 50, 50, 53];
+const K1480: readonly number[] = [85, 49, 50, 50, 54];
+const K1481: readonly number[] = [85, 49, 50, 50, 55];
+const K1482: readonly number[] = [85, 49, 50, 51, 48];
+const K1483: readonly number[] = [85, 49, 51, 48, 48];
+const K1484: readonly number[] = [85, 49, 51, 48, 49];
+const K1485: readonly number[] = [85, 49, 51, 48, 50];
+const K1486: readonly number[] = [85, 49, 51, 48, 51];
+const K1487: readonly number[] = [85, 49, 51, 48, 52];
+const K1488: readonly number[] = [85, 49, 51, 48, 53];
+const K1489: readonly number[] = [85, 49, 51, 48, 54];
+const K1490: readonly number[] = [85, 49, 51, 48, 55];
+const K1491: readonly number[] = [85, 49, 51, 48, 56];
+const K1492: readonly number[] = [85, 49, 51, 48, 57];
+const K1493: readonly number[] = [85, 49, 51, 49, 48];
+const K1494: readonly number[] = [85, 49, 51, 49, 49];
+const K1495: readonly number[] = [85, 49, 51, 49, 50];
+const K1496: readonly number[] = [85, 49, 51, 51, 48];
+const K1497: readonly number[] = [85, 49, 51, 52, 48];
+const K1498: readonly number[] = [85, 49, 51, 53, 48];
+const K1499: readonly number[] = [85, 49, 52, 48, 48];
+const K1500: readonly number[] = [85, 49, 53, 48, 48];
+const K1501: readonly number[] = [85, 49, 53, 49, 48];
+const K1502: readonly number[] = [85, 49, 54, 48, 48];
+const K1503: readonly number[] = [85, 49, 54, 48, 49];
+const K1504: readonly number[] = [85, 54, 48, 48, 56];
+const K1505: readonly number[] = [85, 54, 48, 50, 55];
+const K1506: readonly number[] = [85, 54, 51, 56, 53];
+const K1507: readonly number[] = [85, 54, 51, 56, 54];
+const K1508: readonly number[] = [85, 54, 51, 56, 55];
+const K1509: readonly number[] = [85, 54, 51, 56, 56];
+const K1510: readonly number[] = [85, 54, 51, 56, 57];
+const K1511: readonly number[] = [85, 54, 51, 57, 48];
+const K1512: readonly number[] = [85, 54, 52, 48, 48];
+const K1513: readonly number[] = [85, 54, 52, 48, 49];
+const K1514: readonly number[] = [85, 54, 52, 48, 57];
+const K1515: readonly number[] = [85, 54, 52, 49, 56];
+const K1516: readonly number[] = [85, 54, 52, 51, 53];
+const K1517: readonly number[] = [85, 56, 53, 49, 55];
+const K1518: readonly number[] = [85, 56, 53, 53, 48];
+const K1519: readonly number[] = [85, 56, 53, 54, 51];
+const K1520: readonly number[] = [85, 56, 53, 55, 50];
+const K1521: readonly number[] = [85, 56, 54, 49, 51];
+const K1522: readonly number[] = [85, 56, 54, 49, 54];
+const K1523: readonly number[] = [85, 56, 54, 52, 55];
+const K1524: readonly number[] = [86, 49, 48, 48, 48];
+const K1525: readonly number[] = [86, 49, 49, 48, 48];
+const K1526: readonly number[] = [86, 49, 49, 48, 49];
+const K1527: readonly number[] = [86, 49, 49, 48, 50];
+const K1528: readonly number[] = [86, 49, 49, 48, 51];
+const K1529: readonly number[] = [86, 49, 49, 48, 52];
+const K1530: readonly number[] = [86, 49, 49, 48, 53];
+const K1531: readonly number[] = [86, 49, 49, 48, 54];
+const K1532: readonly number[] = [86, 49, 49, 48, 55];
+const K1533: readonly number[] = [86, 49, 49, 48, 56];
+const K1534: readonly number[] = [86, 49, 49, 48, 57];
+const K1535: readonly number[] = [86, 49, 49, 49, 48];
+const K1536: readonly number[] = [86, 49, 49, 49, 49];
+const K1537: readonly number[] = [86, 49, 49, 49, 50];
+const K1538: readonly number[] = [86, 49, 49, 49, 51];
+const K1539: readonly number[] = [86, 49, 49, 49, 52];
+const K1540: readonly number[] = [86, 49, 49, 49, 53];
+const K1541: readonly number[] = [86, 49, 49, 49, 54];
+const K1542: readonly number[] = [86, 49, 49, 50, 48];
+const K1543: readonly number[] = [86, 49, 49, 50, 49];
+const K1544: readonly number[] = [86, 49, 49, 50, 50];
+const K1545: readonly number[] = [86, 49, 49, 50, 51];
+const K1546: readonly number[] = [86, 49, 49, 50, 52];
+const K1547: readonly number[] = [86, 49, 49, 50, 53];
+const K1548: readonly number[] = [86, 49, 49, 50, 54];
+const K1549: readonly number[] = [86, 49, 49, 50, 55];
+const K1550: readonly number[] = [86, 49, 49, 50, 56];
+const K1551: readonly number[] = [86, 54, 48, 49, 49];
+const K1552: readonly number[] = [86, 54, 48, 49, 50];
+const K1553: readonly number[] = [86, 54, 48, 49, 51];
+const K1554: readonly number[] = [86, 54, 48, 49, 52];
+const K1555: readonly number[] = [86, 54, 48, 51, 51];
+const K1556: readonly number[] = [86, 54, 48, 52, 48];
+const K1557: readonly number[] = [86, 54, 48, 52, 50];
+const K1558: readonly number[] = [86, 54, 48, 52, 51];
+const K1559: readonly number[] = [86, 54, 48, 52, 53];
+const K1560: readonly number[] = [86, 54, 48, 52, 54];
+const K1561: readonly number[] = [86, 54, 48, 53, 49];
+const K1562: readonly number[] = [86, 54, 48, 53, 52];
+const K1563: readonly number[] = [86, 54, 50, 51, 52];
+const K1564: readonly number[] = [86, 54, 50, 52, 48];
+const K1565: readonly number[] = [87, 49, 48, 48, 48];
+const K1566: readonly number[] = [87, 49, 49, 48, 48];
+const K1567: readonly number[] = [87, 49, 49, 48, 49];
+const K1568: readonly number[] = [87, 49, 49, 48, 50];
+const K1569: readonly number[] = [87, 49, 49, 48, 51];
+const K1570: readonly number[] = [87, 49, 49, 48, 52];
+const K1571: readonly number[] = [87, 49, 49, 48, 53];
+const K1572: readonly number[] = [87, 49, 49, 48, 54];
+const K1573: readonly number[] = [87, 49, 49, 48, 55];
+const K1574: readonly number[] = [87, 49, 49, 48, 57];
+const K1575: readonly number[] = [87, 49, 49, 49, 48];
+const K1576: readonly number[] = [87, 49, 49, 49, 49];
+const K1577: readonly number[] = [87, 49, 49, 49, 50];
+const K1578: readonly number[] = [87, 49, 49, 49, 51];
+const K1579: readonly number[] = [87, 49, 49, 49, 52];
+const K1580: readonly number[] = [87, 49, 49, 49, 53];
+const K1581: readonly number[] = [87, 49, 49, 49, 54];
+const K1582: readonly number[] = [87, 49, 49, 49, 55];
+const K1583: readonly number[] = [87, 49, 49, 49, 56];
+const K1584: readonly number[] = [87, 49, 49, 49, 57];
+const K1585: readonly number[] = [87, 49, 49, 50, 48];
+const K1586: readonly number[] = [87, 49, 49, 50, 49];
+const K1587: readonly number[] = [87, 49, 49, 50, 50];
+const K1588: readonly number[] = [87, 49, 49, 50, 51];
+const K1589: readonly number[] = [87, 49, 49, 50, 52];
+const K1590: readonly number[] = [87, 49, 50, 48, 48];
+const K1591: readonly number[] = [87, 49, 50, 48, 49];
+const K1592: readonly number[] = [87, 49, 50, 48, 50];
+const K1593: readonly number[] = [87, 49, 50, 48, 51];
+const K1594: readonly number[] = [87, 49, 50, 48, 52];
+const K1595: readonly number[] = [87, 49, 50, 48, 53];
+const K1596: readonly number[] = [87, 49, 50, 48, 54];
+const K1597: readonly number[] = [87, 49, 50, 48, 55];
+const K1598: readonly number[] = [87, 49, 50, 48, 56];
+const K1599: readonly number[] = [87, 49, 50, 48, 57];
+const K1600: readonly number[] = [87, 49, 50, 49, 48];
+const K1601: readonly number[] = [87, 49, 50, 49, 49];
+const K1602: readonly number[] = [87, 49, 50, 49, 50];
+const K1603: readonly number[] = [87, 49, 50, 49, 51];
+const K1604: readonly number[] = [87, 49, 50, 49, 52];
+const K1605: readonly number[] = [87, 49, 50, 49, 53];
+const K1606: readonly number[] = [87, 49, 50, 49, 55];
+const K1607: readonly number[] = [87, 49, 50, 49, 56];
+const K1608: readonly number[] = [87, 49, 50, 49, 57];
+const K1609: readonly number[] = [87, 49, 50, 50, 48];
+const K1610: readonly number[] = [87, 49, 51, 48, 48];
+const K1611: readonly number[] = [87, 49, 52, 48, 48];
+const K1612: readonly number[] = [87, 49, 52, 51, 48];
+const K1613: readonly number[] = [87, 49, 53, 48, 48];
+const K1614: readonly number[] = [87, 54, 48, 48, 56];
+const K1615: readonly number[] = [87, 54, 48, 48, 57];
+const K1616: readonly number[] = [87, 54, 49, 49, 56];
+const K1617: readonly number[] = [87, 54, 50, 56, 57];
+const K1618: readonly number[] = [87, 54, 50, 57, 52];
+const K1619: readonly number[] = [87, 54, 51, 55, 55];
+const K1620: readonly number[] = [87, 54, 52, 51, 56];
+const K1621: readonly number[] = [87, 54, 52, 53, 51];
+const K1622: readonly number[] = [87, 54, 52, 53, 52];
+const K1623: readonly number[] = [87, 54, 52, 53, 53];
+const K1624: readonly number[] = [87, 54, 52, 53, 56];
+const K1625: readonly number[] = [87, 54, 52, 53, 57];
+const K1626: readonly number[] = [87, 54, 52, 54, 48];
+const K1627: readonly number[] = [87, 54, 52, 54, 52];
+const K1628: readonly number[] = [87, 54, 52, 54, 55];
+const K1629: readonly number[] = [87, 54, 52, 54, 56];
+const K1630: readonly number[] = [87, 54, 52, 54, 57];
+const K1631: readonly number[] = [87, 54, 52, 55, 48];
+const K1632: readonly number[] = [87, 54, 52, 55, 49];
+const K1633: readonly number[] = [87, 54, 52, 55, 50];
+const K1634: readonly number[] = [87, 54, 52, 56, 56];
+const K1635: readonly number[] = [87, 54, 54, 51, 50];
+const K1636: readonly number[] = [87, 54, 54, 51, 51];
+const K1637: readonly number[] = [87, 54, 54, 51, 52];
+const K1638: readonly number[] = [87, 54, 54, 51, 53];
+const K1639: readonly number[] = [87, 54, 54, 51, 54];
+const K1640: readonly number[] = [87, 54, 54, 51, 55];
+const K1641: readonly number[] = [88, 49, 48, 48, 48];
+const K1642: readonly number[] = [88, 49, 49, 48, 48];
+const K1643: readonly number[] = [88, 49, 49, 49, 49];
+const K1644: readonly number[] = [88, 49, 49, 49, 50];
+const K1645: readonly number[] = [88, 49, 49, 49, 51];
+const K1646: readonly number[] = [88, 49, 49, 49, 52];
+const K1647: readonly number[] = [88, 49, 49, 49, 53];
+const K1648: readonly number[] = [88, 49, 49, 49, 54];
+const K1649: readonly number[] = [88, 49, 49, 49, 55];
+const K1650: readonly number[] = [88, 49, 49, 49, 56];
+const K1651: readonly number[] = [88, 49, 49, 49, 57];
+const K1652: readonly number[] = [88, 49, 49, 50, 49];
+const K1653: readonly number[] = [88, 49, 49, 50, 50];
+const K1654: readonly number[] = [88, 49, 49, 50, 51];
+const K1655: readonly number[] = [88, 49, 49, 50, 52];
+const K1656: readonly number[] = [88, 49, 51, 48, 48];
+const K1657: readonly number[] = [88, 49, 51, 49, 49];
+const K1658: readonly number[] = [88, 49, 51, 49, 50];
+const K1659: readonly number[] = [88, 49, 51, 49, 52];
+const K1660: readonly number[] = [88, 49, 51, 49, 53];
+const K1661: readonly number[] = [88, 49, 51, 49, 54];
+const K1662: readonly number[] = [88, 49, 51, 49, 55];
+const K1663: readonly number[] = [88, 49, 51, 49, 56];
+const K1664: readonly number[] = [88, 49, 51, 49, 57];
+const K1665: readonly number[] = [88, 49, 51, 50, 49];
+const K1666: readonly number[] = [88, 49, 51, 50, 50];
+const K1667: readonly number[] = [88, 49, 51, 50, 51];
+const K1668: readonly number[] = [88, 49, 51, 50, 52];
+const K1669: readonly number[] = [88, 49, 51, 50, 53];
+const K1670: readonly number[] = [88, 49, 51, 50, 54];
+const K1671: readonly number[] = [88, 49, 53, 48, 48];
+const K1672: readonly number[] = [88, 49, 53, 49, 49];
+const K1673: readonly number[] = [88, 49, 53, 49, 50];
+const K1674: readonly number[] = [88, 49, 53, 49, 51];
+const K1675: readonly number[] = [88, 49, 53, 49, 52];
+const K1676: readonly number[] = [88, 49, 53, 49, 53];
+const K1677: readonly number[] = [88, 49, 53, 49, 54];
+const K1678: readonly number[] = [88, 49, 53, 49, 55];
+const K1679: readonly number[] = [88, 49, 53, 49, 56];
+const K1680: readonly number[] = [88, 49, 53, 49, 57];
+const K1681: readonly number[] = [88, 49, 53, 50, 49];
+const K1682: readonly number[] = [88, 49, 53, 50, 50];
+const K1683: readonly number[] = [88, 49, 53, 50, 51];
+const K1684: readonly number[] = [88, 49, 53, 50, 52];
+const K1685: readonly number[] = [88, 49, 53, 50, 53];
+const K1686: readonly number[] = [88, 49, 53, 50, 54];
+const K1687: readonly number[] = [88, 49, 55, 48, 48];
+const K1688: readonly number[] = [88, 49, 55, 49, 49];
+const K1689: readonly number[] = [88, 49, 55, 49, 50];
+const K1690: readonly number[] = [88, 49, 55, 49, 51];
+const K1691: readonly number[] = [88, 49, 55, 49, 52];
+const K1692: readonly number[] = [88, 49, 55, 49, 53];
+const K1693: readonly number[] = [88, 49, 55, 49, 54];
+const K1694: readonly number[] = [88, 49, 55, 49, 55];
+const K1695: readonly number[] = [88, 49, 55, 49, 56];
+const K1696: readonly number[] = [88, 49, 55, 49, 57];
+const K1697: readonly number[] = [88, 49, 55, 50, 49];
+const K1698: readonly number[] = [88, 49, 55, 50, 50];
+const K1699: readonly number[] = [88, 49, 55, 50, 51];
+const K1700: readonly number[] = [88, 49, 55, 50, 52];
+const K1701: readonly number[] = [88, 49, 55, 50, 53];
+const K1702: readonly number[] = [88, 49, 55, 50, 54];
+const K1703: readonly number[] = [88, 49, 55, 50, 55];
+const K1704: readonly number[] = [88, 49, 55, 50, 56];
+const K1705: readonly number[] = [88, 49, 55, 50, 57];
+const K1706: readonly number[] = [88, 54, 48, 55, 48];
+const K1707: readonly number[] = [88, 54, 48, 55, 49];
+const K1708: readonly number[] = [88, 54, 48, 55, 51];
+const K1709: readonly number[] = [88, 54, 48, 55, 52];
+const K1710: readonly number[] = [88, 54, 48, 55, 53];
+const K1711: readonly number[] = [88, 54, 48, 55, 54];
+const K1712: readonly number[] = [88, 54, 48, 55, 55];
+const K1713: readonly number[] = [88, 54, 48, 55, 56];
+const K1714: readonly number[] = [88, 54, 48, 55, 57];
+const K1715: readonly number[] = [88, 54, 48, 56, 48];
+const K1716: readonly number[] = [88, 54, 49, 49, 49];
+const K1717: readonly number[] = [88, 54, 49, 54, 53];
+const K1718: readonly number[] = [88, 54, 49, 54, 54];
+const K1719: readonly number[] = [88, 54, 49, 56, 56];
+const K1720: readonly number[] = [88, 54, 51, 56, 55];
+const K1721: readonly number[] = [88, 54, 52, 51, 51];
+const K1722: readonly number[] = [88, 54, 55, 55, 54];
+const K1723: readonly number[] = [89, 49, 48, 48, 48];
+const K1724: readonly number[] = [89, 49, 49, 48, 48];
+const K1725: readonly number[] = [89, 49, 49, 48, 49];
+const K1726: readonly number[] = [89, 49, 49, 48, 50];
+const K1727: readonly number[] = [89, 49, 49, 48, 51];
+const K1728: readonly number[] = [89, 49, 49, 48, 52];
+const K1729: readonly number[] = [89, 49, 49, 48, 53];
+const K1730: readonly number[] = [89, 49, 49, 48, 54];
+const K1731: readonly number[] = [89, 49, 49, 48, 55];
+const K1732: readonly number[] = [89, 49, 49, 48, 56];
+const K1733: readonly number[] = [89, 49, 49, 48, 57];
+const K1734: readonly number[] = [89, 49, 49, 49, 48];
+const K1735: readonly number[] = [89, 49, 49, 49, 49];
+const K1736: readonly number[] = [89, 49, 49, 49, 50];
+const K1737: readonly number[] = [89, 49, 49, 49, 51];
+const K1738: readonly number[] = [89, 49, 49, 49, 52];
+const K1739: readonly number[] = [89, 49, 49, 49, 53];
+const K1740: readonly number[] = [89, 49, 50, 48, 48];
+const K1741: readonly number[] = [89, 49, 50, 48, 49];
+const K1742: readonly number[] = [89, 49, 50, 48, 50];
+const K1743: readonly number[] = [89, 49, 50, 48, 51];
+const K1744: readonly number[] = [89, 49, 50, 48, 52];
+const K1745: readonly number[] = [89, 49, 50, 48, 53];
+const K1746: readonly number[] = [89, 49, 50, 48, 54];
+const K1747: readonly number[] = [89, 49, 50, 48, 56];
+const K1748: readonly number[] = [89, 49, 50, 48, 57];
+const K1749: readonly number[] = [89, 49, 50, 49, 48];
+const K1750: readonly number[] = [89, 49, 50, 49, 49];
+const K1751: readonly number[] = [89, 49, 50, 49, 50];
+const K1752: readonly number[] = [89, 49, 50, 49, 51];
+const K1753: readonly number[] = [89, 49, 50, 49, 52];
+const K1754: readonly number[] = [89, 49, 50, 49, 53];
+const K1755: readonly number[] = [89, 49, 51, 48, 48];
+const K1756: readonly number[] = [89, 49, 51, 48, 49];
+const K1757: readonly number[] = [89, 49, 51, 48, 50];
+const K1758: readonly number[] = [89, 49, 51, 48, 51];
+const K1759: readonly number[] = [89, 49, 51, 48, 52];
+const K1760: readonly number[] = [89, 49, 51, 48, 53];
+const K1761: readonly number[] = [89, 49, 51, 48, 54];
+const K1762: readonly number[] = [89, 49, 51, 48, 55];
+const K1763: readonly number[] = [89, 49, 51, 48, 56];
+const K1764: readonly number[] = [89, 49, 52, 48, 48];
+const K1765: readonly number[] = [89, 54, 48, 48, 51];
+const K1766: readonly number[] = [89, 54, 48, 48, 52];
+const K1767: readonly number[] = [89, 54, 48, 49, 48];
+const K1768: readonly number[] = [89, 54, 48, 54, 48];
+const K1769: readonly number[] = [89, 54, 48, 54, 49];
+const K1770: readonly number[] = [89, 54, 49, 52, 57];
+const K1771: readonly number[] = [89, 54, 51, 50, 53];
+const K1772: readonly number[] = [89, 54, 51, 52, 50];
+const K1773: readonly number[] = [89, 54, 51, 56, 56];
+const K1774: readonly number[] = [89, 54, 51, 56, 57];
+const K1775: readonly number[] = [89, 54, 51, 57, 48];
+const K1776: readonly number[] = [89, 54, 51, 57, 49];
+const K1777: readonly number[] = [89, 54, 51, 57, 50];
+const K1778: readonly number[] = [89, 54, 51, 57, 51];
+const K1779: readonly number[] = [89, 54, 51, 57, 55];
+const K1780: readonly number[] = [89, 54, 51, 57, 56];
+const K1781: readonly number[] = [89, 54, 52, 48, 50];
+const K1782: readonly number[] = [89, 54, 52, 48, 51];
+const K1783: readonly number[] = [89, 54, 52, 48, 52];
+const K1784: readonly number[] = [89, 54, 52, 48, 53];
+const K1785: readonly number[] = [89, 54, 52, 48, 54];
+const K1786: readonly number[] = [90, 49, 48, 48, 48];
+const K1787: readonly number[] = [90, 49, 48, 48, 55];
+const K1788: readonly number[] = [90, 49, 49, 48, 48];
+const K1789: readonly number[] = [90, 49, 50, 48, 48];
+const K1790: readonly number[] = [90, 54, 49, 48, 56];
+const K1791: readonly number[] = [90, 55, 51, 53, 48];
+const X1792: readonly (readonly number[])[] = [K44, K45, K46, K47, K48, K49, K50, K51, K52, K53, K54, K55, K56, K57, K58, K59, K60, K61, K62, K63, K64, K65, K66, K67, K68, K69, K70, K71, K72, K73, K74, K75, K76, K77, K78, K79, K80, K81, K82, K83, K84, K85, K86, K87, K88, K89, K90, K91, K92, K93, K94, K95, K96, K97, K98, K99, K100, K101, K102, K103, K104, K105, K106, K107, K108, K109, K110, K111, K112, K113, K114, K115, K116, K117, K118, K119, K120, K121, K122, K123, K124, K125, K126, K127, K128, K129, K130, K131, K132, K133, K134, K135, K136, K137, K138, K139, K140, K141, K142, K143, K144, K145, K146, K147, K148, K149, K150, K151, K152, K153, K154, K155, K156, K157, K158, K159, K160, K161, K162, K163, K164, K165, K166, K167, K168, K169, K170, K171, K172, K173, K174, K175, K176, K177, K178, K179, K180, K181, K182, K183, K184, K185, K186, K187, K188, K189, K190, K191, K192, K193, K194, K195, K196, K197, K198, K199, K200, K201, K202, K203, K204, K205, K206, K207, K208, K209, K210, K211, K212, K213, K214, K215, K216, K217, K218, K219, K220, K221, K222, K223, K224, K225, K226, K227, K228, K229, K230, K231, K232, K233, K234, K235, K236, K237, K238, K239, K240, K241, K242, K243, K244, K245, K246, K247, K248, K249, K250, K251, K252, K253, K254, K255, K256, K257, K258, K259, K260, K261, K262, K263, K264, K265, K266, K267, K268, K269, K270, K271, K272, K273, K274, K275, K276, K277, K278, K279, K280, K281, K282, K283, K284, K285, K286, K287, K288, K289, K290, K291, K292, K293, K294, K295, K296, K297, K298, K299, K300, K301, K302, K303, K304, K305, K306, K307, K308, K309, K310, K311, K312, K313, K314, K315, K316, K317, K318, K319, K320, K321, K322, K323, K324, K325, K326, K327, K328, K329, K330, K331, K332, K333, K334, K335, K336, K337, K338, K339, K340, K341, K342, K343, K344, K345, K346, K347, K348, K349, K350, K351, K352, K353, K354, K355, K356, K357, K358, K359, K360, K361, K362, K363, K364, K365, K366, K367, K368, K369, K370, K371, K372, K373, K374, K375, K376, K377, K378, K379, K380, K381, K382, K383, K384, K385, K386, K387, K388, K389, K390, K391, K392, K393, K394, K395, K396, K397, K398, K399, K400, K401, K402, K403, K404, K405, K406, K407, K408, K409, K410, K411, K412, K413, K414, K415, K416, K417, K418, K419, K420, K421, K422, K423, K424, K425, K426, K427, K428, K429, K430, K431, K432, K433, K434, K435, K436, K437, K438, K439, K440, K441, K442, K443, K444, K445, K446, K447, K448, K449, K450, K451, K452, K453, K454, K455, K456, K457, K458, K459, K460, K461, K462, K463, K464, K465, K466, K467, K468, K469, K470, K471, K472, K473, K474, K475, K476, K477, K478, K479, K480, K481, K482, K483, K484, K485, K486, K487, K488, K489, K490, K491, K492, K493, K494, K495, K496, K497, K498, K499, K500, K501, K502, K503, K504, K505, K506, K507, K508, K509, K510, K511, K512, K513, K514, K515, K516, K517, K518, K519, K520, K521, K522, K523, K524, K525, K526, K527, K528, K529, K530, K531, K532, K533, K534, K535, K536, K537, K538, K539, K540, K541, K542, K543, K544, K545, K546, K547, K548, K549, K550, K551, K552, K553, K554, K555, K556, K557, K558, K559, K560, K561, K562, K563, K564, K565, K566, K567, K568, K569, K570, K571, K572, K573, K574, K575, K576, K577, K578, K579, K580, K581, K582, K583, K584, K585, K586, K587, K588, K589, K590, K591, K592, K593, K594, K595, K596, K597, K598, K599, K600, K601, K602, K603, K604, K605, K606, K607, K608, K609, K610, K611, K612, K613, K614, K615, K616, K617, K618, K619, K620, K621, K622, K623, K624, K625, K626, K627, K628, K629, K630, K631, K632, K633, K634, K635, K636, K637, K638, K639, K640, K641, K642, K643, K644, K645, K646, K647, K648, K649, K650, K651, K652, K653, K654, K655, K656, K657, K658, K659, K660, K661, K662, K663, K664, K665, K666, K667, K668, K669, K670, K671, K672, K673, K674, K675, K676, K677, K678, K679, K680, K681, K682, K683, K684, K685, K686, K687, K688, K689, K690, K691, K692, K693, K694, K695, K696, K697, K698, K699, K700, K701, K702, K703, K704, K705, K706, K707, K708, K709, K710, K711, K712, K713, K714, K715, K716, K717, K718, K719, K720, K721, K722, K723, K724, K725, K726, K727, K728, K729, K730, K731, K732, K733, K734, K735, K736, K737, K738, K739, K740, K741, K742, K743, K744, K745, K746, K747, K748, K749, K750, K751, K752, K753, K754, K755, K756, K757, K758, K759, K760, K761, K762, K763, K764, K765, K766, K767, K768, K769, K770, K771, K772, K773, K774, K775, K776, K777, K778, K779, K780, K781, K782, K783, K784, K785, K786, K787, K788, K789, K790, K791, K792, K793, K794, K795, K796, K797, K798, K799, K800, K801, K802, K803, K804, K805, K806, K807, K808, K809, K810, K811, K812, K813, K814, K815, K816, K817, K818, K819, K820, K821, K822, K823, K824, K825, K826, K827, K828, K829, K830, K831, K832, K833, K834, K835, K836, K837, K838, K839, K840, K841, K842, K843, K844, K845, K846, K847, K848, K849, K850, K851, K852, K853, K854, K855, K856, K857, K858, K859, K860, K861, K862, K863, K864, K865, K866, K867, K868, K869, K870, K871, K872, K873, K874, K875, K876, K877, K878, K879, K880, K881, K882, K883, K884, K885, K886, K887, K888, K889, K890, K891, K892, K893, K894, K895, K896, K897, K898, K899, K900, K901, K902, K903, K904, K905, K906, K907, K908, K909, K910, K911, K912, K913, K914, K915, K916, K917, K918, K919, K920, K921, K922, K923, K924, K925, K926, K927, K928, K929, K930, K931, K932, K933, K934, K935, K936, K937, K938, K939, K940, K941, K942, K943, K944, K945, K946, K947, K948, K949, K950, K951, K952, K953, K954, K955, K956, K957, K958, K959, K960, K961, K962, K963, K964, K965, K966, K967, K968, K969, K970, K971, K972, K973, K974, K975, K976, K977, K978, K979, K980, K981, K982, K983, K984, K985, K986, K987, K988, K989, K990, K991, K992, K993, K994, K995, K996, K997, K998, K999, K1000, K1001, K1002, K1003, K1004, K1005, K1006, K1007, K1008, K1009, K1010, K1011, K1012, K1013, K1014, K1015, K1016, K1017, K1018, K1019, K1020, K1021, K1022, K1023, K1024, K1025, K1026, K1027, K1028, K1029, K1030, K1031, K1032, K1033, K1034, K1035, K1036, K1037, K1038, K1039, K1040, K1041, K1042, K1043, K1044, K1045, K1046, K1047, K1048, K1049, K1050, K1051, K1052, K1053, K1054, K1055, K1056, K1057, K1058, K1059, K1060, K1061, K1062, K1063, K1064, K1065, K1066, K1067, K1068, K1069, K1070, K1071, K1072, K1073, K1074, K1075, K1076, K1077, K1078, K1079, K1080, K1081, K1082, K1083, K1084, K1085, K1086, K1087, K1088, K1089, K1090, K1091, K1092, K1093, K1094, K1095, K1096, K1097, K1098, K1099, K1100, K1101, K1102, K1103, K1104, K1105, K1106, K1107, K1108, K1109, K1110, K1111, K1112, K1113, K1114, K1115, K1116, K1117, K1118, K1119, K1120, K1121, K1122, K1123, K1124, K1125, K1126, K1127, K1128, K1129, K1130, K1131, K1132, K1133, K1134, K1135, K1136, K1137, K1138, K1139, K1140, K1141, K1142, K1143, K1144, K1145, K1146, K1147, K1148, K1149, K1150, K1151, K1152, K1153, K1154, K1155, K1156, K1157, K1158, K1159, K1160, K1161, K1162, K1163, K1164, K1165, K1166, K1167, K1168, K1169, K1170, K1171, K1172, K1173, K1174, K1175, K1176, K1177, K1178, K1179, K1180, K1181, K1182, K1183, K1184, K1185, K1186, K1187, K1188, K1189, K1190, K1191, K1192, K1193, K1194, K1195, K1196, K1197, K1198, K1199, K1200, K1201, K1202, K1203, K1204, K1205, K1206, K1207, K1208, K1209, K1210, K1211, K1212, K1213, K1214, K1215, K1216, K1217, K1218, K1219, K1220, K1221, K1222, K1223, K1224, K1225, K1226, K1227, K1228, K1229, K1230, K1231, K1232, K1233, K1234, K1235, K1236, K1237, K1238, K1239, K1240, K1241, K1242, K1243, K1244, K1245, K1246, K1247, K1248, K1249, K1250, K1251, K1252, K1253, K1254, K1255, K1256, K1257, K1258, K1259, K1260, K1261, K1262, K1263, K1264, K1265, K1266, K1267, K1268, K1269, K1270, K1271, K1272, K1273, K1274, K1275, K1276, K1277, K1278, K1279, K1280, K1281, K1282, K1283, K1284, K1285, K1286, K1287, K1288, K1289, K1290, K1291, K1292, K1293, K1294, K1295, K1296, K1297, K1298, K1299, K1300, K1301, K1302, K1303, K1304, K1305, K1306, K1307, K1308, K1309, K1310, K1311, K1312, K1313, K1314, K1315, K1316, K1317, K1318, K1319, K1320, K1321, K1322, K1323, K1324, K1325, K1326, K1327, K1328, K1329, K1330, K1331, K1332, K1333, K1334, K1335, K1336, K1337, K1338, K1339, K1340, K1341, K1342, K1343, K1344, K1345, K1346, K1347, K1348, K1349, K1350, K1351, K1352, K1353, K1354, K1355, K1356, K1357, K1358, K1359, K1360, K1361, K1362, K1363, K1364, K1365, K1366, K1367, K1368, K1369, K1370, K1371, K1372, K1373, K1374, K1375, K1376, K1377, K1378, K1379, K1380, K1381, K1382, K1383, K1384, K1385, K1386, K1387, K1388, K1389, K1390, K1391, K1392, K1393, K1394, K1395, K1396, K1397, K1398, K1399, K1400, K1401, K1402, K1403, K1404, K1405, K1406, K1407, K1408, K1409, K1410, K1411, K1412, K1413, K1414, K1415, K1416, K1417, K1418, K1419, K1420, K1421, K1422, K1423, K1424, K1425, K1426, K1427, K1428, K1429, K1430, K1431, K1432, K1433, K1434, K1435, K1436, K1437, K1438, K1439, K1440, K1441, K1442, K1443, K1444, K1445, K1446, K1447, K1448, K1449, K1450, K1451, K1452, K1453, K1454, K1455, K1456, K1457, K1458, K1459, K1460, K1461, K1462, K1463, K1464, K1465, K1466, K1467, K1468, K1469, K1470, K1471, K1472, K1473, K1474, K1475, K1476, K1477, K1478, K1479, K1480, K1481, K1482, K1483, K1484, K1485, K1486, K1487, K1488, K1489, K1490, K1491, K1492, K1493, K1494, K1495, K1496, K1497, K1498, K1499, K1500, K1501, K1502, K1503, K1504, K1505, K1506, K1507, K1508, K1509, K1510, K1511, K1512, K1513, K1514, K1515, K1516, K1517, K1518, K1519, K1520, K1521, K1522, K1523, K1524, K1525, K1526, K1527, K1528, K1529, K1530, K1531, K1532, K1533, K1534, K1535, K1536, K1537, K1538, K1539, K1540, K1541, K1542, K1543, K1544, K1545, K1546, K1547, K1548, K1549, K1550, K1551, K1552, K1553, K1554, K1555, K1556, K1557, K1558, K1559, K1560, K1561, K1562, K1563, K1564, K1565, K1566, K1567, K1568, K1569, K1570, K1571, K1572, K1573, K1574, K1575, K1576, K1577, K1578, K1579, K1580, K1581, K1582, K1583, K1584, K1585, K1586, K1587, K1588, K1589, K1590, K1591, K1592, K1593, K1594, K1595, K1596, K1597, K1598, K1599, K1600, K1601, K1602, K1603, K1604, K1605, K1606, K1607, K1608, K1609, K1610, K1611, K1612, K1613, K1614, K1615, K1616, K1617, K1618, K1619, K1620, K1621, K1622, K1623, K1624, K1625, K1626, K1627, K1628, K1629, K1630, K1631, K1632, K1633, K1634, K1635, K1636, K1637, K1638, K1639, K1640, K1641, K1642, K1643, K1644, K1645, K1646, K1647, K1648, K1649, K1650, K1651, K1652, K1653, K1654, K1655, K1656, K1657, K1658, K1659, K1660, K1661, K1662, K1663, K1664, K1665, K1666, K1667, K1668, K1669, K1670, K1671, K1672, K1673, K1674, K1675, K1676, K1677, K1678, K1679, K1680, K1681, K1682, K1683, K1684, K1685, K1686, K1687, K1688, K1689, K1690, K1691, K1692, K1693, K1694, K1695, K1696, K1697, K1698, K1699, K1700, K1701, K1702, K1703, K1704, K1705, K1706, K1707, K1708, K1709, K1710, K1711, K1712, K1713, K1714, K1715, K1716, K1717, K1718, K1719, K1720, K1721, K1722, K1723, K1724, K1725, K1726, K1727, K1728, K1729, K1730, K1731, K1732, K1733, K1734, K1735, K1736, K1737, K1738, K1739, K1740, K1741, K1742, K1743, K1744, K1745, K1746, K1747, K1748, K1749, K1750, K1751, K1752, K1753, K1754, K1755, K1756, K1757, K1758, K1759, K1760, K1761, K1762, K1763, K1764, K1765, K1766, K1767, K1768, K1769, K1770, K1771, K1772, K1773, K1774, K1775, K1776, K1777, K1778, K1779, K1780, K1781, K1782, K1783, K1784, K1785, K1786, K1787, K1788, K1789, K1790, K1791];
+const K1793: readonly number[] = [57, 65, 48, 48, 48, 48];
+const K1794: readonly number[] = [57, 66, 48, 48, 48, 48];
+const K1795: readonly number[] = [57, 68, 48, 48, 48, 48];
+const K1796: readonly number[] = [57, 70, 48, 48, 48, 48];
+const K1797: readonly number[] = [57, 71, 48, 48, 48, 48];
+const K1798: readonly number[] = [57, 72, 48, 48, 48, 48];
+const K1799: readonly number[] = [57, 75, 48, 48, 48, 48];
+const K1800: readonly number[] = [57, 77, 48, 48, 48, 48];
+const K1801: readonly number[] = [57, 78, 48, 48, 48, 48];
+const K1802: readonly number[] = [57, 80, 48, 48, 48, 48];
+const K1803: readonly number[] = [57, 82, 48, 48, 48, 48];
+const K1804: readonly number[] = [57, 84, 48, 48, 48, 48];
+const K1805: readonly number[] = [57, 85, 48, 48, 48, 48];
+const K1806: readonly number[] = [57, 86, 48, 48, 48, 48];
+const K1807: readonly number[] = [57, 87, 48, 48, 48, 48];
+const K1808: readonly number[] = [57, 88, 48, 48, 48, 48];
+const K1809: readonly number[] = [57, 89, 48, 48, 48, 48];
+const K1810: readonly number[] = [65, 49, 48, 48, 48, 83];
+const K1811: readonly number[] = [65, 49, 48, 48, 49, 83];
+const K1812: readonly number[] = [66, 49, 48, 48, 48, 83];
+const K1813: readonly number[] = [66, 49, 49, 48, 48, 83];
+const K1814: readonly number[] = [66, 49, 49, 48, 49, 71];
+const K1815: readonly number[] = [66, 49, 50, 48, 48, 83];
+const K1816: readonly number[] = [66, 49, 50, 48, 50, 71];
+const K1817: readonly number[] = [66, 49, 50, 48, 54, 83];
+const K1818: readonly number[] = [66, 49, 51, 48, 48, 83];
+const K1819: readonly number[] = [66, 49, 52, 48, 48, 83];
+const K1820: readonly number[] = [66, 49, 52, 48, 52, 82];
+const K1821: readonly number[] = [66, 49, 52, 48, 54, 83];
+const K1822: readonly number[] = [66, 49, 53, 48, 48, 83];
+const K1823: readonly number[] = [66, 49, 53, 49, 49, 71];
+const K1824: readonly number[] = [66, 49, 53, 49, 49, 83];
+const K1825: readonly number[] = [66, 49, 54, 48, 48, 83];
+const K1826: readonly number[] = [66, 49, 54, 48, 49, 71];
+const K1827: readonly number[] = [66, 49, 55, 48, 48, 83];
+const K1828: readonly number[] = [66, 49, 55, 48, 54, 71];
+const K1829: readonly number[] = [66, 49, 56, 48, 48, 83];
+const K1830: readonly number[] = [66, 49, 57, 48, 48, 83];
+const K1831: readonly number[] = [66, 50, 48, 48, 48, 83];
+const K1832: readonly number[] = [66, 50, 49, 48, 48, 83];
+const K1833: readonly number[] = [66, 50, 49, 48, 56, 71];
+const K1834: readonly number[] = [66, 50, 50, 48, 48, 83];
+const K1835: readonly number[] = [66, 50, 50, 48, 53, 71];
+const K1836: readonly number[] = [66, 50, 51, 48, 48, 83];
+const K1837: readonly number[] = [66, 50, 51, 48, 51, 71];
+const K1838: readonly number[] = [66, 50, 51, 48, 54, 71];
+const K1839: readonly number[] = [66, 50, 51, 48, 56, 83];
+const K1840: readonly number[] = [66, 50, 52, 48, 48, 83];
+const K1841: readonly number[] = [66, 50, 52, 48, 52, 71];
+const K1842: readonly number[] = [66, 50, 53, 48, 48, 83];
+const K1843: readonly number[] = [66, 50, 54, 48, 48, 83];
+const K1844: readonly number[] = [66, 50, 54, 48, 50, 71];
+const K1845: readonly number[] = [66, 50, 54, 48, 57, 77];
+const K1846: readonly number[] = [66, 50, 54, 49, 49, 71];
+const K1847: readonly number[] = [66, 50, 55, 48, 48, 83];
+const K1848: readonly number[] = [66, 50, 55, 48, 49, 83];
+const K1849: readonly number[] = [66, 50, 56, 48, 48, 83];
+const K1850: readonly number[] = [66, 50, 56, 48, 53, 71];
+const K1851: readonly number[] = [66, 56, 55, 50, 49, 71];
+const K1852: readonly number[] = [68, 49, 48, 48, 48, 83];
+const K1853: readonly number[] = [68, 50, 48, 48, 48, 83];
+const K1854: readonly number[] = [68, 50, 49, 48, 48, 83];
+const K1855: readonly number[] = [68, 50, 49, 48, 49, 71];
+const K1856: readonly number[] = [68, 50, 49, 48, 50, 71];
+const K1857: readonly number[] = [68, 50, 49, 48, 50, 86];
+const K1858: readonly number[] = [68, 50, 49, 48, 51, 71];
+const K1859: readonly number[] = [68, 50, 49, 48, 54, 71];
+const K1860: readonly number[] = [68, 50, 49, 48, 56, 71];
+const K1861: readonly number[] = [68, 50, 50, 48, 48, 83];
+const K1862: readonly number[] = [68, 50, 50, 48, 49, 71];
+const K1863: readonly number[] = [68, 50, 50, 48, 49, 86];
+const K1864: readonly number[] = [68, 50, 50, 48, 53, 71];
+const K1865: readonly number[] = [68, 50, 51, 48, 48, 83];
+const K1866: readonly number[] = [68, 50, 51, 48, 51, 71];
+const K1867: readonly number[] = [68, 50, 51, 48, 52, 71];
+const K1868: readonly number[] = [68, 50, 51, 48, 52, 86];
+const K1869: readonly number[] = [68, 50, 51, 48, 53, 71];
+const K1870: readonly number[] = [68, 50, 51, 48, 56, 71];
+const K1871: readonly number[] = [68, 50, 52, 48, 48, 83];
+const K1872: readonly number[] = [68, 50, 52, 48, 50, 71];
+const K1873: readonly number[] = [68, 50, 52, 48, 51, 71];
+const K1874: readonly number[] = [68, 50, 52, 48, 52, 71];
+const K1875: readonly number[] = [68, 50, 52, 48, 52, 86];
+const K1876: readonly number[] = [68, 50, 52, 49, 49, 71];
+const K1877: readonly number[] = [68, 50, 52, 49, 50, 71];
+const K1878: readonly number[] = [68, 50, 53, 48, 48, 83];
+const K1879: readonly number[] = [68, 50, 53, 48, 50, 71];
+const K1880: readonly number[] = [68, 50, 53, 48, 53, 71];
+const K1881: readonly number[] = [68, 50, 53, 48, 53, 86];
+const K1882: readonly number[] = [68, 50, 53, 48, 55, 71];
+const K1883: readonly number[] = [68, 50, 54, 48, 48, 83];
+const K1884: readonly number[] = [68, 50, 54, 48, 49, 71];
+const K1885: readonly number[] = [68, 50, 54, 48, 49, 86];
+const K1886: readonly number[] = [68, 50, 55, 48, 48, 83];
+const K1887: readonly number[] = [68, 50, 55, 48, 50, 71];
+const K1888: readonly number[] = [68, 50, 55, 48, 51, 71];
+const K1889: readonly number[] = [68, 50, 55, 48, 54, 71];
+const K1890: readonly number[] = [68, 50, 55, 48, 55, 71];
+const K1891: readonly number[] = [68, 50, 55, 49, 48, 71];
+const K1892: readonly number[] = [68, 50, 55, 49, 50, 71];
+const K1893: readonly number[] = [68, 50, 55, 49, 51, 71];
+const K1894: readonly number[] = [68, 50, 55, 49, 52, 71];
+const K1895: readonly number[] = [68, 50, 56, 48, 48, 83];
+const K1896: readonly number[] = [68, 50, 56, 48, 49, 71];
+const K1897: readonly number[] = [68, 50, 56, 48, 51, 71];
+const K1898: readonly number[] = [68, 50, 56, 48, 51, 86];
+const K1899: readonly number[] = [68, 50, 57, 48, 48, 83];
+const K1900: readonly number[] = [68, 50, 57, 48, 49, 71];
+const K1901: readonly number[] = [68, 50, 57, 48, 55, 71];
+const K1902: readonly number[] = [68, 50, 57, 48, 56, 71];
+const K1903: readonly number[] = [68, 50, 57, 48, 57, 71];
+const K1904: readonly number[] = [68, 50, 57, 49, 48, 71];
+const K1905: readonly number[] = [68, 50, 57, 49, 48, 86];
+const K1906: readonly number[] = [68, 51, 48, 48, 48, 83];
+const K1907: readonly number[] = [68, 51, 49, 48, 48, 83];
+const K1908: readonly number[] = [68, 51, 49, 48, 49, 71];
+const K1909: readonly number[] = [68, 51, 49, 48, 49, 86];
+const K1910: readonly number[] = [68, 51, 49, 48, 54, 71];
+const K1911: readonly number[] = [68, 51, 50, 48, 48, 83];
+const K1912: readonly number[] = [68, 51, 50, 48, 49, 71];
+const K1913: readonly number[] = [68, 51, 50, 48, 49, 86];
+const K1914: readonly number[] = [68, 51, 50, 48, 56, 71];
+const K1915: readonly number[] = [68, 51, 51, 48, 48, 83];
+const K1916: readonly number[] = [68, 51, 51, 48, 51, 71];
+const K1917: readonly number[] = [68, 51, 51, 48, 52, 71];
+const K1918: readonly number[] = [68, 51, 51, 48, 52, 86];
+const K1919: readonly number[] = [68, 51, 51, 48, 53, 71];
+const K1920: readonly number[] = [68, 51, 51, 48, 56, 71];
+const K1921: readonly number[] = [68, 51, 51, 48, 57, 71];
+const K1922: readonly number[] = [68, 51, 51, 49, 48, 71];
+const K1923: readonly number[] = [68, 51, 51, 49, 48, 86];
+const K1924: readonly number[] = [68, 51, 51, 49, 51, 71];
+const K1925: readonly number[] = [68, 51, 52, 48, 48, 83];
+const K1926: readonly number[] = [68, 51, 52, 48, 53, 71];
+const K1927: readonly number[] = [68, 51, 52, 49, 48, 71];
+const K1928: readonly number[] = [68, 51, 52, 49, 48, 86];
+const K1929: readonly number[] = [68, 51, 52, 49, 51, 71];
+const K1930: readonly number[] = [68, 51, 52, 49, 51, 86];
+const K1931: readonly number[] = [68, 51, 52, 49, 53, 71];
+const K1932: readonly number[] = [68, 51, 53, 48, 48, 83];
+const K1933: readonly number[] = [68, 51, 53, 48, 53, 71];
+const K1934: readonly number[] = [68, 51, 53, 48, 56, 71];
+const K1935: readonly number[] = [68, 51, 53, 48, 56, 86];
+const K1936: readonly number[] = [68, 52, 48, 48, 48, 83];
+const K1937: readonly number[] = [68, 52, 49, 48, 48, 83];
+const K1938: readonly number[] = [68, 52, 49, 48, 50, 71];
+const K1939: readonly number[] = [68, 52, 49, 48, 50, 86];
+const K1940: readonly number[] = [68, 52, 49, 48, 53, 71];
+const K1941: readonly number[] = [68, 52, 50, 48, 48, 83];
+const K1942: readonly number[] = [68, 52, 50, 48, 49, 71];
+const K1943: readonly number[] = [68, 52, 50, 48, 49, 86];
+const K1944: readonly number[] = [68, 52, 50, 48, 51, 71];
+const K1945: readonly number[] = [68, 52, 50, 48, 52, 71];
+const K1946: readonly number[] = [68, 52, 51, 48, 48, 83];
+const K1947: readonly number[] = [68, 52, 51, 48, 49, 71];
+const K1948: readonly number[] = [68, 52, 51, 48, 49, 86];
+const K1949: readonly number[] = [68, 52, 51, 48, 50, 71];
+const K1950: readonly number[] = [68, 52, 52, 48, 48, 83];
+const K1951: readonly number[] = [68, 52, 52, 48, 49, 71];
+const K1952: readonly number[] = [68, 52, 52, 48, 49, 77];
+const K1953: readonly number[] = [68, 52, 52, 48, 49, 86];
+const K1954: readonly number[] = [68, 52, 52, 48, 50, 71];
+const K1955: readonly number[] = [68, 52, 52, 48, 51, 71];
+const K1956: readonly number[] = [68, 52, 53, 48, 48, 83];
+const K1957: readonly number[] = [68, 52, 53, 48, 49, 71];
+const K1958: readonly number[] = [68, 52, 53, 48, 49, 82];
+const K1959: readonly number[] = [68, 52, 53, 48, 49, 86];
+const K1960: readonly number[] = [68, 52, 53, 48, 53, 71];
+const K1961: readonly number[] = [68, 52, 54, 48, 48, 83];
+const K1962: readonly number[] = [68, 52, 54, 48, 49, 71];
+const K1963: readonly number[] = [68, 52, 54, 48, 50, 71];
+const K1964: readonly number[] = [68, 52, 54, 48, 56, 71];
+const K1965: readonly number[] = [68, 52, 54, 48, 56, 86];
+const K1966: readonly number[] = [68, 52, 55, 48, 48, 83];
+const K1967: readonly number[] = [68, 52, 55, 48, 51, 71];
+const K1968: readonly number[] = [68, 52, 55, 48, 53, 71];
+const K1969: readonly number[] = [68, 52, 55, 48, 56, 71];
+const K1970: readonly number[] = [68, 52, 55, 48, 56, 86];
+const K1971: readonly number[] = [68, 53, 50, 48, 48, 83];
+const K1972: readonly number[] = [68, 53, 51, 48, 48, 83];
+const K1973: readonly number[] = [68, 53, 52, 48, 48, 83];
+const K1974: readonly number[] = [68, 53, 53, 48, 48, 83];
+const K1975: readonly number[] = [68, 53, 55, 48, 48, 83];
+const K1976: readonly number[] = [68, 53, 55, 48, 49, 71];
+const K1977: readonly number[] = [68, 53, 55, 48, 49, 86];
+const K1978: readonly number[] = [68, 53, 55, 48, 50, 71];
+const K1979: readonly number[] = [68, 53, 55, 48, 51, 71];
+const K1980: readonly number[] = [68, 53, 57, 48, 48, 83];
+const K1981: readonly number[] = [70, 49, 48, 48, 48, 83];
+const K1982: readonly number[] = [70, 49, 48, 48, 49, 83];
+const K1983: readonly number[] = [70, 49, 49, 48, 48, 83];
+const K1984: readonly number[] = [70, 49, 49, 48, 49, 82];
+const K1985: readonly number[] = [70, 49, 49, 48, 50, 77];
+const K1986: readonly number[] = [70, 49, 49, 48, 51, 82];
+const K1987: readonly number[] = [70, 49, 49, 49, 48, 83];
+const K1988: readonly number[] = [70, 49, 49, 49, 50, 82];
+const K1989: readonly number[] = [70, 49, 50, 48, 48, 83];
+const K1990: readonly number[] = [71, 49, 48, 48, 48, 83];
+const K1991: readonly number[] = [71, 49, 48, 48, 49, 83];
+const K1992: readonly number[] = [71, 49, 49, 48, 48, 83];
+const K1993: readonly number[] = [71, 49, 49, 48, 49, 71];
+const K1994: readonly number[] = [71, 49, 49, 48, 51, 71];
+const K1995: readonly number[] = [71, 49, 49, 49, 48, 71];
+const K1996: readonly number[] = [71, 49, 49, 49, 49, 71];
+const K1997: readonly number[] = [71, 49, 49, 49, 51, 83];
+const K1998: readonly number[] = [71, 49, 50, 48, 48, 83];
+const K1999: readonly number[] = [71, 49, 50, 48, 50, 71];
+const K2000: readonly number[] = [71, 49, 50, 48, 52, 71];
+const K2001: readonly number[] = [71, 49, 50, 48, 52, 83];
+const K2002: readonly number[] = [71, 49, 50, 48, 53, 71];
+const K2003: readonly number[] = [71, 49, 50, 48, 53, 83];
+const K2004: readonly number[] = [71, 49, 50, 48, 54, 71];
+const K2005: readonly number[] = [71, 49, 50, 48, 55, 71];
+const K2006: readonly number[] = [71, 49, 50, 48, 56, 71];
+const K2007: readonly number[] = [71, 49, 50, 48, 57, 71];
+const K2008: readonly number[] = [71, 49, 50, 49, 48, 71];
+const K2009: readonly number[] = [71, 49, 50, 49, 48, 83];
+const K2010: readonly number[] = [71, 49, 50, 49, 50, 71];
+const K2011: readonly number[] = [71, 49, 50, 49, 52, 83];
+const K2012: readonly number[] = [71, 49, 51, 48, 48, 83];
+const K2013: readonly number[] = [71, 49, 51, 48, 50, 71];
+const K2014: readonly number[] = [71, 49, 51, 48, 51, 71];
+const K2015: readonly number[] = [71, 49, 51, 48, 53, 71];
+const K2016: readonly number[] = [71, 49, 51, 48, 55, 71];
+const K2017: readonly number[] = [71, 49, 51, 48, 55, 83];
+const K2018: readonly number[] = [71, 49, 51, 48, 56, 71];
+const K2019: readonly number[] = [71, 49, 51, 48, 56, 82];
+const K2020: readonly number[] = [71, 49, 51, 48, 57, 71];
+const K2021: readonly number[] = [71, 49, 51, 49, 48, 71];
+const K2022: readonly number[] = [71, 49, 51, 49, 49, 71];
+const K2023: readonly number[] = [71, 49, 51, 49, 50, 71];
+const K2024: readonly number[] = [71, 49, 51, 49, 53, 71];
+const K2025: readonly number[] = [71, 49, 51, 49, 55, 71];
+const K2026: readonly number[] = [71, 49, 51, 49, 57, 83];
+const K2027: readonly number[] = [71, 49, 52, 48, 48, 83];
+const K2028: readonly number[] = [71, 49, 52, 48, 49, 83];
+const K2029: readonly number[] = [72, 49, 48, 48, 48, 83];
+const K2030: readonly number[] = [72, 49, 49, 48, 48, 83];
+const K2031: readonly number[] = [72, 49, 49, 48, 49, 71];
+const K2032: readonly number[] = [72, 49, 49, 48, 50, 71];
+const K2033: readonly number[] = [72, 49, 49, 48, 50, 83];
+const K2034: readonly number[] = [72, 49, 49, 48, 50, 86];
+const K2035: readonly number[] = [72, 49, 49, 48, 51, 71];
+const K2036: readonly number[] = [75, 49, 48, 48, 48, 83];
+const K2037: readonly number[] = [75, 49, 49, 48, 48, 83];
+const K2038: readonly number[] = [75, 49, 49, 48, 49, 71];
+const K2039: readonly number[] = [75, 49, 49, 48, 49, 73];
+const K2040: readonly number[] = [75, 49, 49, 48, 49, 77];
+const K2041: readonly number[] = [75, 49, 49, 48, 49, 82];
+const K2042: readonly number[] = [75, 49, 49, 48, 49, 86];
+const K2043: readonly number[] = [75, 49, 49, 48, 49, 90];
+const K2044: readonly number[] = [75, 49, 49, 48, 50, 71];
+const K2045: readonly number[] = [75, 49, 49, 48, 51, 71];
+const K2046: readonly number[] = [75, 49, 49, 48, 52, 71];
+const K2047: readonly number[] = [75, 49, 49, 48, 53, 71];
+const K2048: readonly number[] = [75, 49, 49, 48, 54, 71];
+const K2049: readonly number[] = [75, 49, 49, 48, 55, 71];
+const K2050: readonly number[] = [75, 49, 49, 48, 56, 71];
+const K2051: readonly number[] = [77, 49, 48, 48, 48, 83];
+const K2052: readonly number[] = [77, 49, 48, 48, 49, 83];
+const K2053: readonly number[] = [77, 49, 49, 48, 48, 83];
+const K2054: readonly number[] = [77, 49, 49, 48, 50, 71];
+const K2055: readonly number[] = [77, 49, 49, 48, 51, 71];
+const K2056: readonly number[] = [77, 49, 49, 48, 52, 71];
+const K2057: readonly number[] = [77, 49, 49, 48, 53, 71];
+const K2058: readonly number[] = [77, 49, 49, 48, 54, 71];
+const K2059: readonly number[] = [77, 49, 49, 48, 55, 71];
+const K2060: readonly number[] = [77, 49, 49, 49, 49, 71];
+const K2061: readonly number[] = [77, 49, 49, 49, 50, 71];
+const K2062: readonly number[] = [77, 49, 49, 49, 51, 71];
+const K2063: readonly number[] = [77, 49, 49, 49, 52, 71];
+const K2064: readonly number[] = [77, 49, 49, 49, 52, 83];
+const K2065: readonly number[] = [77, 49, 49, 49, 55, 71];
+const K2066: readonly number[] = [77, 49, 50, 48, 48, 83];
+const K2067: readonly number[] = [77, 49, 50, 48, 49, 71];
+const K2068: readonly number[] = [77, 49, 50, 48, 49, 83];
+const K2069: readonly number[] = [77, 49, 50, 48, 50, 71];
+const K2070: readonly number[] = [77, 49, 50, 48, 51, 71];
+const K2071: readonly number[] = [77, 49, 50, 48, 54, 71];
+const K2072: readonly number[] = [77, 49, 51, 48, 48, 83];
+const K2073: readonly number[] = [77, 49, 51, 48, 49, 71];
+const K2074: readonly number[] = [77, 49, 51, 48, 53, 71];
+const K2075: readonly number[] = [77, 49, 51, 48, 55, 71];
+const K2076: readonly number[] = [77, 49, 51, 48, 55, 82];
+const K2077: readonly number[] = [77, 49, 52, 48, 48, 83];
+const K2078: readonly number[] = [77, 49, 52, 48, 49, 71];
+const K2079: readonly number[] = [77, 49, 52, 48, 50, 71];
+const K2080: readonly number[] = [77, 49, 52, 48, 53, 71];
+const K2081: readonly number[] = [77, 49, 52, 48, 54, 71];
+const K2082: readonly number[] = [77, 49, 53, 48, 48, 83];
+const K2083: readonly number[] = [77, 49, 53, 48, 49, 71];
+const K2084: readonly number[] = [77, 49, 53, 48, 50, 71];
+const K2085: readonly number[] = [77, 49, 54, 48, 48, 83];
+const K2086: readonly number[] = [77, 49, 54, 48, 50, 71];
+const K2087: readonly number[] = [77, 49, 54, 48, 51, 71];
+const K2088: readonly number[] = [77, 49, 54, 48, 53, 71];
+const K2089: readonly number[] = [77, 49, 54, 48, 55, 71];
+const K2090: readonly number[] = [77, 49, 54, 48, 56, 71];
+const K2091: readonly number[] = [77, 49, 54, 48, 57, 71];
+const K2092: readonly number[] = [77, 49, 55, 48, 48, 83];
+const K2093: readonly number[] = [77, 49, 55, 48, 50, 71];
+const K2094: readonly number[] = [77, 49, 55, 48, 52, 71];
+const K2095: readonly number[] = [77, 49, 55, 48, 53, 71];
+const K2096: readonly number[] = [77, 49, 55, 48, 54, 71];
+const K2097: readonly number[] = [77, 49, 55, 48, 57, 71];
+const K2098: readonly number[] = [77, 49, 55, 49, 48, 71];
+const K2099: readonly number[] = [77, 49, 55, 49, 48, 83];
+const K2100: readonly number[] = [77, 49, 56, 48, 48, 83];
+const K2101: readonly number[] = [77, 49, 56, 48, 49, 71];
+const K2102: readonly number[] = [77, 49, 56, 48, 51, 71];
+const K2103: readonly number[] = [77, 49, 56, 48, 55, 71];
+const K2104: readonly number[] = [77, 49, 56, 48, 57, 71];
+const K2105: readonly number[] = [77, 49, 56, 49, 50, 71];
+const K2106: readonly number[] = [77, 49, 57, 48, 48, 83];
+const K2107: readonly number[] = [77, 49, 57, 48, 51, 71];
+const K2108: readonly number[] = [77, 49, 57, 48, 52, 71];
+const K2109: readonly number[] = [77, 49, 57, 48, 53, 71];
+const K2110: readonly number[] = [77, 49, 57, 48, 54, 71];
+const K2111: readonly number[] = [77, 54, 48, 51, 54, 83];
+const K2112: readonly number[] = [78, 49, 48, 48, 48, 83];
+const K2113: readonly number[] = [78, 49, 49, 48, 48, 83];
+const K2114: readonly number[] = [78, 49, 49, 48, 53, 82];
+const K2115: readonly number[] = [78, 49, 49, 48, 53, 86];
+const K2116: readonly number[] = [78, 49, 49, 49, 50, 71];
+const K2117: readonly number[] = [78, 49, 49, 49, 51, 71];
+const K2118: readonly number[] = [78, 49, 49, 49, 53, 71];
+const K2119: readonly number[] = [78, 49, 50, 48, 48, 83];
+const K2120: readonly number[] = [78, 49, 50, 48, 50, 71];
+const K2121: readonly number[] = [78, 49, 50, 48, 53, 71];
+const K2122: readonly number[] = [78, 49, 50, 48, 54, 71];
+const K2123: readonly number[] = [78, 49, 50, 48, 54, 86];
+const K2124: readonly number[] = [78, 49, 50, 48, 57, 71];
+const K2125: readonly number[] = [78, 49, 50, 48, 57, 86];
+const K2126: readonly number[] = [78, 49, 51, 48, 48, 83];
+const K2127: readonly number[] = [78, 49, 51, 48, 51, 71];
+const K2128: readonly number[] = [78, 49, 51, 48, 56, 71];
+const K2129: readonly number[] = [78, 49, 51, 48, 56, 86];
+const K2130: readonly number[] = [78, 49, 51, 49, 48, 71];
+const K2131: readonly number[] = [78, 49, 51, 49, 49, 71];
+const K2132: readonly number[] = [78, 49, 52, 48, 48, 83];
+const K2133: readonly number[] = [80, 49, 48, 48, 48, 83];
+const K2134: readonly number[] = [80, 49, 49, 48, 48, 83];
+const K2135: readonly number[] = [80, 49, 49, 48, 49, 71];
+const K2136: readonly number[] = [80, 49, 49, 48, 51, 71];
+const K2137: readonly number[] = [80, 49, 49, 48, 52, 71];
+const K2138: readonly number[] = [80, 49, 49, 48, 52, 82];
+const K2139: readonly number[] = [80, 49, 49, 48, 53, 71];
+const K2140: readonly number[] = [80, 49, 49, 48, 56, 71];
+const K2141: readonly number[] = [80, 49, 49, 49, 49, 71];
+const K2142: readonly number[] = [80, 49, 49, 49, 53, 71];
+const K2143: readonly number[] = [80, 50, 48, 48, 48, 83];
+const K2144: readonly number[] = [80, 50, 49, 48, 48, 83];
+const K2145: readonly number[] = [80, 50, 49, 48, 49, 71];
+const K2146: readonly number[] = [80, 50, 49, 48, 52, 71];
+const K2147: readonly number[] = [80, 50, 49, 48, 54, 71];
+const K2148: readonly number[] = [80, 50, 50, 48, 48, 83];
+const K2149: readonly number[] = [80, 50, 50, 48, 49, 71];
+const K2150: readonly number[] = [80, 50, 50, 48, 50, 71];
+const K2151: readonly number[] = [80, 50, 50, 48, 51, 71];
+const K2152: readonly number[] = [80, 50, 50, 48, 52, 71];
+const K2153: readonly number[] = [80, 50, 50, 48, 53, 71];
+const K2154: readonly number[] = [80, 50, 50, 48, 54, 71];
+const K2155: readonly number[] = [80, 50, 50, 48, 56, 71];
+const K2156: readonly number[] = [80, 50, 50, 48, 57, 71];
+const K2157: readonly number[] = [80, 50, 51, 48, 48, 83];
+const K2158: readonly number[] = [80, 50, 51, 48, 51, 71];
+const K2159: readonly number[] = [80, 50, 51, 48, 52, 71];
+const K2160: readonly number[] = [80, 50, 51, 48, 53, 71];
+const K2161: readonly number[] = [80, 50, 51, 48, 54, 71];
+const K2162: readonly number[] = [80, 50, 51, 48, 55, 71];
+const K2163: readonly number[] = [80, 50, 51, 48, 56, 71];
+const K2164: readonly number[] = [80, 50, 52, 48, 48, 83];
+const K2165: readonly number[] = [80, 50, 52, 48, 49, 71];
+const K2166: readonly number[] = [80, 50, 52, 48, 51, 71];
+const K2167: readonly number[] = [80, 50, 52, 48, 52, 71];
+const K2168: readonly number[] = [80, 50, 52, 48, 55, 71];
+const K2169: readonly number[] = [80, 50, 52, 48, 56, 71];
+const K2170: readonly number[] = [80, 50, 52, 48, 57, 71];
+const K2171: readonly number[] = [80, 50, 52, 49, 48, 71];
+const K2172: readonly number[] = [80, 50, 52, 49, 49, 71];
+const K2173: readonly number[] = [80, 50, 52, 49, 51, 71];
+const K2174: readonly number[] = [80, 50, 53, 48, 48, 83];
+const K2175: readonly number[] = [80, 50, 53, 48, 51, 71];
+const K2176: readonly number[] = [80, 50, 53, 48, 52, 71];
+const K2177: readonly number[] = [80, 50, 53, 48, 55, 71];
+const K2178: readonly number[] = [80, 50, 53, 48, 57, 71];
+const K2179: readonly number[] = [80, 50, 53, 49, 48, 71];
+const K2180: readonly number[] = [80, 50, 53, 49, 48, 77];
+const K2181: readonly number[] = [80, 50, 53, 49, 49, 71];
+const K2182: readonly number[] = [80, 50, 54, 48, 48, 83];
+const K2183: readonly number[] = [80, 50, 54, 48, 49, 71];
+const K2184: readonly number[] = [80, 50, 54, 48, 50, 71];
+const K2185: readonly number[] = [80, 50, 54, 48, 51, 71];
+const K2186: readonly number[] = [80, 50, 54, 48, 56, 71];
+const K2187: readonly number[] = [80, 50, 54, 49, 49, 71];
+const K2188: readonly number[] = [80, 50, 54, 49, 50, 71];
+const K2189: readonly number[] = [80, 50, 54, 49, 51, 71];
+const K2190: readonly number[] = [80, 50, 54, 49, 52, 71];
+const K2191: readonly number[] = [80, 50, 55, 48, 48, 83];
+const K2192: readonly number[] = [80, 50, 55, 48, 49, 71];
+const K2193: readonly number[] = [80, 50, 55, 48, 53, 71];
+const K2194: readonly number[] = [80, 50, 55, 48, 56, 71];
+const K2195: readonly number[] = [80, 50, 55, 48, 57, 71];
+const K2196: readonly number[] = [80, 50, 55, 49, 48, 71];
+const K2197: readonly number[] = [80, 50, 55, 49, 49, 71];
+const K2198: readonly number[] = [80, 50, 55, 49, 50, 71];
+const K2199: readonly number[] = [80, 50, 55, 49, 51, 71];
+const K2200: readonly number[] = [80, 50, 55, 49, 53, 71];
+const K2201: readonly number[] = [80, 50, 55, 49, 54, 71];
+const K2202: readonly number[] = [80, 50, 56, 48, 48, 83];
+const K2203: readonly number[] = [80, 51, 48, 48, 48, 83];
+const K2204: readonly number[] = [80, 51, 49, 48, 48, 83];
+const K2205: readonly number[] = [80, 51, 49, 48, 49, 71];
+const K2206: readonly number[] = [80, 51, 49, 48, 50, 71];
+const K2207: readonly number[] = [80, 51, 49, 48, 52, 71];
+const K2208: readonly number[] = [80, 51, 49, 48, 53, 71];
+const K2209: readonly number[] = [80, 51, 49, 48, 55, 71];
+const K2210: readonly number[] = [80, 51, 50, 48, 48, 83];
+const K2211: readonly number[] = [80, 51, 50, 48, 49, 71];
+const K2212: readonly number[] = [80, 51, 50, 48, 50, 71];
+const K2213: readonly number[] = [80, 51, 50, 48, 52, 71];
+const K2214: readonly number[] = [80, 51, 50, 48, 55, 71];
+const K2215: readonly number[] = [80, 51, 50, 48, 57, 71];
+const K2216: readonly number[] = [80, 51, 50, 49, 48, 71];
+const K2217: readonly number[] = [80, 51, 50, 49, 49, 71];
+const K2218: readonly number[] = [80, 51, 50, 49, 50, 71];
+const K2219: readonly number[] = [80, 51, 50, 49, 51, 71];
+const K2220: readonly number[] = [80, 51, 50, 49, 52, 71];
+const K2221: readonly number[] = [80, 51, 50, 49, 53, 71];
+const K2222: readonly number[] = [80, 51, 51, 48, 48, 83];
+const K2223: readonly number[] = [80, 51, 51, 48, 50, 71];
+const K2224: readonly number[] = [80, 51, 51, 48, 55, 71];
+const K2225: readonly number[] = [80, 51, 51, 48, 56, 71];
+const K2226: readonly number[] = [80, 51, 51, 49, 48, 71];
+const K2227: readonly number[] = [80, 51, 51, 49, 50, 71];
+const K2228: readonly number[] = [80, 51, 51, 49, 51, 71];
+const K2229: readonly number[] = [80, 51, 51, 49, 52, 71];
+const K2230: readonly number[] = [82, 49, 48, 48, 48, 83];
+const K2231: readonly number[] = [82, 49, 49, 48, 48, 81];
+const K2232: readonly number[] = [82, 49, 49, 48, 48, 83];
+const K2233: readonly number[] = [82, 49, 49, 48, 49, 71];
+const K2234: readonly number[] = [82, 49, 49, 48, 50, 71];
+const K2235: readonly number[] = [82, 49, 49, 48, 52, 71];
+const K2236: readonly number[] = [82, 49, 49, 48, 53, 71];
+const K2237: readonly number[] = [82, 49, 50, 48, 48, 83];
+const K2238: readonly number[] = [82, 49, 50, 48, 49, 71];
+const K2239: readonly number[] = [82, 49, 50, 48, 50, 71];
+const K2240: readonly number[] = [82, 49, 50, 48, 51, 71];
+const K2241: readonly number[] = [82, 49, 50, 48, 52, 71];
+const K2242: readonly number[] = [82, 49, 50, 48, 53, 71];
+const K2243: readonly number[] = [82, 49, 50, 48, 54, 71];
+const K2244: readonly number[] = [82, 49, 50, 48, 56, 71];
+const K2245: readonly number[] = [82, 49, 51, 48, 48, 83];
+const K2246: readonly number[] = [82, 49, 51, 48, 49, 71];
+const K2247: readonly number[] = [82, 49, 51, 48, 50, 71];
+const K2248: readonly number[] = [82, 49, 51, 48, 52, 71];
+const K2249: readonly number[] = [82, 49, 51, 48, 53, 71];
+const K2250: readonly number[] = [82, 49, 51, 48, 53, 83];
+const K2251: readonly number[] = [82, 49, 51, 48, 54, 71];
+const K2252: readonly number[] = [82, 49, 52, 48, 48, 83];
+const K2253: readonly number[] = [82, 49, 52, 48, 49, 71];
+const K2254: readonly number[] = [82, 49, 52, 48, 50, 71];
+const K2255: readonly number[] = [82, 49, 52, 48, 52, 71];
+const K2256: readonly number[] = [82, 49, 53, 48, 48, 83];
+const K2257: readonly number[] = [82, 49, 53, 48, 50, 71];
+const K2258: readonly number[] = [82, 49, 53, 48, 51, 71];
+const K2259: readonly number[] = [82, 49, 53, 48, 52, 71];
+const K2260: readonly number[] = [82, 49, 53, 48, 53, 71];
+const K2261: readonly number[] = [82, 49, 53, 48, 54, 71];
+const K2262: readonly number[] = [82, 49, 54, 48, 48, 83];
+const K2263: readonly number[] = [82, 49, 54, 48, 50, 71];
+const K2264: readonly number[] = [82, 49, 54, 48, 51, 71];
+const K2265: readonly number[] = [82, 49, 54, 48, 53, 71];
+const K2266: readonly number[] = [82, 49, 54, 48, 54, 71];
+const K2267: readonly number[] = [82, 49, 54, 48, 56, 71];
+const K2268: readonly number[] = [82, 49, 57, 48, 48, 81];
+const K2269: readonly number[] = [82, 49, 57, 48, 48, 83];
+const K2270: readonly number[] = [82, 49, 57, 48, 49, 71];
+const K2271: readonly number[] = [82, 49, 57, 48, 52, 71];
+const K2272: readonly number[] = [82, 49, 57, 48, 53, 71];
+const K2273: readonly number[] = [82, 49, 57, 48, 54, 71];
+const K2274: readonly number[] = [82, 49, 57, 48, 55, 71];
+const K2275: readonly number[] = [82, 49, 57, 48, 56, 71];
+const K2276: readonly number[] = [82, 49, 57, 48, 57, 71];
+const K2277: readonly number[] = [82, 49, 57, 49, 49, 71];
+const K2278: readonly number[] = [82, 49, 57, 49, 50, 71];
+const K2279: readonly number[] = [82, 49, 57, 49, 51, 71];
+const K2280: readonly number[] = [82, 50, 48, 48, 48, 83];
+const K2281: readonly number[] = [82, 50, 49, 48, 48, 83];
+const K2282: readonly number[] = [82, 50, 49, 48, 49, 71];
+const K2283: readonly number[] = [82, 50, 49, 48, 50, 71];
+const K2284: readonly number[] = [82, 50, 49, 48, 51, 71];
+const K2285: readonly number[] = [82, 50, 49, 48, 52, 71];
+const K2286: readonly number[] = [82, 50, 49, 48, 53, 71];
+const K2287: readonly number[] = [82, 50, 49, 48, 54, 71];
+const K2288: readonly number[] = [82, 50, 49, 48, 55, 71];
+const K2289: readonly number[] = [82, 50, 49, 48, 56, 71];
+const K2290: readonly number[] = [82, 50, 49, 49, 48, 71];
+const K2291: readonly number[] = [82, 50, 49, 49, 51, 71];
+const K2292: readonly number[] = [82, 50, 50, 48, 48, 83];
+const K2293: readonly number[] = [82, 50, 50, 48, 49, 71];
+const K2294: readonly number[] = [82, 50, 50, 48, 51, 71];
+const K2295: readonly number[] = [82, 50, 50, 48, 52, 71];
+const K2296: readonly number[] = [82, 50, 50, 48, 52, 83];
+const K2297: readonly number[] = [82, 50, 50, 48, 53, 71];
+const K2298: readonly number[] = [82, 50, 50, 48, 55, 71];
+const K2299: readonly number[] = [82, 50, 51, 48, 48, 83];
+const K2300: readonly number[] = [82, 50, 51, 48, 50, 71];
+const K2301: readonly number[] = [82, 50, 51, 48, 51, 71];
+const K2302: readonly number[] = [82, 50, 51, 48, 55, 71];
+const K2303: readonly number[] = [82, 50, 52, 48, 48, 83];
+const K2304: readonly number[] = [82, 50, 52, 48, 49, 71];
+const K2305: readonly number[] = [82, 50, 52, 48, 50, 71];
+const K2306: readonly number[] = [82, 50, 52, 48, 52, 71];
+const K2307: readonly number[] = [82, 50, 52, 48, 52, 83];
+const K2308: readonly number[] = [82, 50, 52, 48, 53, 71];
+const K2309: readonly number[] = [82, 50, 52, 48, 54, 71];
+const K2310: readonly number[] = [82, 50, 52, 48, 55, 71];
+const K2311: readonly number[] = [82, 50, 53, 48, 48, 83];
+const K2312: readonly number[] = [82, 50, 53, 48, 49, 71];
+const K2313: readonly number[] = [82, 50, 53, 48, 50, 71];
+const K2314: readonly number[] = [82, 50, 53, 48, 51, 71];
+const K2315: readonly number[] = [82, 50, 53, 48, 52, 71];
+const K2316: readonly number[] = [82, 50, 53, 48, 53, 71];
+const K2317: readonly number[] = [82, 50, 53, 48, 55, 71];
+const K2318: readonly number[] = [82, 50, 53, 48, 56, 71];
+const K2319: readonly number[] = [82, 50, 53, 48, 56, 83];
+const K2320: readonly number[] = [82, 50, 53, 48, 57, 71];
+const K2321: readonly number[] = [82, 50, 53, 49, 48, 71];
+const K2322: readonly number[] = [82, 50, 53, 49, 49, 71];
+const K2323: readonly number[] = [82, 50, 54, 48, 48, 83];
+const K2324: readonly number[] = [82, 50, 54, 48, 49, 71];
+const K2325: readonly number[] = [82, 50, 54, 48, 50, 71];
+const K2326: readonly number[] = [82, 50, 54, 48, 50, 77];
+const K2327: readonly number[] = [82, 50, 54, 48, 50, 82];
+const K2328: readonly number[] = [82, 50, 54, 48, 52, 71];
+const K2329: readonly number[] = [82, 50, 54, 48, 53, 71];
+const K2330: readonly number[] = [82, 50, 54, 48, 54, 71];
+const K2331: readonly number[] = [82, 50, 54, 48, 55, 71];
+const K2332: readonly number[] = [82, 50, 54, 48, 56, 71];
+const K2333: readonly number[] = [82, 50, 54, 48, 57, 71];
+const K2334: readonly number[] = [82, 50, 54, 49, 48, 71];
+const K2335: readonly number[] = [82, 50, 55, 48, 48, 83];
+const K2336: readonly number[] = [82, 50, 55, 48, 49, 71];
+const K2337: readonly number[] = [82, 50, 55, 48, 50, 71];
+const K2338: readonly number[] = [82, 50, 55, 48, 51, 71];
+const K2339: readonly number[] = [82, 50, 55, 48, 52, 71];
+const K2340: readonly number[] = [82, 50, 55, 48, 52, 83];
+const K2341: readonly number[] = [82, 50, 55, 48, 53, 71];
+const K2342: readonly number[] = [82, 50, 55, 48, 54, 71];
+const K2343: readonly number[] = [82, 50, 55, 48, 55, 71];
+const K2344: readonly number[] = [82, 50, 55, 48, 56, 71];
+const K2345: readonly number[] = [82, 50, 55, 48, 57, 71];
+const K2346: readonly number[] = [82, 50, 55, 49, 49, 71];
+const K2347: readonly number[] = [82, 50, 55, 49, 50, 71];
+const K2348: readonly number[] = [82, 50, 55, 49, 51, 71];
+const K2349: readonly number[] = [82, 50, 55, 49, 53, 71];
+const K2350: readonly number[] = [82, 50, 55, 49, 54, 71];
+const K2351: readonly number[] = [82, 50, 55, 49, 56, 71];
+const K2352: readonly number[] = [82, 50, 56, 48, 48, 83];
+const K2353: readonly number[] = [82, 50, 56, 48, 50, 71];
+const K2354: readonly number[] = [82, 50, 56, 48, 52, 71];
+const K2355: readonly number[] = [82, 50, 56, 48, 55, 71];
+const K2356: readonly number[] = [82, 50, 56, 48, 56, 71];
+const K2357: readonly number[] = [82, 50, 56, 48, 57, 71];
+const K2358: readonly number[] = [82, 50, 56, 49, 51, 71];
+const K2359: readonly number[] = [82, 50, 57, 48, 48, 83];
+const K2360: readonly number[] = [82, 50, 57, 48, 50, 71];
+const K2361: readonly number[] = [82, 50, 57, 48, 52, 71];
+const K2362: readonly number[] = [82, 50, 57, 48, 56, 71];
+const K2363: readonly number[] = [82, 50, 57, 48, 57, 71];
+const K2364: readonly number[] = [82, 51, 48, 48, 48, 83];
+const K2365: readonly number[] = [82, 51, 49, 48, 48, 83];
+const K2366: readonly number[] = [82, 51, 49, 48, 49, 71];
+const K2367: readonly number[] = [82, 51, 49, 48, 51, 71];
+const K2368: readonly number[] = [82, 51, 49, 48, 52, 71];
+const K2369: readonly number[] = [82, 51, 49, 48, 53, 71];
+const K2370: readonly number[] = [82, 51, 49, 48, 54, 71];
+const K2371: readonly number[] = [82, 51, 49, 48, 55, 71];
+const K2372: readonly number[] = [82, 51, 49, 48, 56, 71];
+const K2373: readonly number[] = [82, 51, 49, 48, 57, 71];
+const K2374: readonly number[] = [82, 51, 50, 48, 48, 83];
+const K2375: readonly number[] = [82, 51, 50, 48, 49, 71];
+const K2376: readonly number[] = [82, 51, 50, 48, 51, 71];
+const K2377: readonly number[] = [82, 51, 50, 48, 51, 77];
+const K2378: readonly number[] = [82, 51, 50, 48, 53, 71];
+const K2379: readonly number[] = [82, 51, 50, 48, 55, 71];
+const K2380: readonly number[] = [82, 51, 50, 48, 56, 71];
+const K2381: readonly number[] = [82, 51, 50, 48, 57, 71];
+const K2382: readonly number[] = [82, 51, 51, 48, 48, 83];
+const K2383: readonly number[] = [82, 51, 51, 48, 49, 71];
+const K2384: readonly number[] = [82, 51, 51, 48, 50, 71];
+const K2385: readonly number[] = [82, 51, 51, 48, 51, 71];
+const K2386: readonly number[] = [82, 51, 51, 48, 52, 71];
+const K2387: readonly number[] = [82, 51, 51, 48, 53, 71];
+const K2388: readonly number[] = [82, 51, 51, 48, 54, 71];
+const K2389: readonly number[] = [82, 51, 51, 48, 57, 71];
+const K2390: readonly number[] = [82, 51, 51, 49, 49, 71];
+const K2391: readonly number[] = [82, 51, 51, 49, 50, 71];
+const K2392: readonly number[] = [84, 50, 48, 48, 48, 83];
+const K2393: readonly number[] = [84, 50, 49, 48, 48, 83];
+const K2394: readonly number[] = [84, 50, 49, 48, 49, 71];
+const K2395: readonly number[] = [84, 50, 49, 48, 49, 73];
+const K2396: readonly number[] = [84, 50, 49, 48, 49, 86];
+const K2397: readonly number[] = [84, 50, 49, 48, 51, 71];
+const K2398: readonly number[] = [84, 50, 49, 48, 51, 73];
+const K2399: readonly number[] = [84, 50, 49, 48, 53, 71];
+const K2400: readonly number[] = [84, 50, 49, 48, 54, 71];
+const K2401: readonly number[] = [84, 50, 50, 48, 48, 83];
+const K2402: readonly number[] = [84, 50, 50, 48, 50, 71];
+const K2403: readonly number[] = [84, 50, 50, 48, 51, 71];
+const K2404: readonly number[] = [84, 50, 50, 48, 52, 71];
+const K2405: readonly number[] = [84, 50, 50, 48, 52, 73];
+const K2406: readonly number[] = [84, 50, 50, 48, 53, 71];
+const K2407: readonly number[] = [84, 50, 50, 48, 53, 73];
+const K2408: readonly number[] = [84, 50, 50, 48, 55, 71];
+const K2409: readonly number[] = [84, 50, 50, 48, 55, 73];
+const K2410: readonly number[] = [84, 50, 50, 48, 56, 71];
+const K2411: readonly number[] = [84, 50, 50, 49, 48, 71];
+const K2412: readonly number[] = [84, 50, 50, 49, 48, 73];
+const K2413: readonly number[] = [84, 50, 50, 49, 48, 86];
+const K2414: readonly number[] = [84, 50, 50, 49, 49, 71];
+const K2415: readonly number[] = [84, 50, 50, 49, 50, 71];
+const K2416: readonly number[] = [84, 50, 50, 49, 51, 71];
+const K2417: readonly number[] = [84, 50, 50, 49, 51, 73];
+const K2418: readonly number[] = [84, 50, 50, 49, 51, 77];
+const K2419: readonly number[] = [84, 50, 50, 49, 52, 71];
+const K2420: readonly number[] = [84, 50, 50, 49, 52, 73];
+const K2421: readonly number[] = [84, 50, 50, 49, 52, 86];
+const K2422: readonly number[] = [84, 50, 50, 49, 53, 71];
+const K2423: readonly number[] = [84, 50, 50, 49, 53, 73];
+const K2424: readonly number[] = [84, 50, 50, 49, 54, 71];
+const K2425: readonly number[] = [84, 50, 50, 49, 56, 71];
+const K2426: readonly number[] = [84, 50, 50, 49, 57, 71];
+const K2427: readonly number[] = [84, 50, 51, 48, 48, 83];
+const K2428: readonly number[] = [84, 50, 51, 48, 49, 71];
+const K2429: readonly number[] = [84, 50, 51, 48, 49, 73];
+const K2430: readonly number[] = [84, 50, 51, 48, 50, 71];
+const K2431: readonly number[] = [84, 50, 51, 48, 50, 73];
+const K2432: readonly number[] = [84, 50, 51, 48, 52, 71];
+const K2433: readonly number[] = [84, 50, 51, 48, 52, 73];
+const K2434: readonly number[] = [84, 50, 51, 48, 52, 86];
+const K2435: readonly number[] = [84, 50, 51, 48, 55, 71];
+const K2436: readonly number[] = [84, 50, 51, 48, 55, 73];
+const K2437: readonly number[] = [84, 50, 51, 48, 55, 83];
+const K2438: readonly number[] = [84, 50, 52, 48, 48, 83];
+const K2439: readonly number[] = [84, 50, 52, 48, 49, 71];
+const K2440: readonly number[] = [84, 50, 52, 48, 50, 71];
+const K2441: readonly number[] = [84, 50, 52, 48, 50, 73];
+const K2442: readonly number[] = [84, 50, 52, 48, 51, 71];
+const K2443: readonly number[] = [84, 50, 52, 48, 52, 71];
+const K2444: readonly number[] = [84, 50, 52, 48, 53, 71];
+const K2445: readonly number[] = [84, 50, 52, 48, 54, 71];
+const K2446: readonly number[] = [84, 50, 52, 48, 55, 71];
+const K2447: readonly number[] = [84, 50, 52, 48, 55, 73];
+const K2448: readonly number[] = [84, 50, 52, 48, 56, 71];
+const K2449: readonly number[] = [84, 50, 52, 48, 56, 73];
+const K2450: readonly number[] = [84, 50, 52, 48, 56, 86];
+const K2451: readonly number[] = [84, 51, 48, 48, 48, 83];
+const K2452: readonly number[] = [84, 51, 49, 48, 48, 83];
+const K2453: readonly number[] = [84, 51, 49, 48, 49, 71];
+const K2454: readonly number[] = [84, 51, 49, 48, 50, 71];
+const K2455: readonly number[] = [84, 51, 49, 48, 51, 71];
+const K2456: readonly number[] = [84, 51, 49, 48, 52, 71];
+const K2457: readonly number[] = [84, 51, 49, 48, 52, 73];
+const K2458: readonly number[] = [84, 51, 49, 48, 52, 83];
+const K2459: readonly number[] = [84, 51, 49, 48, 52, 86];
+const K2460: readonly number[] = [84, 51, 49, 48, 53, 71];
+const K2461: readonly number[] = [84, 51, 49, 48, 53, 73];
+const K2462: readonly number[] = [84, 51, 49, 48, 54, 71];
+const K2463: readonly number[] = [84, 51, 50, 48, 48, 83];
+const K2464: readonly number[] = [84, 51, 50, 48, 49, 71];
+const K2465: readonly number[] = [84, 51, 50, 48, 49, 73];
+const K2466: readonly number[] = [84, 51, 50, 48, 49, 82];
+const K2467: readonly number[] = [84, 51, 50, 48, 49, 86];
+const K2468: readonly number[] = [84, 51, 50, 48, 51, 71];
+const K2469: readonly number[] = [84, 51, 50, 48, 53, 71];
+const K2470: readonly number[] = [84, 51, 51, 48, 48, 83];
+const K2471: readonly number[] = [84, 51, 51, 48, 49, 71];
+const K2472: readonly number[] = [84, 51, 51, 48, 50, 71];
+const K2473: readonly number[] = [84, 51, 51, 48, 51, 71];
+const K2474: readonly number[] = [84, 51, 51, 48, 52, 71];
+const K2475: readonly number[] = [84, 51, 51, 48, 52, 73];
+const K2476: readonly number[] = [84, 51, 51, 48, 52, 86];
+const K2477: readonly number[] = [84, 51, 52, 48, 48, 83];
+const K2478: readonly number[] = [84, 51, 52, 48, 49, 71];
+const K2479: readonly number[] = [84, 51, 52, 48, 50, 71];
+const K2480: readonly number[] = [84, 51, 52, 48, 50, 73];
+const K2481: readonly number[] = [84, 51, 52, 48, 51, 71];
+const K2482: readonly number[] = [84, 51, 52, 48, 51, 73];
+const K2483: readonly number[] = [84, 51, 52, 48, 51, 86];
+const K2484: readonly number[] = [85, 49, 48, 48, 48, 83];
+const K2485: readonly number[] = [85, 49, 49, 48, 48, 83];
+const K2486: readonly number[] = [85, 49, 49, 48, 49, 71];
+const K2487: readonly number[] = [85, 49, 49, 48, 51, 71];
+const K2488: readonly number[] = [85, 49, 49, 48, 52, 71];
+const K2489: readonly number[] = [85, 49, 49, 48, 55, 71];
+const K2490: readonly number[] = [85, 49, 49, 48, 57, 71];
+const K2491: readonly number[] = [85, 49, 49, 48, 57, 83];
+const K2492: readonly number[] = [85, 49, 49, 49, 48, 71];
+const K2493: readonly number[] = [85, 49, 49, 49, 50, 71];
+const K2494: readonly number[] = [85, 49, 49, 49, 50, 83];
+const K2495: readonly number[] = [85, 49, 49, 49, 52, 71];
+const K2496: readonly number[] = [85, 49, 49, 49, 52, 83];
+const K2497: readonly number[] = [85, 49, 49, 49, 53, 71];
+const K2498: readonly number[] = [85, 49, 49, 49, 55, 71];
+const K2499: readonly number[] = [85, 49, 49, 49, 56, 71];
+const K2500: readonly number[] = [85, 49, 49, 49, 56, 83];
+const K2501: readonly number[] = [85, 49, 50, 48, 48, 83];
+const K2502: readonly number[] = [85, 49, 50, 48, 50, 71];
+const K2503: readonly number[] = [85, 49, 50, 48, 51, 71];
+const K2504: readonly number[] = [85, 49, 50, 48, 54, 71];
+const K2505: readonly number[] = [85, 49, 50, 48, 56, 71];
+const K2506: readonly number[] = [85, 49, 50, 49, 49, 71];
+const K2507: readonly number[] = [85, 49, 50, 49, 51, 71];
+const K2508: readonly number[] = [85, 49, 50, 49, 53, 71];
+const K2509: readonly number[] = [85, 49, 50, 50, 50, 71];
+const K2510: readonly number[] = [85, 49, 50, 50, 50, 82];
+const K2511: readonly number[] = [85, 49, 50, 50, 53, 71];
+const K2512: readonly number[] = [85, 49, 51, 48, 48, 83];
+const K2513: readonly number[] = [85, 49, 51, 48, 50, 71];
+const K2514: readonly number[] = [85, 49, 51, 48, 52, 71];
+const K2515: readonly number[] = [85, 49, 51, 48, 53, 71];
+const K2516: readonly number[] = [85, 49, 51, 48, 54, 71];
+const K2517: readonly number[] = [85, 49, 51, 48, 54, 83];
+const K2518: readonly number[] = [85, 49, 51, 48, 56, 71];
+const K2519: readonly number[] = [85, 49, 51, 49, 48, 71];
+const K2520: readonly number[] = [85, 49, 51, 49, 48, 83];
+const K2521: readonly number[] = [85, 49, 52, 48, 48, 83];
+const K2522: readonly number[] = [85, 49, 53, 48, 48, 83];
+const K2523: readonly number[] = [85, 49, 53, 49, 48, 83];
+const K2524: readonly number[] = [85, 49, 54, 48, 48, 83];
+const K2525: readonly number[] = [85, 49, 54, 48, 49, 83];
+const K2526: readonly number[] = [86, 49, 48, 48, 48, 83];
+const K2527: readonly number[] = [86, 49, 49, 48, 48, 83];
+const K2528: readonly number[] = [86, 49, 49, 48, 57, 82];
+const K2529: readonly number[] = [86, 49, 49, 48, 57, 86];
+const K2530: readonly number[] = [87, 49, 48, 48, 48, 83];
+const K2531: readonly number[] = [87, 49, 49, 48, 48, 83];
+const K2532: readonly number[] = [87, 49, 49, 48, 52, 82];
+const K2533: readonly number[] = [87, 49, 49, 49, 53, 83];
+const K2534: readonly number[] = [87, 49, 50, 48, 48, 83];
+const K2535: readonly number[] = [87, 49, 50, 48, 52, 83];
+const K2536: readonly number[] = [87, 49, 51, 48, 48, 83];
+const K2537: readonly number[] = [87, 49, 52, 48, 48, 83];
+const K2538: readonly number[] = [88, 49, 48, 48, 48, 83];
+const K2539: readonly number[] = [88, 49, 49, 48, 48, 83];
+const K2540: readonly number[] = [88, 49, 49, 49, 50, 71];
+const K2541: readonly number[] = [88, 49, 49, 49, 50, 82];
+const K2542: readonly number[] = [88, 49, 49, 49, 53, 71];
+const K2543: readonly number[] = [88, 49, 49, 49, 56, 71];
+const K2544: readonly number[] = [88, 49, 49, 49, 57, 71];
+const K2545: readonly number[] = [88, 49, 49, 49, 57, 77];
+const K2546: readonly number[] = [88, 49, 49, 49, 57, 82];
+const K2547: readonly number[] = [88, 49, 51, 48, 48, 83];
+const K2548: readonly number[] = [88, 49, 51, 49, 50, 71];
+const K2549: readonly number[] = [88, 49, 51, 49, 53, 71];
+const K2550: readonly number[] = [88, 49, 51, 49, 57, 71];
+const K2551: readonly number[] = [88, 49, 51, 50, 49, 71];
+const K2552: readonly number[] = [88, 49, 51, 50, 49, 82];
+const K2553: readonly number[] = [88, 49, 53, 48, 48, 83];
+const K2554: readonly number[] = [88, 49, 53, 49, 50, 71];
+const K2555: readonly number[] = [88, 49, 53, 49, 52, 71];
+const K2556: readonly number[] = [88, 49, 53, 49, 55, 71];
+const K2557: readonly number[] = [88, 49, 53, 49, 55, 82];
+const K2558: readonly number[] = [88, 49, 53, 49, 57, 71];
+const K2559: readonly number[] = [88, 49, 53, 50, 50, 71];
+const K2560: readonly number[] = [88, 49, 53, 50, 52, 71];
+const K2561: readonly number[] = [88, 49, 53, 50, 54, 71];
+const K2562: readonly number[] = [88, 49, 55, 48, 48, 83];
+const K2563: readonly number[] = [88, 49, 55, 49, 49, 71];
+const K2564: readonly number[] = [88, 49, 55, 49, 54, 71];
+const K2565: readonly number[] = [88, 49, 55, 50, 49, 71];
+const K2566: readonly number[] = [88, 49, 55, 50, 49, 82];
+const K2567: readonly number[] = [88, 49, 55, 50, 52, 71];
+const K2568: readonly number[] = [88, 49, 55, 50, 53, 71];
+const K2569: readonly number[] = [88, 49, 55, 50, 54, 71];
+const K2570: readonly number[] = [88, 49, 55, 50, 56, 71];
+const K2571: readonly number[] = [89, 49, 48, 48, 48, 83];
+const K2572: readonly number[] = [89, 49, 49, 48, 48, 83];
+const K2573: readonly number[] = [89, 49, 49, 48, 49, 71];
+const K2574: readonly number[] = [89, 49, 49, 48, 50, 71];
+const K2575: readonly number[] = [89, 49, 49, 48, 52, 71];
+const K2576: readonly number[] = [89, 49, 49, 48, 53, 71];
+const K2577: readonly number[] = [89, 49, 49, 48, 54, 71];
+const K2578: readonly number[] = [89, 49, 49, 48, 56, 71];
+const K2579: readonly number[] = [89, 49, 49, 48, 57, 71];
+const K2580: readonly number[] = [89, 49, 49, 49, 48, 71];
+const K2581: readonly number[] = [89, 49, 49, 49, 49, 71];
+const K2582: readonly number[] = [89, 49, 49, 49, 50, 71];
+const K2583: readonly number[] = [89, 49, 49, 49, 51, 71];
+const K2584: readonly number[] = [89, 49, 49, 49, 52, 71];
+const K2585: readonly number[] = [89, 49, 49, 49, 54, 83];
+const K2586: readonly number[] = [89, 49, 49, 49, 55, 83];
+const K2587: readonly number[] = [89, 49, 49, 49, 56, 83];
+const K2588: readonly number[] = [89, 49, 50, 48, 48, 83];
+const K2589: readonly number[] = [89, 49, 50, 48, 49, 71];
+const K2590: readonly number[] = [89, 49, 50, 48, 51, 71];
+const K2591: readonly number[] = [89, 49, 50, 48, 53, 71];
+const K2592: readonly number[] = [89, 49, 50, 48, 54, 71];
+const K2593: readonly number[] = [89, 49, 50, 48, 54, 83];
+const K2594: readonly number[] = [89, 49, 50, 48, 54, 86];
+const K2595: readonly number[] = [89, 49, 50, 48, 56, 71];
+const K2596: readonly number[] = [89, 49, 50, 48, 57, 71];
+const K2597: readonly number[] = [89, 49, 50, 49, 48, 71];
+const K2598: readonly number[] = [89, 49, 50, 49, 48, 83];
+const K2599: readonly number[] = [89, 49, 50, 49, 49, 71];
+const K2600: readonly number[] = [89, 49, 50, 49, 52, 71];
+const K2601: readonly number[] = [89, 49, 51, 48, 48, 83];
+const K2602: readonly number[] = [89, 49, 51, 48, 49, 71];
+const K2603: readonly number[] = [89, 49, 51, 48, 50, 71];
+const K2604: readonly number[] = [89, 49, 51, 48, 51, 71];
+const K2605: readonly number[] = [89, 49, 51, 48, 52, 71];
+const K2606: readonly number[] = [89, 49, 51, 48, 52, 82];
+const K2607: readonly number[] = [89, 49, 51, 48, 55, 71];
+const K2608: readonly number[] = [89, 49, 51, 48, 56, 71];
+const K2609: readonly number[] = [89, 49, 52, 48, 48, 83];
+const K2610: readonly number[] = [90, 49, 48, 48, 48, 83];
+const X2611: readonly (readonly number[])[] = [K1793, K1794, K1795, K1796, K1797, K1798, K1799, K1800, K1801, K1802, K1803, K1804, K1805, K1806, K1807, K1808, K1809, K1810, K1811, K1812, K1813, K1814, K1815, K1816, K1817, K1818, K1819, K1820, K1821, K1822, K1823, K1824, K1825, K1826, K1827, K1828, K1829, K1830, K1831, K1832, K1833, K1834, K1835, K1836, K1837, K1838, K1839, K1840, K1841, K1842, K1843, K1844, K1845, K1846, K1847, K1848, K1849, K1850, K1851, K1852, K1853, K1854, K1855, K1856, K1857, K1858, K1859, K1860, K1861, K1862, K1863, K1864, K1865, K1866, K1867, K1868, K1869, K1870, K1871, K1872, K1873, K1874, K1875, K1876, K1877, K1878, K1879, K1880, K1881, K1882, K1883, K1884, K1885, K1886, K1887, K1888, K1889, K1890, K1891, K1892, K1893, K1894, K1895, K1896, K1897, K1898, K1899, K1900, K1901, K1902, K1903, K1904, K1905, K1906, K1907, K1908, K1909, K1910, K1911, K1912, K1913, K1914, K1915, K1916, K1917, K1918, K1919, K1920, K1921, K1922, K1923, K1924, K1925, K1926, K1927, K1928, K1929, K1930, K1931, K1932, K1933, K1934, K1935, K1936, K1937, K1938, K1939, K1940, K1941, K1942, K1943, K1944, K1945, K1946, K1947, K1948, K1949, K1950, K1951, K1952, K1953, K1954, K1955, K1956, K1957, K1958, K1959, K1960, K1961, K1962, K1963, K1964, K1965, K1966, K1967, K1968, K1969, K1970, K1971, K1972, K1973, K1974, K1975, K1976, K1977, K1978, K1979, K1980, K1981, K1982, K1983, K1984, K1985, K1986, K1987, K1988, K1989, K1990, K1991, K1992, K1993, K1994, K1995, K1996, K1997, K1998, K1999, K2000, K2001, K2002, K2003, K2004, K2005, K2006, K2007, K2008, K2009, K2010, K2011, K2012, K2013, K2014, K2015, K2016, K2017, K2018, K2019, K2020, K2021, K2022, K2023, K2024, K2025, K2026, K2027, K2028, K2029, K2030, K2031, K2032, K2033, K2034, K2035, K2036, K2037, K2038, K2039, K2040, K2041, K2042, K2043, K2044, K2045, K2046, K2047, K2048, K2049, K2050, K2051, K2052, K2053, K2054, K2055, K2056, K2057, K2058, K2059, K2060, K2061, K2062, K2063, K2064, K2065, K2066, K2067, K2068, K2069, K2070, K2071, K2072, K2073, K2074, K2075, K2076, K2077, K2078, K2079, K2080, K2081, K2082, K2083, K2084, K2085, K2086, K2087, K2088, K2089, K2090, K2091, K2092, K2093, K2094, K2095, K2096, K2097, K2098, K2099, K2100, K2101, K2102, K2103, K2104, K2105, K2106, K2107, K2108, K2109, K2110, K2111, K2112, K2113, K2114, K2115, K2116, K2117, K2118, K2119, K2120, K2121, K2122, K2123, K2124, K2125, K2126, K2127, K2128, K2129, K2130, K2131, K2132, K2133, K2134, K2135, K2136, K2137, K2138, K2139, K2140, K2141, K2142, K2143, K2144, K2145, K2146, K2147, K2148, K2149, K2150, K2151, K2152, K2153, K2154, K2155, K2156, K2157, K2158, K2159, K2160, K2161, K2162, K2163, K2164, K2165, K2166, K2167, K2168, K2169, K2170, K2171, K2172, K2173, K2174, K2175, K2176, K2177, K2178, K2179, K2180, K2181, K2182, K2183, K2184, K2185, K2186, K2187, K2188, K2189, K2190, K2191, K2192, K2193, K2194, K2195, K2196, K2197, K2198, K2199, K2200, K2201, K2202, K2203, K2204, K2205, K2206, K2207, K2208, K2209, K2210, K2211, K2212, K2213, K2214, K2215, K2216, K2217, K2218, K2219, K2220, K2221, K2222, K2223, K2224, K2225, K2226, K2227, K2228, K2229, K2230, K2231, K2232, K2233, K2234, K2235, K2236, K2237, K2238, K2239, K2240, K2241, K2242, K2243, K2244, K2245, K2246, K2247, K2248, K2249, K2250, K2251, K2252, K2253, K2254, K2255, K2256, K2257, K2258, K2259, K2260, K2261, K2262, K2263, K2264, K2265, K2266, K2267, K2268, K2269, K2270, K2271, K2272, K2273, K2274, K2275, K2276, K2277, K2278, K2279, K2280, K2281, K2282, K2283, K2284, K2285, K2286, K2287, K2288, K2289, K2290, K2291, K2292, K2293, K2294, K2295, K2296, K2297, K2298, K2299, K2300, K2301, K2302, K2303, K2304, K2305, K2306, K2307, K2308, K2309, K2310, K2311, K2312, K2313, K2314, K2315, K2316, K2317, K2318, K2319, K2320, K2321, K2322, K2323, K2324, K2325, K2326, K2327, K2328, K2329, K2330, K2331, K2332, K2333, K2334, K2335, K2336, K2337, K2338, K2339, K2340, K2341, K2342, K2343, K2344, K2345, K2346, K2347, K2348, K2349, K2350, K2351, K2352, K2353, K2354, K2355, K2356, K2357, K2358, K2359, K2360, K2361, K2362, K2363, K2364, K2365, K2366, K2367, K2368, K2369, K2370, K2371, K2372, K2373, K2374, K2375, K2376, K2377, K2378, K2379, K2380, K2381, K2382, K2383, K2384, K2385, K2386, K2387, K2388, K2389, K2390, K2391, K2392, K2393, K2394, K2395, K2396, K2397, K2398, K2399, K2400, K2401, K2402, K2403, K2404, K2405, K2406, K2407, K2408, K2409, K2410, K2411, K2412, K2413, K2414, K2415, K2416, K2417, K2418, K2419, K2420, K2421, K2422, K2423, K2424, K2425, K2426, K2427, K2428, K2429, K2430, K2431, K2432, K2433, K2434, K2435, K2436, K2437, K2438, K2439, K2440, K2441, K2442, K2443, K2444, K2445, K2446, K2447, K2448, K2449, K2450, K2451, K2452, K2453, K2454, K2455, K2456, K2457, K2458, K2459, K2460, K2461, K2462, K2463, K2464, K2465, K2466, K2467, K2468, K2469, K2470, K2471, K2472, K2473, K2474, K2475, K2476, K2477, K2478, K2479, K2480, K2481, K2482, K2483, K2484, K2485, K2486, K2487, K2488, K2489, K2490, K2491, K2492, K2493, K2494, K2495, K2496, K2497, K2498, K2499, K2500, K2501, K2502, K2503, K2504, K2505, K2506, K2507, K2508, K2509, K2510, K2511, K2512, K2513, K2514, K2515, K2516, K2517, K2518, K2519, K2520, K2521, K2522, K2523, K2524, K2525, K2526, K2527, K2528, K2529, K2530, K2531, K2532, K2533, K2534, K2535, K2536, K2537, K2538, K2539, K2540, K2541, K2542, K2543, K2544, K2545, K2546, K2547, K2548, K2549, K2550, K2551, K2552, K2553, K2554, K2555, K2556, K2557, K2558, K2559, K2560, K2561, K2562, K2563, K2564, K2565, K2566, K2567, K2568, K2569, K2570, K2571, K2572, K2573, K2574, K2575, K2576, K2577, K2578, K2579, K2580, K2581, K2582, K2583, K2584, K2585, K2586, K2587, K2588, K2589, K2590, K2591, K2592, K2593, K2594, K2595, K2596, K2597, K2598, K2599, K2600, K2601, K2602, K2603, K2604, K2605, K2606, K2607, K2608, K2609, K2610];
+const K2612: readonly number[] = [68, 75];
+const K2613: readonly number[] = [69, 69];
+const K2614: readonly number[] = [69, 83];
+const K2615: readonly number[] = [70, 73];
+const K2616: readonly number[] = [70, 82];
+const K2617: readonly number[] = [48, 49, 48, 49];
+const K2618: readonly number[] = [48, 50, 48, 50];
+const K2619: readonly number[] = [48, 50, 48, 51];
+const K2620: readonly number[] = [48, 51, 48, 49];
+const K2621: readonly number[] = [48, 51, 48, 51];
+const K2622: readonly number[] = [48, 52, 48, 49];
+const K2623: readonly number[] = [48, 53, 48, 49];
+const K2624: readonly number[] = [48, 54, 48, 49];
+const K2625: readonly number[] = [48, 54, 48, 50];
+const K2626: readonly number[] = [48, 54, 48, 51];
+const K2627: readonly number[] = [48, 54, 48, 53];
+const K2628: readonly number[] = [48, 55, 48, 50];
+const K2629: readonly number[] = [48, 56, 48, 50];
+const K2630: readonly number[] = [48, 57, 48, 49];
+const K2631: readonly number[] = [49, 48, 48, 49];
+const K2632: readonly number[] = [49, 49, 48, 49];
+const K2633: readonly number[] = [49, 49, 48, 52];
+const K2634: readonly number[] = [49, 50, 48, 51];
+const K2635: readonly number[] = [49, 51, 48, 49];
+const K2636: readonly number[] = [49, 51, 48, 51];
+const K2637: readonly number[] = [49, 51, 48, 52];
+const K2638: readonly number[] = [49, 51, 48, 53];
+const K2639: readonly number[] = [49, 52, 48, 50];
+const K2640: readonly number[] = [49, 52, 48, 55];
+const K2641: readonly number[] = [49, 53, 48, 49];
+const K2642: readonly number[] = [49, 54, 48, 49];
+const K2643: readonly number[] = [49, 55, 48, 52];
+const K2644: readonly number[] = [49, 55, 48, 56];
+const K2645: readonly number[] = [49, 56, 48, 49];
+const K2646: readonly number[] = [49, 57, 48, 49];
+const K2647: readonly number[] = [50, 48, 48, 49];
+const K2648: readonly number[] = [50, 48, 48, 50];
+const K2649: readonly number[] = [50, 49, 48, 52];
+const K2650: readonly number[] = [50, 50, 48, 50];
+const K2651: readonly number[] = [50, 51, 48, 49];
+const K2652: readonly number[] = [50, 52, 48, 49];
+const K2653: readonly number[] = [50, 52, 48, 50];
+const K2654: readonly number[] = [50, 53, 48, 49];
+const K2655: readonly number[] = [50, 54, 48, 50];
+const K2656: readonly number[] = [50, 55, 48, 49];
+const K2657: readonly number[] = [50, 55, 48, 50];
+const K2658: readonly number[] = [50, 56, 48, 49];
+const K2659: readonly number[] = [50, 57, 48, 49];
+const K2660: readonly number[] = [50, 57, 48, 51];
+const K2661: readonly number[] = [51, 48, 48, 51];
+const K2662: readonly number[] = [51, 49, 48, 50];
+const K2663: readonly number[] = [51, 50, 48, 49];
+const K2664: readonly number[] = [51, 51, 48, 50];
+const K2665: readonly number[] = [51, 51, 48, 51];
+const K2666: readonly number[] = [51, 52, 48, 50];
+const K2667: readonly number[] = [51, 52, 48, 53];
+const K2668: readonly number[] = [51, 53, 48, 49];
+const K2669: readonly number[] = [51, 53, 48, 50];
+const K2670: readonly number[] = [51, 54, 48, 49];
+const K2671: readonly number[] = [51, 55, 48, 49];
+const K2672: readonly number[] = [51, 56, 48, 49];
+const K2673: readonly number[] = [51, 56, 48, 50];
+const K2674: readonly number[] = [51, 57, 48, 50];
+const K2675: readonly number[] = [52, 48, 48, 49];
+const K2676: readonly number[] = [52, 48, 48, 50];
+const K2677: readonly number[] = [52, 49, 48, 49];
+const K2678: readonly number[] = [52, 50, 48, 49];
+const K2679: readonly number[] = [52, 50, 48, 50];
+const K2680: readonly number[] = [52, 51, 48, 50];
+const K2681: readonly number[] = [52, 52, 48, 49];
+const K2682: readonly number[] = [52, 52, 48, 50];
+const K2683: readonly number[] = [52, 53, 48, 50];
+const K2684: readonly number[] = [52, 54, 48, 49];
+const K2685: readonly number[] = [52, 55, 48, 49];
+const K2686: readonly number[] = [52, 56, 48, 49];
+const K2687: readonly number[] = [52, 57, 48, 49];
+const K2688: readonly number[] = [53, 48, 48, 49];
+const K2689: readonly number[] = [53, 48, 48, 50];
+const K2690: readonly number[] = [53, 49, 48, 49];
+const K2691: readonly number[] = [53, 49, 48, 51];
+const K2692: readonly number[] = [53, 50, 48, 49];
+const K2693: readonly number[] = [53, 51, 48, 49];
+const K2694: readonly number[] = [53, 52, 48, 49];
+const K2695: readonly number[] = [53, 52, 48, 50];
+const K2696: readonly number[] = [53, 53, 48, 49];
+const K2697: readonly number[] = [53, 54, 48, 49];
+const K2698: readonly number[] = [53, 54, 48, 50];
+const K2699: readonly number[] = [53, 55, 53, 49];
+const K2700: readonly number[] = [53, 55, 53, 50];
+const K2701: readonly number[] = [53, 55, 53, 51];
+const K2702: readonly number[] = [53, 56, 48, 50];
+const K2703: readonly number[] = [53, 57, 48, 50];
+const K2704: readonly number[] = [53, 57, 48, 54];
+const K2705: readonly number[] = [53, 57, 49, 48];
+const K2706: readonly number[] = [53, 57, 53, 50];
+const K2707: readonly number[] = [54, 48, 48, 49];
+const K2708: readonly number[] = [54, 48, 48, 50];
+const K2709: readonly number[] = [54, 49, 48, 49];
+const K2710: readonly number[] = [54, 50, 48, 49];
+const K2711: readonly number[] = [54, 50, 48, 50];
+const K2712: readonly number[] = [54, 51, 48, 51];
+const K2713: readonly number[] = [54, 52, 48, 49];
+const K2714: readonly number[] = [54, 52, 48, 51];
+const K2715: readonly number[] = [54, 53, 48, 50];
+const K2716: readonly number[] = [54, 54, 48, 49];
+const K2717: readonly number[] = [54, 55, 53, 49];
+const K2718: readonly number[] = [54, 55, 53, 50];
+const K2719: readonly number[] = [54, 56, 53, 49];
+const K2720: readonly number[] = [54, 56, 53, 50];
+const K2721: readonly number[] = [54, 57, 48, 49];
+const K2722: readonly number[] = [54, 57, 48, 51];
+const K2723: readonly number[] = [55, 48, 48, 49];
+const K2724: readonly number[] = [55, 49, 48, 50];
+const K2725: readonly number[] = [55, 49, 48, 54];
+const K2726: readonly number[] = [55, 50, 48, 50];
+const K2727: readonly number[] = [55, 51, 48, 49];
+const K2728: readonly number[] = [55, 52, 48, 49];
+const K2729: readonly number[] = [55, 52, 48, 50];
+const K2730: readonly number[] = [55, 53, 48, 49];
+const K2731: readonly number[] = [55, 54, 48, 49];
+const K2732: readonly number[] = [55, 54, 48, 54];
+const K2733: readonly number[] = [55, 54, 48, 56];
+const K2734: readonly number[] = [55, 55, 48, 49];
+const K2735: readonly number[] = [55, 55, 48, 50];
+const K2736: readonly number[] = [55, 56, 48, 49];
+const K2737: readonly number[] = [55, 56, 48, 50];
+const K2738: readonly number[] = [55, 56, 48, 51];
+const K2739: readonly number[] = [55, 57, 48, 49];
+const K2740: readonly number[] = [56, 48, 48, 50];
+const K2741: readonly number[] = [56, 49, 48, 49];
+const K2742: readonly number[] = [56, 49, 48, 50];
+const K2743: readonly number[] = [56, 50, 48, 49];
+const K2744: readonly number[] = [56, 51, 48, 50];
+const K2745: readonly number[] = [56, 51, 48, 51];
+const K2746: readonly number[] = [56, 51, 48, 53];
+const K2747: readonly number[] = [56, 52, 48, 49];
+const K2748: readonly number[] = [56, 53, 48, 49];
+const K2749: readonly number[] = [56, 54, 48, 50];
+const K2750: readonly number[] = [56, 55, 48, 49];
+const K2751: readonly number[] = [56, 56, 48, 49];
+const K2752: readonly number[] = [56, 57, 48, 49];
+const K2753: readonly number[] = [56, 57, 48, 51];
+const K2754: readonly number[] = [57, 48, 48, 49];
+const K2755: readonly number[] = [57, 50, 48, 49];
+const K2756: readonly number[] = [57, 51, 48, 49];
+const K2757: readonly number[] = [57, 52, 48, 49];
+const K2758: readonly number[] = [57, 55, 49, 49];
+const K2759: readonly number[] = [57, 55, 49, 50];
+const K2760: readonly number[] = [57, 55, 50, 49];
+const K2761: readonly number[] = [57, 55, 51, 49];
+const K2762: readonly number[] = [57, 55, 52, 49];
+const K2763: readonly number[] = [57, 55, 52, 50];
+const K2764: readonly number[] = [57, 55, 54, 49];
+const X2765: readonly (readonly number[])[] = [K2617, K2618, K2619, K2620, K2621, K2622, K2623, K2624, K2625, K2626, K2627, K2628, K2629, K2630, K2631, K2632, K2633, K2634, K2635, K2636, K2637, K2638, K2639, K2640, K2641, K2642, K2643, K2644, K2645, K2646, K2647, K2648, K2649, K2650, K2651, K2652, K2653, K2654, K2655, K2656, K2657, K2658, K2659, K2660, K2661, K2662, K2663, K2664, K2665, K2666, K2667, K2668, K2669, K2670, K2671, K2672, K2673, K2674, K2675, K2676, K2677, K2678, K2679, K2680, K2681, K2682, K2683, K2684, K2685, K2686, K2687, K2688, K2689, K2690, K2691, K2692, K2693, K2694, K2695, K2696, K2697, K2698, K2699, K2700, K2701, K2702, K2703, K2704, K2705, K2706, K2707, K2708, K2709, K2710, K2711, K2712, K2713, K2714, K2715, K2716, K2717, K2718, K2719, K2720, K2721, K2722, K2723, K2724, K2725, K2726, K2727, K2728, K2729, K2730, K2731, K2732, K2733, K2734, K2735, K2736, K2737, K2738, K2739, K2740, K2741, K2742, K2743, K2744, K2745, K2746, K2747, K2748, K2749, K2750, K2751, K2752, K2753, K2754, K2755, K2756, K2757, K2758, K2759, K2760, K2761, K2762, K2763, K2764];
+const K2766: readonly number[] = [72, 82];
+const K2767: readonly number[] = [72, 85];
+const K2768: readonly number[] = [73, 69];
+const K2769: readonly number[] = [73, 84];
+const K2770: readonly number[] = [76, 84];
+const K2771: readonly number[] = [76, 85];
+const K2772: readonly number[] = [76, 86];
+const K2773: readonly number[] = [77, 84];
+const K2774: readonly number[] = [78, 76];
+const K2775: readonly number[] = [80, 76];
+const K2776: readonly number[] = [80, 84];
+const K2777: readonly number[] = [82, 79];
+const K2778: readonly number[] = [83, 69];
+const K2779: readonly number[] = [83, 73];
+const K2780: readonly number[] = [83, 75];
+const K2781: readonly number[] = [65, 67];
+const K2782: readonly number[] = [67, 69];
+const K2783: readonly number[] = [67, 83];
+const K2784: readonly number[] = [69, 78];
+const K2785: readonly number[] = [70, 67];
+const K2786: readonly number[] = [70, 69];
+const K2787: readonly number[] = [71, 69];
+const K2788: readonly number[] = [71, 78];
+const K2789: readonly number[] = [71, 83];
+const K2790: readonly number[] = [73, 67];
+const K2791: readonly number[] = [73, 80];
+const K2792: readonly number[] = [76, 80];
+const K2793: readonly number[] = [78, 65];
+const K2794: readonly number[] = [78, 67];
+const K2795: readonly number[] = [78, 70];
+const K2796: readonly number[] = [78, 73];
+const K2797: readonly number[] = [78, 79];
+const K2798: readonly number[] = [78, 80];
+const K2799: readonly number[] = [78, 82];
+const K2800: readonly number[] = [78, 86];
+const K2801: readonly number[] = [78, 90];
+const K2802: readonly number[] = [79, 67];
+const K2803: readonly number[] = [79, 69];
+const K2804: readonly number[] = [80, 67];
+const K2805: readonly number[] = [82, 48];
+const K2806: readonly number[] = [82, 67];
+const K2807: readonly number[] = [82, 83];
+const K2808: readonly number[] = [83, 65];
+const K2809: readonly number[] = [83, 67];
+const K2810: readonly number[] = [83, 70];
+const K2811: readonly number[] = [83, 71];
+const K2812: readonly number[] = [83, 76];
+const K2813: readonly number[] = [83, 79];
+const K2814: readonly number[] = [83, 80];
+const K2815: readonly number[] = [83, 82];
+const K2816: readonly number[] = [83, 90];
+const K2817: readonly number[] = [90, 67];
+const X2818: readonly (readonly number[])[] = [K2781, K2782, K2783, K2784, K2614, K2785, K2786, K2787, K2788, K2789, K2790, K2791, K2792, K2793, K2794, K2795, K2796, K2774, K2797, K2798, K2799, K2800, K2801, K2802, K2803, K2804, K2805, K2806, K2807, K2808, K2809, K2778, K2810, K2811, K2779, K2812, K2813, K2814, K2815, K2816, K2817];
+const K2819: readonly number[] = [67];
+const K2820: readonly number[] = [71, 66];
+const K2821: readonly number[] = [73, 83];
+const K2822: readonly number[] = [76, 73];
+const K2823: readonly number[] = [88, 73];
+const X2824: readonly (readonly number[])[] = [];
+const X2825: readonly (readonly number[])[] = [K38];
+const X2826: readonly (readonly number[])[] = [K39];
+const X2827: readonly (readonly number[])[] = [K40];
+const X2828: readonly (readonly number[])[] = [K41];
+const X2829: readonly (readonly number[])[] = [K42];
+const X2830: readonly (readonly number[])[] = [K43];
+const X2831: readonly (readonly number[])[] = [K2612];
+const X2832: readonly (readonly number[])[] = [K2613];
+const X2833: readonly (readonly number[])[] = [K1];
+const X2834: readonly (readonly number[])[] = [K2614];
+const X2835: readonly (readonly number[])[] = [K2615];
+const X2836: readonly (readonly number[])[] = [K2616];
+const X2837: readonly (readonly number[])[] = [K2766];
+const X2838: readonly (readonly number[])[] = [K2767];
+const X2839: readonly (readonly number[])[] = [K2768];
+const X2840: readonly (readonly number[])[] = [K2769];
+const X2841: readonly (readonly number[])[] = [K2770];
+const X2842: readonly (readonly number[])[] = [K2771];
+const X2843: readonly (readonly number[])[] = [K2772];
+const X2844: readonly (readonly number[])[] = [K2773];
+const X2845: readonly (readonly number[])[] = [K2774];
+const X2846: readonly (readonly number[])[] = [K2775];
+const X2847: readonly (readonly number[])[] = [K2776];
+const X2848: readonly (readonly number[])[] = [K2777];
+const X2849: readonly (readonly number[])[] = [K2778];
+const X2850: readonly (readonly number[])[] = [K2779];
+const X2851: readonly (readonly number[])[] = [K2780];
+const X2852: readonly (readonly number[])[] = [K2820];
+const X2853: readonly (readonly number[])[] = [K1, K2];
+const X2854: readonly (readonly number[])[] = [K2821];
+const X2855: readonly (readonly number[])[] = [K2822];
+const X2856: readonly (readonly number[])[] = [K2797];
+const X2857: readonly (readonly number[])[] = [K2823];
+const K2858: readonly number[] = [66, 82];
+const K2859: readonly number[] = [74, 80];
+const K2860: readonly number[] = [85, 83];
+const K2861: readonly number[] = [67, 78];
+const K2862: readonly number[] = [];
 
 function S0(point: number): boolean {
   switch (point) {
@@ -611,195 +3327,195 @@ function S20(point: number): boolean {
 function acceptedPrefixesOf(definition: number): readonly (readonly number[])[] {
   switch (definition) {
     case 1:
-      return X108;
+      return X2824;
     case 2:
-      return X108;
+      return X2824;
     case 3:
-      return X108;
+      return X2824;
     case 4:
-      return X108;
+      return X2824;
     case 5:
-      return X108;
+      return X2824;
     case 6:
-      return X108;
+      return X2824;
     case 7:
-      return X108;
+      return X2824;
     case 8:
-      return X108;
+      return X2824;
     case 9:
-      return X108;
+      return X2824;
     case 10:
-      return X108;
+      return X2824;
     case 11:
-      return X108;
+      return X2824;
     case 12:
-      return X108;
+      return X2824;
     case 13:
-      return X108;
+      return X2824;
     case 14:
-      return X109;
+      return X2825;
     case 15:
-      return X110;
+      return X2826;
     case 16:
-      return X111;
+      return X2827;
     case 17:
-      return X112;
+      return X2828;
     case 18:
-      return X113;
+      return X2829;
     case 19:
-      return X114;
+      return X2830;
     case 20:
-      return X115;
+      return X2831;
     case 21:
-      return X116;
+      return X2832;
     case 22:
-      return X117;
+      return X2833;
     case 23:
-      return X118;
+      return X2834;
     case 24:
-      return X119;
+      return X2835;
     case 25:
-      return X120;
+      return X2836;
     case 26:
-      return X121;
+      return X2837;
     case 27:
-      return X122;
+      return X2838;
     case 28:
-      return X123;
+      return X2839;
     case 29:
-      return X124;
+      return X2840;
     case 30:
-      return X125;
+      return X2841;
     case 31:
-      return X126;
+      return X2842;
     case 32:
-      return X127;
+      return X2843;
     case 33:
-      return X128;
+      return X2844;
     case 34:
-      return X129;
+      return X2845;
     case 35:
-      return X130;
+      return X2846;
     case 36:
-      return X131;
+      return X2847;
     case 37:
-      return X132;
+      return X2848;
     case 38:
-      return X133;
+      return X2849;
     case 39:
-      return X134;
+      return X2850;
     case 40:
-      return X135;
+      return X2851;
     case 41:
-      return X108;
+      return X2824;
     case 42:
-      return X108;
+      return X2824;
     case 43:
-      return X108;
+      return X2824;
     case 44:
-      return X108;
+      return X2824;
     case 45:
-      return X108;
+      return X2824;
     case 46:
-      return X108;
+      return X2824;
     case 47:
-      return X108;
+      return X2824;
     case 48:
-      return X108;
+      return X2824;
     case 49:
-      return X108;
+      return X2824;
     case 50:
-      return X108;
+      return X2824;
     case 51:
-      return X108;
+      return X2824;
     case 52:
-      return X108;
+      return X2824;
     case 53:
-      return X108;
+      return X2824;
     case 54:
-      return X108;
+      return X2824;
     case 55:
-      return X108;
+      return X2824;
     case 56:
-      return X108;
+      return X2824;
     case 57:
-      return X108;
+      return X2824;
     case 58:
-      return X108;
+      return X2824;
     case 59:
-      return X108;
+      return X2824;
     case 60:
-      return X108;
+      return X2824;
     case 61:
-      return X108;
+      return X2824;
     case 62:
-      return X108;
+      return X2824;
     case 63:
-      return X109;
+      return X2825;
     case 64:
-      return X110;
+      return X2826;
     case 65:
-      return X111;
+      return X2827;
     case 66:
-      return X112;
+      return X2828;
     case 67:
-      return X113;
+      return X2829;
     case 68:
-      return X114;
+      return X2830;
     case 69:
-      return X115;
+      return X2831;
     case 70:
-      return X116;
+      return X2832;
     case 71:
-      return X118;
+      return X2834;
     case 72:
-      return X119;
+      return X2835;
     case 73:
-      return X120;
+      return X2836;
     case 74:
-      return X136;
+      return X2852;
     case 75:
-      return X137;
+      return X2853;
     case 76:
-      return X121;
+      return X2837;
     case 77:
-      return X122;
+      return X2838;
     case 78:
-      return X123;
+      return X2839;
     case 79:
-      return X138;
+      return X2854;
     case 80:
-      return X124;
+      return X2840;
     case 81:
-      return X139;
+      return X2855;
     case 82:
-      return X126;
+      return X2842;
     case 83:
-      return X127;
+      return X2843;
     case 84:
-      return X128;
+      return X2844;
     case 85:
-      return X129;
+      return X2845;
     case 86:
-      return X140;
+      return X2856;
     case 87:
-      return X130;
+      return X2846;
     case 88:
-      return X131;
+      return X2847;
     case 89:
-      return X132;
+      return X2848;
     case 90:
-      return X133;
+      return X2849;
     case 91:
-      return X134;
+      return X2850;
     case 92:
-      return X135;
+      return X2851;
     case 93:
-      return X141;
+      return X2857;
     case 94:
-      return X108;
+      return X2824;
     default:
-      return X108;
+      return X2824;
   }
 }
 /**
@@ -811,25 +3527,25 @@ function acceptedPrefixesOf(definition: number): readonly (readonly number[])[] 
 function prependedPrefixOf(definition: number): readonly number[] {
   switch (definition) {
     case 1:
-      return K50;
+      return K2767;
     case 2:
-      return K142;
+      return K2858;
     case 3:
-      return K52;
+      return K2769;
     case 4:
-      return K104;
+      return K2820;
     case 5:
-      return K143;
+      return K2859;
     case 6:
-      return K51;
+      return K2768;
     case 7:
-      return K60;
+      return K2777;
     case 8:
-      return K44;
+      return K2612;
     case 10:
       return K40;
     case 11:
-      return K144;
+      return K2860;
     case 12:
       return K39;
     case 14:
@@ -845,47 +3561,47 @@ function prependedPrefixOf(definition: number): readonly number[] {
     case 19:
       return K43;
     case 20:
-      return K44;
+      return K2612;
     case 21:
-      return K45;
+      return K2613;
     case 22:
       return K1;
     case 23:
-      return K46;
+      return K2614;
     case 24:
-      return K47;
+      return K2615;
     case 25:
-      return K48;
+      return K2616;
     case 26:
-      return K49;
+      return K2766;
     case 27:
-      return K50;
+      return K2767;
     case 28:
-      return K51;
+      return K2768;
     case 29:
-      return K52;
+      return K2769;
     case 30:
-      return K53;
+      return K2770;
     case 31:
-      return K54;
+      return K2771;
     case 32:
-      return K55;
+      return K2772;
     case 33:
-      return K56;
+      return K2773;
     case 34:
-      return K57;
+      return K2774;
     case 35:
-      return K58;
+      return K2775;
     case 36:
-      return K59;
+      return K2776;
     case 37:
-      return K60;
+      return K2777;
     case 38:
-      return K61;
+      return K2778;
     case 39:
-      return K62;
+      return K2779;
     case 40:
-      return K63;
+      return K2780;
     case 41:
       return K38;
     case 42:
@@ -897,37 +3613,37 @@ function prependedPrefixOf(definition: number): readonly number[] {
     case 45:
       return K42;
     case 46:
-      return K63;
+      return K2780;
     case 47:
-      return K53;
+      return K2770;
     case 48:
-      return K58;
+      return K2775;
     case 49:
-      return K57;
+      return K2774;
     case 51:
-      return K62;
+      return K2779;
     case 52:
-      return K56;
+      return K2773;
     case 53:
-      return K49;
+      return K2766;
     case 54:
-      return K46;
+      return K2614;
     case 55:
-      return K59;
+      return K2776;
     case 56:
-      return K61;
+      return K2778;
     case 57:
-      return K54;
+      return K2771;
     case 58:
-      return K55;
+      return K2772;
     case 59:
-      return K45;
+      return K2613;
     case 60:
-      return K48;
+      return K2616;
     case 61:
-      return K48;
+      return K2616;
     case 62:
-      return K145;
+      return K2861;
     case 63:
       return K38;
     case 64:
@@ -941,59 +3657,59 @@ function prependedPrefixOf(definition: number): readonly number[] {
     case 68:
       return K43;
     case 69:
-      return K44;
+      return K2612;
     case 70:
-      return K45;
+      return K2613;
     case 71:
-      return K46;
+      return K2614;
     case 72:
-      return K47;
+      return K2615;
     case 73:
-      return K48;
+      return K2616;
     case 74:
-      return K104;
+      return K2820;
     case 75:
       return K1;
     case 76:
-      return K49;
+      return K2766;
     case 77:
-      return K50;
+      return K2767;
     case 78:
-      return K51;
+      return K2768;
     case 79:
-      return K105;
+      return K2821;
     case 80:
-      return K52;
+      return K2769;
     case 81:
-      return K106;
+      return K2822;
     case 82:
-      return K54;
+      return K2771;
     case 83:
-      return K55;
+      return K2772;
     case 84:
-      return K56;
+      return K2773;
     case 85:
-      return K57;
+      return K2774;
     case 86:
-      return K80;
+      return K2797;
     case 87:
-      return K58;
+      return K2775;
     case 88:
-      return K59;
+      return K2776;
     case 89:
-      return K60;
+      return K2777;
     case 90:
-      return K61;
+      return K2778;
     case 91:
-      return K62;
+      return K2779;
     case 92:
-      return K63;
+      return K2780;
     case 93:
-      return K107;
+      return K2823;
     case 94:
-      return K47;
+      return K2615;
     default:
-      return K146;
+      return K2862;
   }
 }
 
@@ -2549,11 +5265,14 @@ function format174(subject: StringValue): AssertionResult {
   if ((support.beforeFirst(support.afterFirst(subject, K43), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.de.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K43), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K43), K15), 5, 6))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.de.register_length" };
   }
   if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K43), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.de.register_characters" };
+  }
+  if (!(((support.beforeFirst(support.afterFirst(subject, K43), K15)?.length === 5) && support.prefixIn(support.beforeFirst(support.afterFirst(subject, K43), K15), X1792)) || ((support.beforeFirst(support.afterFirst(subject, K43), K15)?.length === 6) && support.prefixIn(support.beforeFirst(support.afterFirst(subject, K43), K15), X2611)))) {
+    return { failed: true, reasonCode: "invalid_format", messageKey: "euid.de.register_unknown" };
   }
   const called0 = format164(support.afterFirst(subject, K15));
   if (called0.failed) {
@@ -2566,19 +5285,19 @@ function format175(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.dk.empty" };
   }
-  if (!(support.startsWith(subject, K44))) {
+  if (!(support.startsWith(subject, K2612))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.dk.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.dk.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K44), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2612), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.dk.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K44), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2612), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.dk.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K44), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2612), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.dk.register_characters" };
   }
   const called0 = format165(support.afterFirst(subject, K15));
@@ -2592,19 +5311,19 @@ function format176(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.ee.empty" };
   }
-  if (!(support.startsWith(subject, K45))) {
+  if (!(support.startsWith(subject, K2613))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.ee.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.ee.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K45), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2613), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.ee.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K45), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2613), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.ee.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K45), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2613), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.ee.register_characters" };
   }
   const called0 = format166(support.afterFirst(subject, K15));
@@ -2644,19 +5363,19 @@ function format178(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.es.empty" };
   }
-  if (!(support.startsWith(subject, K46))) {
+  if (!(support.startsWith(subject, K2614))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.es.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.es.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K46), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2614), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.es.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K46), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2614), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.es.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K46), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2614), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.es.register_characters" };
   }
   const called0 = format168(support.afterFirst(subject, K15));
@@ -2670,19 +5389,19 @@ function format179(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.fi.empty" };
   }
-  if (!(support.startsWith(subject, K47))) {
+  if (!(support.startsWith(subject, K2615))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.fi.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.fi.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K47), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2615), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.fi.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K47), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2615), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.fi.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K47), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2615), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.fi.register_characters" };
   }
   const called0 = format196(support.afterFirst(subject, K15));
@@ -2696,20 +5415,23 @@ function format180(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.fr.empty" };
   }
-  if (!(support.startsWith(subject, K48))) {
+  if (!(support.startsWith(subject, K2616))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.fr.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.fr.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K48), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2616), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.fr.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K48), K15), 1, 8))) {
+  if (!(support.beforeFirst(support.afterFirst(subject, K2616), K15)?.length === 4)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.fr.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K48), K15)))) {
+  if (!(support.asciiDigits(support.beforeFirst(support.afterFirst(subject, K2616), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.fr.register_characters" };
+  }
+  if (!(support.prefixIn(support.beforeFirst(support.afterFirst(subject, K2616), K15), X2765))) {
+    return { failed: true, reasonCode: "invalid_format", messageKey: "euid.fr.register_unknown" };
   }
   const called0 = format197(support.afterFirst(subject, K15));
   if (called0.failed) {
@@ -2722,19 +5444,19 @@ function format181(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.hr.empty" };
   }
-  if (!(support.startsWith(subject, K49))) {
+  if (!(support.startsWith(subject, K2766))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.hr.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.hr.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K49), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2766), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.hr.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K49), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2766), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.hr.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K49), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2766), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.hr.register_characters" };
   }
   const called0 = format202(support.afterFirst(subject, K15));
@@ -2748,19 +5470,19 @@ function format182(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.hu.empty" };
   }
-  if (!(support.startsWith(subject, K50))) {
+  if (!(support.startsWith(subject, K2767))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.hu.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.hu.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K50), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2767), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.hu.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K50), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2767), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.hu.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K50), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2767), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.hu.register_characters" };
   }
   const called0 = format203(support.afterFirst(subject, K15));
@@ -2774,19 +5496,19 @@ function format183(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.ie.empty" };
   }
-  if (!(support.startsWith(subject, K51))) {
+  if (!(support.startsWith(subject, K2768))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.ie.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.ie.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K51), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2768), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.ie.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K51), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2768), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.ie.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K51), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2768), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.ie.register_characters" };
   }
   const called0 = format204(support.afterFirst(subject, K15));
@@ -2800,19 +5522,19 @@ function format184(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.it.empty" };
   }
-  if (!(support.startsWith(subject, K52))) {
+  if (!(support.startsWith(subject, K2769))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.it.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.it.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K52), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2769), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.it.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K52), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2769), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.it.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K52), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2769), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.it.register_characters" };
   }
   const called0 = format205(support.afterFirst(subject, K15));
@@ -2826,19 +5548,19 @@ function format185(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.lt.empty" };
   }
-  if (!(support.startsWith(subject, K53))) {
+  if (!(support.startsWith(subject, K2770))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.lt.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.lt.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K53), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2770), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.lt.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K53), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2770), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.lt.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K53), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2770), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.lt.register_characters" };
   }
   const called0 = format208(support.afterFirst(subject, K15));
@@ -2852,19 +5574,19 @@ function format186(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.lu.empty" };
   }
-  if (!(support.startsWith(subject, K54))) {
+  if (!(support.startsWith(subject, K2771))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.lu.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.lu.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K54), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2771), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.lu.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K54), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2771), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.lu.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K54), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2771), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.lu.register_characters" };
   }
   const called0 = format209(support.afterFirst(subject, K15));
@@ -2878,19 +5600,19 @@ function format187(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.lv.empty" };
   }
-  if (!(support.startsWith(subject, K55))) {
+  if (!(support.startsWith(subject, K2772))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.lv.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.lv.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K55), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2772), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.lv.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K55), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2772), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.lv.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K55), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2772), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.lv.register_characters" };
   }
   const called0 = format210(support.afterFirst(subject, K15));
@@ -2904,19 +5626,19 @@ function format188(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.mt.empty" };
   }
-  if (!(support.startsWith(subject, K56))) {
+  if (!(support.startsWith(subject, K2773))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.mt.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.mt.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K56), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2773), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.mt.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K56), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2773), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.mt.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K56), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2773), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.mt.register_characters" };
   }
   const called0 = format211(support.afterFirst(subject, K15));
@@ -2930,19 +5652,19 @@ function format189(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.nl.empty" };
   }
-  if (!(support.startsWith(subject, K57))) {
+  if (!(support.startsWith(subject, K2774))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.nl.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.nl.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K57), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2774), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.nl.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K57), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2774), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.nl.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K57), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2774), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.nl.register_characters" };
   }
   const called0 = format212(support.afterFirst(subject, K15));
@@ -2956,19 +5678,19 @@ function format190(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.pl.empty" };
   }
-  if (!(support.startsWith(subject, K58))) {
+  if (!(support.startsWith(subject, K2775))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.pl.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.pl.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K58), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2775), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.pl.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K58), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2775), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.pl.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K58), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2775), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.pl.register_characters" };
   }
   const called0 = format213(support.afterFirst(subject, K15));
@@ -2982,19 +5704,19 @@ function format191(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.pt.empty" };
   }
-  if (!(support.startsWith(subject, K59))) {
+  if (!(support.startsWith(subject, K2776))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.pt.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.pt.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K59), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2776), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.pt.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K59), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2776), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.pt.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K59), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2776), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.pt.register_characters" };
   }
   const called0 = format214(support.afterFirst(subject, K15));
@@ -3008,19 +5730,19 @@ function format192(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.ro.empty" };
   }
-  if (!(support.startsWith(subject, K60))) {
+  if (!(support.startsWith(subject, K2777))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.ro.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.ro.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K60), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2777), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.ro.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K60), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2777), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.ro.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K60), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2777), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.ro.register_characters" };
   }
   const called0 = format215(support.afterFirst(subject, K15));
@@ -3034,19 +5756,19 @@ function format193(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.se.empty" };
   }
-  if (!(support.startsWith(subject, K61))) {
+  if (!(support.startsWith(subject, K2778))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.se.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.se.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K61), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2778), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.se.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K61), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2778), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.se.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K61), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2778), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.se.register_characters" };
   }
   const called0 = format216(support.afterFirst(subject, K15));
@@ -3060,19 +5782,19 @@ function format194(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.si.empty" };
   }
-  if (!(support.startsWith(subject, K62))) {
+  if (!(support.startsWith(subject, K2779))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.si.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.si.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K62), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2779), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.si.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K62), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2779), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.si.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K62), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2779), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.si.register_characters" };
   }
   const called0 = format217(support.afterFirst(subject, K15));
@@ -3086,19 +5808,19 @@ function format195(subject: StringValue): AssertionResult {
   if (support.isEmpty(subject)) {
     return { failed: true, reasonCode: "empty", messageKey: "euid.sk.empty" };
   }
-  if (!(support.startsWith(subject, K63))) {
+  if (!(support.startsWith(subject, K2780))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.sk.prefix" };
   }
   if (!(support.contains(subject, K15))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.sk.separator" };
   }
-  if ((support.beforeFirst(support.afterFirst(subject, K63), K15) === undefined)) {
+  if ((support.beforeFirst(support.afterFirst(subject, K2780), K15) === undefined)) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "euid.sk.register" };
   }
-  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K63), K15), 1, 8))) {
+  if (!(support.lengthBetween(support.beforeFirst(support.afterFirst(subject, K2780), K15), 1, 8))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "euid.sk.register_length" };
   }
-  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K63), K15)))) {
+  if (!(support.asciiAlphanumeric(support.beforeFirst(support.afterFirst(subject, K2780), K15)))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "euid.sk.register_characters" };
   }
   const called0 = format218(support.afterFirst(subject, K15));
@@ -3157,7 +5879,7 @@ function format199(subject: StringValue): AssertionResult {
   if (!(support.asciiAlphanumeric(subject))) {
     return { failed: true, reasonCode: "invalid_characters", messageKey: "company_number.characters" };
   }
-  if (!(support.asciiDigits(subject) || support.prefixIn(subject, X101))) {
+  if (!(support.asciiDigits(subject) || support.prefixIn(subject, X2818))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "company_number.prefix" };
   }
   return support.PASSED;
@@ -3293,7 +6015,7 @@ function format209(subject: StringValue): AssertionResult {
   if (!(support.lengthBetween(subject, 5, 7))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "lu.rcs_number.length" };
   }
-  if (!(support.startsWith(subject, K102))) {
+  if (!(support.charAtIn(subject, 0, S12))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "lu.rcs_number.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 1)))) {
@@ -3325,7 +6047,7 @@ function format211(subject: StringValue): AssertionResult {
   if (!(support.lengthBetween(subject, 5, 7))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "mt.mbr_number.length" };
   }
-  if (!(support.startsWith(subject, K103))) {
+  if (!(support.startsWith(subject, K2819))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "mt.mbr_number.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 1)))) {
@@ -3553,7 +6275,7 @@ function format226(subject: StringValue): AssertionResult {
   if (!(subject?.length === 10)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.dk.length" };
   }
-  if (!(support.startsWith(subject, K44))) {
+  if (!(support.startsWith(subject, K2612))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.dk.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3569,7 +6291,7 @@ function format227(subject: StringValue): AssertionResult {
   if (!(subject?.length === 11)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.ee.length" };
   }
-  if (!(support.startsWith(subject, K45))) {
+  if (!(support.startsWith(subject, K2613))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.ee.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3585,7 +6307,7 @@ function format228(subject: StringValue): AssertionResult {
   if (!(subject?.length === 11)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.es.length" };
   }
-  if (!(support.startsWith(subject, K46))) {
+  if (!(support.startsWith(subject, K2614))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.es.prefix" };
   }
   if (!(support.asciiAlphanumeric(support.sliceFrom(subject, 2)))) {
@@ -3604,7 +6326,7 @@ function format229(subject: StringValue): AssertionResult {
   if (!(subject?.length === 10)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.fi.length" };
   }
-  if (!(support.startsWith(subject, K47))) {
+  if (!(support.startsWith(subject, K2615))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.fi.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3620,7 +6342,7 @@ function format230(subject: StringValue, profile: ValidationProfile): AssertionR
   if (!(subject?.length === 13)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.fr.length" };
   }
-  if (!(support.startsWith(subject, K48))) {
+  if (!(support.startsWith(subject, K2616))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.fr.prefix" };
   }
   if (!(support.asciiDigits(support.slice(subject, 2, 4)) || ((profile === "compatible") && support.asciiAlphanumeric(support.slice(subject, 2, 4))))) {
@@ -3643,7 +6365,7 @@ function format231(subject: StringValue): AssertionResult {
   if (!((subject?.length === 11) || (subject?.length === 14))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.gb.length" };
   }
-  if (!(support.startsWith(subject, K104))) {
+  if (!(support.startsWith(subject, K2820))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.gb.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3675,7 +6397,7 @@ function format233(subject: StringValue): AssertionResult {
   if (!(subject?.length === 13)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.hr.length" };
   }
-  if (!(support.startsWith(subject, K49))) {
+  if (!(support.startsWith(subject, K2766))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.hr.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3691,7 +6413,7 @@ function format234(subject: StringValue): AssertionResult {
   if (!(subject?.length === 10)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.hu.length" };
   }
-  if (!(support.startsWith(subject, K50))) {
+  if (!(support.startsWith(subject, K2767))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.hu.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3707,7 +6429,7 @@ function format235(subject: StringValue): AssertionResult {
   if (!(support.lengthBetween(subject, 10, 11))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.ie.length" };
   }
-  if (!(support.startsWith(subject, K51))) {
+  if (!(support.startsWith(subject, K2768))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.ie.prefix" };
   }
   if (!(support.asciiAlphanumeric(support.sliceFrom(subject, 2)))) {
@@ -3726,7 +6448,7 @@ function format236(subject: StringValue): AssertionResult {
   if (!((subject?.length === 7) || (subject?.length === 8) || (subject?.length === 12))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.is.length" };
   }
-  if (!(support.startsWith(subject, K105))) {
+  if (!(support.startsWith(subject, K2821))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.is.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3742,7 +6464,7 @@ function format237(subject: StringValue): AssertionResult {
   if (!(subject?.length === 13)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.it.length" };
   }
-  if (!(support.startsWith(subject, K52))) {
+  if (!(support.startsWith(subject, K2769))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.it.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3758,7 +6480,7 @@ function format238(subject: StringValue): AssertionResult {
   if (!(subject?.length === 7)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.li.length" };
   }
-  if (!(support.startsWith(subject, K106))) {
+  if (!(support.startsWith(subject, K2822))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.li.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3774,7 +6496,7 @@ function format239(subject: StringValue): AssertionResult {
   if (!(subject?.length === 10)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.lu.length" };
   }
-  if (!(support.startsWith(subject, K54))) {
+  if (!(support.startsWith(subject, K2771))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.lu.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3790,7 +6512,7 @@ function format240(subject: StringValue): AssertionResult {
   if (!(subject?.length === 13)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.lv.length" };
   }
-  if (!(support.startsWith(subject, K55))) {
+  if (!(support.startsWith(subject, K2772))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.lv.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3806,7 +6528,7 @@ function format241(subject: StringValue): AssertionResult {
   if (!(subject?.length === 10)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.mt.length" };
   }
-  if (!(support.startsWith(subject, K56))) {
+  if (!(support.startsWith(subject, K2773))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.mt.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3822,7 +6544,7 @@ function format242(subject: StringValue): AssertionResult {
   if (!(subject?.length === 14)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.nl.length" };
   }
-  if (!(support.startsWith(subject, K57))) {
+  if (!(support.startsWith(subject, K2774))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.nl.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 12)))) {
@@ -3847,7 +6569,7 @@ function format243(subject: StringValue): AssertionResult {
   if (!(subject?.length === 11)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.no.length" };
   }
-  if (!(support.startsWith(subject, K80))) {
+  if (!(support.startsWith(subject, K2797))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.no.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3863,7 +6585,7 @@ function format244(subject: StringValue): AssertionResult {
   if (!(subject?.length === 12)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.pl.length" };
   }
-  if (!(support.startsWith(subject, K58))) {
+  if (!(support.startsWith(subject, K2775))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.pl.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3879,7 +6601,7 @@ function format245(subject: StringValue): AssertionResult {
   if (!(subject?.length === 11)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.pt.length" };
   }
-  if (!(support.startsWith(subject, K59))) {
+  if (!(support.startsWith(subject, K2776))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.pt.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3895,7 +6617,7 @@ function format246(subject: StringValue): AssertionResult {
   if (!(support.lengthBetween(subject, 4, 12))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.ro.length" };
   }
-  if (!(support.startsWith(subject, K60))) {
+  if (!(support.startsWith(subject, K2777))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.ro.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3911,7 +6633,7 @@ function format247(subject: StringValue): AssertionResult {
   if (!(subject?.length === 14)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.se.length" };
   }
-  if (!(support.startsWith(subject, K61))) {
+  if (!(support.startsWith(subject, K2778))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.se.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3930,7 +6652,7 @@ function format248(subject: StringValue): AssertionResult {
   if (!(subject?.length === 10)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.si.length" };
   }
-  if (!(support.startsWith(subject, K62))) {
+  if (!(support.startsWith(subject, K2779))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.si.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3946,7 +6668,7 @@ function format249(subject: StringValue): AssertionResult {
   if (!(subject?.length === 12)) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.sk.length" };
   }
-  if (!(support.startsWith(subject, K63))) {
+  if (!(support.startsWith(subject, K2780))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.sk.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {
@@ -3962,7 +6684,7 @@ function format250(subject: StringValue): AssertionResult {
   if (!((subject?.length === 11) || (subject?.length === 14))) {
     return { failed: true, reasonCode: "invalid_length", messageKey: "vat.xi.length" };
   }
-  if (!(support.startsWith(subject, K107))) {
+  if (!(support.startsWith(subject, K2823))) {
     return { failed: true, reasonCode: "invalid_format", messageKey: "vat.xi.prefix" };
   }
   if (!(support.asciiDigits(support.sliceFrom(subject, 2)))) {

@@ -1,8 +1,8 @@
 # Contradictions found in `spec`, and how they were resolved
 
-Found while implementing this engine, across five synchronisations. Everything
-below has been corrected upstream in `github.com/libbusinessid/spec` except the
-last entry, which is a wording refinement rather than a fault.
+Found while implementing this engine, across six synchronisations. Everything
+below has been corrected upstream in `github.com/libbusinessid/spec`. Nothing is
+open as of rules `2026.08.31`.
 
 ---
 
@@ -230,29 +230,91 @@ conclusion independently, which is what says the document was silent.
 
 ---
 
+### 15. The `GOTOOLCHAIN` requirement was stated more broadly than it held
+
+Reported from here last round. `spec.md` and `engine.md` both required the runner
+step to set `GOTOOLCHAIN: auto` and justified it with "Mesuré : sans cela, la
+première exécution échoue sur la résolution de la toolchain". Measured against
+`53fb506a`, the module declared `go 1.25.0` with `toolchain go1.26.5`, and it was
+the first line that bound: the runner built under `GOTOOLCHAIN=local` and under
+`go1.25.0`, failing only at `go1.24.0`. An engine resolving `stable` never met
+the case.
+
+**Corrected** in `2026.08.31`. Both documents now name the `go` line as the exact
+condition, record that the Go engine hit it because it pins lower and that the
+TypeScript engine measured the other side, and keep the requirement as insurance
+rather than as a repair. This repository already sets it.
+
+### 16. `engine.md` section 9.1 contradicted itself in two sentences
+
+The section said an out-of-bounds view produces an absent value and never an
+exception, then added that an out-of-bounds access inside a checksum after a
+valid format must produce an engine error. `ir.md` section 1.1 is unreserved —
+"Absence is never an error and never an exception" — so the same bytes could be
+answered with an absence by one engine and an error by another.
+
+Found by the Kotlin engine, which followed `ir.md`. **Corrected** in
+`2026.08.31`: the clause is gone, and the document records that the intuition
+behind it — a format rule is expected to establish the bounds before the checksum
+runs — is a property of a rule set that nothing proves at load time, not a
+run-time behaviour.
+
+This engine has always read it the surviving way. It contains no `throw` in
+anything it ships, which is the strongest form of the guarantee, and
+`test/unit/ir-checksum.test.ts` now pins the exact case the two engines
+disagreed on.
+
+### 17. A dead `WHEN` passed the reference loader
+
+Check 16 takes `WHEN` only as a direct operand of a `CHOOSE`. Read as written
+that is a statement about the node; the reference loader answered it by looking
+at each node's parents, and a node with no parent has none to look at. `ir.md`
+section 2 permits unreachable nodes, so a dead `WHEN` survived. Found by the
+Kotlin engine.
+
+**Corrected** in `2026.08.31`, with the program root left excluded: `root_node`
+is a reference, so a program rooted in a `WHEN` keeps its own rule and message.
+
+**Checked here, and this engine did not have the hole.** Its check tests the
+node's own membership in the set of `CHOOSE` operands rather than asking whether
+it has a parent, so a `WHEN` nothing references was already refused. Measured on
+four shapes, now pinned in `test/generator/loader.test.ts`:
+
+| Shape                        | Answer                                               |
+| ---------------------------- | ---------------------------------------------------- |
+| `WHEN` a `CHOOSE` reads      | loads                                                |
+| `WHEN` nothing references    | check 16, `node 5 is a WHEN branch outside a CHOOSE` |
+| `WHEN` as the program root   | check 16, `roots at a WHEN branch`                   |
+| `WHEN` an `ALL_CHECKS` reads | check 16, `node 3 is a WHEN branch outside a CHOOSE` |
+
+Re-introducing the parent-based reading in the loader fails the second of those
+and nothing else, which is what says the test is aimed at the right thing.
+
+None of the thirty-five published fixtures moved: the answering check is
+identical under `2026.08.26` and `2026.08.31` for all of them, so the pinned
+table added last round caught nothing here. `loader-stray-when-branch-022` uses a
+`WHEN` as a root, which was already refused.
+
+### 18. The input bound and ill-formed text, now a stated choice
+
+Step 1 counts the bound in UTF-8 bytes and runs before the step that refuses
+ill-formed text, so an input that is both has no byte count of its own.
+`ir.md` now states the freedom and bounds it: an engine whose string type admits
+ill-formed text chooses, and MUST state which.
+
+**Stated here** in the README's Limits section: this engine counts what its own
+encoder produces, so a lone surrogate is measured as the three bytes
+`TextEncoder` emits for the replacement character.
+
+Worth recording that in JavaScript the choice is not observable. The alternative
+`ir.md` names — the encoding the surrogate would have had — is also three bytes
+(`ED A0 80`), where a platform whose encoder emits a single replacement byte
+would answer differently. `test/unit/invalid-encoding.test.ts` brackets the
+boundary at 1021 and 1022 ASCII characters so the README and the behaviour
+cannot drift apart.
+
+---
+
 ## Open
 
-### 15. The `GOTOOLCHAIN` requirement is stated more broadly than it holds
-
-`spec.md` and `engine.md` both require the runner step to set
-`GOTOOLCHAIN: auto`, because `actions/setup-go` sets it to `local` and "le module
-`spec` demande une version de Go plus récente que celle qu'un moteur épingle
-probablement pour lui-même", concluding "Mesuré : sans cela, la première
-exécution échoue sur la résolution de la toolchain".
-
-Measured here against `53fb506a`, the requirement is right and the reason is not
-quite. The module declares `go 1.25.0` and `toolchain go1.26.5`, and it is the
-first line that binds:
-
-| `GOTOOLCHAIN`            | Result                                                            |
-| ------------------------ | ----------------------------------------------------------------- |
-| `local`, local Go 1.26.5 | runner builds                                                     |
-| `go1.25.0`               | runner builds                                                     |
-| `go1.24.0`               | `requires go >= 1.25.0 (running go 1.24.0; GOTOOLCHAIN=go1.24.0)` |
-
-So the failure needs a Go older than **1.25.0**, not older than the `toolchain`
-line, and an engine whose workflow says `go-version: stable` never meets it. This
-repository sets `GOTOOLCHAIN: auto` on the runner step regardless — it costs
-nothing and removes the failure the day either number moves — but the sentence
-would be more useful stated as a condition on the engine's pinned Go than as a
-measurement that always reproduces. Reported, not blocking.
+Nothing.

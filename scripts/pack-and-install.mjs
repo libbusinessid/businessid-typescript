@@ -35,6 +35,37 @@ const bundles = packedPaths.filter((path) => path.endsWith(".binpb"));
 if (bundles.length > 0) {
   throw new Error(`the tarball carries a rule bundle: ${bundles.join(", ")}`);
 }
+// A source map that names a file the tarball does not carry resolves to
+// nothing: a debugger shows "source not available" and the bytes were paid for
+// on install regardless. `files` ships `dist` and never `src`, so every map
+// emitted next to the JavaScript pointed at a source no consumer receives —
+// 55 % of the unpacked package at rules 2026.08.31, once the membership lists
+// arrived. Either the sources ship or the maps do not; this asserts whichever
+// choice is in force is coherent.
+{
+  const packedSet = new Set(packedPaths);
+  const dangling = [];
+  for (const path of packedPaths.filter((one) => one.endsWith(".map"))) {
+    const map = JSON.parse(readFileSync(join(root, path.replace(/^package\//, "")), "utf8"));
+    const dir = path.slice(0, path.lastIndexOf("/"));
+    for (const source of map.sources ?? []) {
+      // `sourcesContent` carries the text inline, so such a map is self-contained.
+      if (Array.isArray(map.sourcesContent) && map.sourcesContent.length > 0) {
+        continue;
+      }
+      const resolved = new URL(source, `file:///${dir}/`).pathname.replace(/^\//, "");
+      if (!packedSet.has(resolved)) {
+        dangling.push(`${path} -> ${source}`);
+      }
+    }
+  }
+  if (dangling.length > 0) {
+    throw new Error(
+      `the tarball carries ${String(dangling.length)} source map reference(s) to files it does not ship:\n  ${dangling.slice(0, 5).join("\n  ")}${dangling.length > 5 ? `\n  ... and ${String(dangling.length - 5)} more` : ""}`,
+    );
+  }
+}
+
 for (const field of ["dependencies", "peerDependencies", "optionalDependencies"]) {
   const declared = Object.keys(manifest[field] ?? {});
   if (declared.length > 0) {
@@ -94,7 +125,7 @@ try {
     format: "valid",
     checksum: "valid",
     fully: true,
-    rulesVersion: "2026.08.26",
+    rulesVersion: "2026.08.31",
     capabilities: 18,
   };
   for (const [key, value] of Object.entries(expected)) {
