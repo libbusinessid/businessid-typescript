@@ -4,7 +4,7 @@ Offline canonicalization, format validation and checksum validation of business
 identifiers — VAT numbers, national company numbers, EUID, LEI and more — driven
 by the shared LibBusinessID rule bundle.
 
-**94 identifiers across 37 countries**, rules version `2026.08.31`. No network
+**94 identifiers across 37 countries**, rules version `2026.09.0`. No network
 access, no locale dependence, no regular expressions, and **no runtime
 dependencies**.
 
@@ -146,7 +146,7 @@ makes it throw.**
 
 ```ts
 BusinessIdEngine.default.rulesInfo();
-// { rulesVersion: "2026.08.31", formatVersion: 1, engineVersion: "0.1.0" }
+// { rulesVersion: "2026.09.0", formatVersion: 1, engineVersion: "0.1.0" }
 ```
 
 Three versions move independently. `engineVersion` follows SemVer for the

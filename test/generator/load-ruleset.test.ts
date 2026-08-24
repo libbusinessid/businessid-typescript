@@ -34,6 +34,12 @@ const cases = loadCorpus().cases.filter((entry) => entry.operation === Operation
  * reaches its own rule. `subject_node_circular.binpb` did exactly that,
  * answering 25 instead of 15, and a table like this one is what would have said
  * so on the day it appeared.
+ *
+ * `loader-when-unreferenced-038` is here because this engine reported that the
+ * clause forbidding an unreferenced `WHEN` had no case behind it: the thirty
+ * five answers were identical across two rules versions, so the table was
+ * pinning nothing for it. The fixture exists now, and the entry below is the
+ * first one it earns.
  */
 const ANSWERING_CHECK = new Map<string, number>([
   ["loader-alphabet-empty-031", 13],
@@ -70,12 +76,13 @@ const ANSWERING_CHECK = new Map<string, number>([
   ["loader-unknown-feature-005", 4],
   ["loader-unknown-field-root-003", 5],
   ["loader-unspecified-enum-013", 8],
+  ["loader-when-unreferenced-038", 16],
   ["loader-unsupported-format-version-004", 3],
 ]);
 
 describe("load_ruleset corpus", () => {
-  it("holds the 35 published cases", () => {
-    expect(cases.length).toBe(35);
+  it("holds the 36 published cases", () => {
+    expect(cases.length).toBe(36);
   });
 
   it("names a check for every published case, and no case the corpus dropped", () => {

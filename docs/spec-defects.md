@@ -1,8 +1,8 @@
 # Contradictions found in `spec`, and how they were resolved
 
-Found while implementing this engine, across six synchronisations. Everything
-below has been corrected upstream in `github.com/libbusinessid/spec`. Nothing is
-open as of rules `2026.08.31`.
+Found while implementing this engine, across seven synchronisations. Everything
+below has been corrected upstream in `github.com/libbusinessid/spec` except the
+last entry, which is a question about where a rule belongs rather than a fault.
 
 ---
 
@@ -313,8 +313,51 @@ would answer differently. `test/unit/invalid-encoding.test.ts` brackets the
 boundary at 1021 and 1022 ASCII characters so the README and the behaviour
 cannot drift apart.
 
+### 19. The clause forbidding an unreferenced `WHEN` now has a case
+
+Reported from here last round, as a negative result: the thirty five
+`load_ruleset` answers were identical between `2026.08.26` and `2026.08.31`, so
+the pinned-check table added that round caught nothing, and no published fixture
+exercised the rule at all. `loader-stray-when-branch-022` uses a `WHEN` as a
+program root, which a different clause already refused.
+
+**Answered** in `2026.09.0` by `when_unreferenced.binpb` and
+`loader-when-unreferenced-038`. Decoded here: its checksum program keeps its
+original root at the `LUHN` outcome, and node 3 is a `WHEN` reading `[2, 1]` that
+nothing references — one defect and no other. This engine answers check 16, and
+giving the branch a `CHOOSE` that reads it, without moving the root, makes the
+bundle load. The pinned table has thirty six entries now, and one of them is
+finally pinning this.
+
 ---
 
 ## Open
 
-Nothing.
+### 20. No check owns the normative order of a parameter list
+
+`ir.md` section 9 puts `PredicateOperation.values` and `lengths` under the
+normative serialization order — "ascending, deduplicated" — and states that an
+engine refuses a bundle that does not respect it. Section 10 assigns a numbered
+check to every other ordering it makes normative: identifiers at 17, dispatchers
+at 19, country aliases at 20, targets at 21, capabilities at 4, programs at 8.
+For these two fields it assigns none.
+
+This engine was not enforcing it at all, which went unnoticed while the lookup
+was a linear scan and mattered the moment it stopped being one: `prefix_in` is
+documented as sorted precisely so an engine can search it, and a binary search
+over an unsorted list does not answer slowly, it answers wrongly. So the
+guarantee had to become a check before anything could rely on it.
+
+**Placed at check 13 here**, which is where the other per-node parameter list
+constraints already live — it refuses a custom alphabet that repeats a code
+point, which is the same kind of rule about the same kind of field. The
+observable answer is `invalid_ruleset` whichever number owns it, and the corpus
+cannot tell the difference, so nothing about conformance turns on the choice.
+It is recorded because two engines inferring a number independently is how
+entry 11 happened.
+
+Ascending by code point, which for text that decodes is the same sequence as
+ascending by UTF-8 bytes, so the two readings of section 9 cannot disagree.
+Verified against the bundle before relying on it: four `PREFIX_IN` nodes holding
+1748, 818, 148 and 41 elements, every one sorted under both orders, no
+duplicates, no empty elements, and each list of a single element length.
