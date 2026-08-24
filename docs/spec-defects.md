@@ -1,8 +1,8 @@
 # Contradictions found in `spec`, and how they were resolved
 
-Found while implementing this engine, across seven synchronisations. Everything
-below has been corrected upstream in `github.com/libbusinessid/spec` except the
-last entry, which is a question about where a rule belongs rather than a fault.
+Found while implementing this engine, across eight synchronisations. Everything
+below has been corrected upstream in `github.com/libbusinessid/spec`. Nothing is
+open as of rules `2026.09.2`.
 
 ---
 
@@ -329,35 +329,65 @@ giving the branch a `CHOOSE` that reads it, without moving the root, makes the
 bundle load. The pinned table has thirty six entries now, and one of them is
 finally pinning this.
 
+### 20. No check owned the normative order of a parameter list
+
+`ir.md` section 9 put `PredicateOperation.values` and `lengths` under the
+normative serialization order — "ascending, deduplicated" — and stated that an
+engine refuses a bundle that does not respect it. Section 10 assigned a numbered
+check to every other ordering it makes normative and none to these two.
+
+This engine was not enforcing it at all. That went unnoticed while the lookup
+was a linear scan and became load bearing the moment it stopped being one:
+`prefix_in` is documented as sorted precisely so an engine can search it, and a
+binary search over an unsorted list does not answer slowly, it answers wrongly.
+Fixed here at check 13 — where the other per-node parameter list rules live, it
+already refuses a custom alphabet that repeats a code point — and reported as a
+question rather than presented as settled, because two engines inferring a
+number independently is how entry 11 happened.
+
+**Corrected** in `2026.09.2`. Check 13 now reads "and the declared order of a
+parameter list as section 9 states it", which is where this engine had put it.
+The reference loader had the same hole — descending, duplicated and equal keys
+out of order all passed it — and fixture `prefix_in_unsorted.binpb`, case
+`loader-prefix-in-unsorted-039`, exists now. This engine answers check 13 on it.
+
+### 21. A `prefix_in` may not mix element lengths, and no case can prove it
+
+Reported from here as the reason the search asks the list once per distinct
+element length rather than once for the value: an element is a prefix of the
+subject exactly when it equals the subject's opening of its own length, and a
+search for the greatest element not after the subject gets `["AB", "ABA"]`
+against `"ABCD"` wrong — it finds `ABA`, which is not a prefix, while `AB` is.
+
+The Swift engine measured the part neither of us had said out loud: **the corpus
+cannot catch an engine that gets this wrong.** All four published `prefix_in`
+nodes hold a single element length — 1748 of five, 818 of six, 148 of four, 41
+of two — so a whole-table search passes every published case while being wrong
+on a shape no rule carries.
+
+**Corrected** in `2026.09.2` by removing the shape: every element has the same
+length, mixed lengths are written as one `prefix_in` per length under an `any`,
+and fixture `prefix_in_mixed_lengths.binpb`, case
+`loader-prefix-in-mixed-lengths-040`, refuses it. This engine accepted that
+fixture before this round — its per-length search reads such a list correctly,
+so nothing forced the refusal — and now answers check 13.
+
+**What the refusal costs, and where the coverage went.** The rule is right, and
+it takes with it the only shapes that tell a correct search from an incorrect
+one. Two tests here were written as bundles and can no longer be: a mixed-length
+`prefix_in` is refused at load. They moved below the loader, to
+`test/unit/support.test.ts`, where the function can still be handed the shape,
+and `test/unit/properties.test.ts` gained a property comparing the search
+against the definition transcribed — some element is a prefix of the subject —
+over four hundred random tables, mixed lengths included.
+
+Installing the whole-table search fails both, and the property shrinks the
+counterexample to `["A", "AA"]` against `"AB"` in thirteen runs. Nothing in the
+shared suite fails. That is the measurement worth keeping: for this rule the
+conformance corpus is not the guard, and after `2026.09.2` it cannot become one.
+
 ---
 
 ## Open
 
-### 20. No check owns the normative order of a parameter list
-
-`ir.md` section 9 puts `PredicateOperation.values` and `lengths` under the
-normative serialization order — "ascending, deduplicated" — and states that an
-engine refuses a bundle that does not respect it. Section 10 assigns a numbered
-check to every other ordering it makes normative: identifiers at 17, dispatchers
-at 19, country aliases at 20, targets at 21, capabilities at 4, programs at 8.
-For these two fields it assigns none.
-
-This engine was not enforcing it at all, which went unnoticed while the lookup
-was a linear scan and mattered the moment it stopped being one: `prefix_in` is
-documented as sorted precisely so an engine can search it, and a binary search
-over an unsorted list does not answer slowly, it answers wrongly. So the
-guarantee had to become a check before anything could rely on it.
-
-**Placed at check 13 here**, which is where the other per-node parameter list
-constraints already live — it refuses a custom alphabet that repeats a code
-point, which is the same kind of rule about the same kind of field. The
-observable answer is `invalid_ruleset` whichever number owns it, and the corpus
-cannot tell the difference, so nothing about conformance turns on the choice.
-It is recorded because two engines inferring a number independently is how
-entry 11 happened.
-
-Ascending by code point, which for text that decodes is the same sequence as
-ascending by UTF-8 bytes, so the two readings of section 9 cannot disagree.
-Verified against the bundle before relying on it: four `PREFIX_IN` nodes holding
-1748, 818, 148 and 41 elements, every one sorted under both orders, no
-duplicates, no empty elements, and each list of a single element length.
+Nothing.

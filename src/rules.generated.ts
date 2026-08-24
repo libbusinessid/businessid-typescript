@@ -7,7 +7,7 @@ import * as support from "./runtime/support.js";
 import type { AssertionResult, ChecksumOutcome, StringValue } from "./runtime/values.js";
 
 /** The business version of the rules this module was generated from. */
-export const RULES_VERSION = "2026.09.0";
+export const RULES_VERSION = "2026.09.2";
 
 /** The structural version of the IR this module was generated from. */
 export const FORMAT_VERSION = 1;

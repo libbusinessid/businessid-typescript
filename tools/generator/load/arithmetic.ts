@@ -158,6 +158,7 @@ function checkPredicateOperation(where: string, entry: ResolvedNode): void {
     checkIndex(where, "lengths", length);
   }
   checkAscendingValues(where, message.values);
+  checkUniformValueLengths(where, message.values);
   checkAscendingLengths(where, message.lengths);
   checkIndex(where, "length", message.length);
   checkIndex(where, "min_length", message.minLength);
@@ -186,6 +187,40 @@ function checkAscendingValues(where: string, values: readonly string[]): void {
       invalid(
         13,
         `${where} declares values that are not ascending and deduplicated: ${JSON.stringify(values[index - 1])} is not before ${JSON.stringify(values[index])}`,
+      );
+    }
+  }
+}
+
+/**
+ * Every element of `values` has the same length.
+ *
+ * `ir.md` refuses a mixed-length list rather than leaving two readings of it.
+ * Over one sorted list of mixed lengths, a search for the greatest element not
+ * after the subject answers wrongly rather than slowly: `["AB", "ABA"]` against
+ * `"ABCD"` finds `ABA`, which is not a prefix, while `AB` is. At one length,
+ * starting with an element is equalling its opening of that length, so the
+ * search is exact. Mixed lengths are written as one `prefix_in` per length
+ * under an `any`, which the German register rule already does.
+ *
+ * This engine searches once per distinct element length and would have answered
+ * such a list correctly. The check is here because the bundle may not carry the
+ * shape, not because this engine could not read it — and because an engine that
+ * would answer it wrongly has no conformance case to catch it: all four
+ * published `prefix_in` nodes hold a single length.
+ */
+function checkUniformValueLengths(where: string, values: readonly string[]): void {
+  const first = values[0];
+  if (first === undefined) {
+    return;
+  }
+  const expected = codePointsOf(first).length;
+  for (const value of values) {
+    const length = codePointsOf(value).length;
+    if (length !== expected) {
+      invalid(
+        13,
+        `${where} declares values of mixed lengths: ${JSON.stringify(first)} is ${String(expected)} code points and ${JSON.stringify(value)} is ${String(length)}`,
       );
     }
   }

@@ -260,3 +260,55 @@ describe("prefix matching", () => {
     expect(support.prefixString(cp("é1"), 2)).toBe("é1");
   });
 });
+
+/**
+ * `prefixIn` over shapes the bundle may no longer carry.
+ *
+ * As of rules 2026.09.2 a `prefix_in` whose elements differ in length is
+ * refused at load, because over one sorted list of mixed lengths a search for
+ * the greatest element not after the subject answers wrongly rather than
+ * slowly. That refusal is the right rule, and it has a cost worth naming: the
+ * shapes that tell a correct search from an incorrect one can no longer be
+ * written as a bundle, so no conformance case can ever exercise them. All four
+ * published `prefix_in` nodes hold a single length — 1748 of five, 818 of six,
+ * 148 of four and 41 of two — and a whole-table search passes every one of them
+ * while being wrong.
+ *
+ * So the coverage moves here, below the loader, where the function can still be
+ * handed the shape. An engine that would answer such a list wrongly has nothing
+ * else to catch it.
+ */
+describe("prefixIn over a table the loader would now refuse", () => {
+  const table = (...values: string[]): readonly (readonly number[])[] =>
+    values.map((value) => codePointsOf(value));
+  const lengthsOf = (...values: string[]): readonly number[] =>
+    [...new Set(values.map((value) => codePointsOf(value).length))].sort((a, b) => a - b);
+  const held = (values: string[], subject: string): boolean =>
+    support.prefixIn(cp(subject), table(...values), lengthsOf(...values));
+
+  it("finds a short element when a longer one sorts between it and the subject", () => {
+    // The case `ir.md` now cites: the greatest element not after "ABCD" is
+    // "ABA", which is not a prefix of it, while "AB" is.
+    expect(held(["AB", "ABA"], "ABCD")).toBe(true);
+    expect(held(["ABA", "ABB"], "ABCD")).toBe(false);
+  });
+
+  it("searches every distinct element length", () => {
+    const values = ["A", "BBB", "CCCCC"];
+
+    expect(held(values, "AX")).toBe(true);
+    expect(held(values, "BBBX")).toBe(true);
+    expect(held(values, "CCCCCX")).toBe(true);
+    expect(held(values, "BBX")).toBe(false);
+    expect(held(values, "CCCCX")).toBe(false);
+  });
+
+  it("answers a subject shorter than every element", () => {
+    expect(held(["AB", "ABA"], "A")).toBe(false);
+    expect(held(["AB"], "")).toBe(false);
+  });
+
+  it("is false on an absent subject whatever the table", () => {
+    expect(support.prefixIn(undefined, table("AB", "ABA"), [2, 3])).toBe(false);
+  });
+});
