@@ -3,10 +3,14 @@ import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import { Operation } from "../../generated/libbusinessid/conformance/v1/conformance_pb.js";
 import {
   CanonicalizationOpKind,
+  ChecksumOpKind,
+  ChecksumOperationSchema,
+  NodeSchema,
   ProgramKind,
   RuleBundleSchema,
   StringOpKind,
   StringOperationSchema,
+  ValueType,
 } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
 import { BundleError } from "../../tools/generator/errors.js";
 import { generate } from "../../tools/generator/generate.js";
@@ -26,7 +30,8 @@ import { loadCorpus } from "../conformance/corpus.js";
  *
  * Three fixtures shipped that way and have since been repaired upstream:
  * `program_expansion.binpb`, `subject_node_circular.binpb` and
- * `left_pad_length.binpb`. Each test below repairs the named defect and nothing
+ * `left_pad_length.binpb`. `when_unreferenced.binpb` was published already
+ * isolated, and is covered here on the same terms. Each test below repairs the named defect and nothing
  * else, then asserts the bundle loads — which is the only way to state that the
  * fixture holds one defect rather than two.
  *
@@ -189,6 +194,66 @@ describe("loader-left-pad-length-026", () => {
     }
 
     expect(clamped, "the fixture no longer declares a length of 4097").toBe(1);
+    expect(() => generate(toBinary(RuleBundleSchema, bundle))).not.toThrow();
+  });
+});
+
+describe("loader-when-unreferenced-038", () => {
+  const payload = payloadOf("loader-when-unreferenced-038");
+
+  /**
+   * Published in rules 2026.09.0, after this engine reported that the clause
+   * forbidding an unreferenced `WHEN` had no case behind it — the thirty five
+   * answers were identical across two rules versions, so nothing exercised it.
+   */
+  it("is refused by check 16, for the unreferenced branch", () => {
+    const refusal = refusalOf(payload);
+
+    expect(refusal).toMatchObject({ reason: "invalid_ruleset", check: 16 });
+    expect(refusal.message).toContain("is a WHEN branch outside a CHOOSE");
+  });
+
+  it("keeps the checksum program rooted where it was", () => {
+    // The root is what makes the fixture isolated: a program rooted at the
+    // WHEN would fail check 16 for a different reason and never reach the one
+    // the case is named for.
+    const bundle = fromBinary(RuleBundleSchema, payload);
+    const checksum = bundle.programs.find((program) => program.kind === ProgramKind.CHECKSUM);
+    const root = checksum?.nodes[checksum.rootNode];
+
+    expect(root?.operation.case).toBe("checksumOperation");
+    expect(
+      root?.operation.case === "checksumOperation" ? root.operation.value.kind : undefined,
+    ).not.toBe(ChecksumOpKind.WHEN);
+  });
+
+  it("loads once the branch alone is given the CHOOSE it lacked", () => {
+    // The minimal repair is a parent, not a deletion: removing the WHEN would
+    // take the fixture's subject away with its defect. The added CHOOSE is
+    // itself unreferenced, which the IR permits, and the root does not move.
+    const bundle = fromBinary(RuleBundleSchema, payload);
+    const checksum = bundle.programs.find((program) => program.kind === ProgramKind.CHECKSUM);
+    expect(checksum, "the fixture has no checksum program").toBeDefined();
+    const rootBefore = checksum?.rootNode;
+    const whenAt = (checksum?.nodes ?? []).findIndex(
+      (one) =>
+        one.operation.case === "checksumOperation" &&
+        one.operation.value.kind === ChecksumOpKind.WHEN,
+    );
+
+    expect(whenAt, "the fixture holds no WHEN").toBeGreaterThanOrEqual(0);
+    checksum?.nodes.push(
+      create(NodeSchema, {
+        outputType: ValueType.CHECKSUM_OUTCOME,
+        inputNodes: [whenAt],
+        operation: {
+          case: "checksumOperation",
+          value: create(ChecksumOperationSchema, { kind: ChecksumOpKind.CHOOSE }),
+        },
+      }),
+    );
+
+    expect(checksum?.rootNode, "the repair moved the root").toBe(rootBefore);
     expect(() => generate(toBinary(RuleBundleSchema, bundle))).not.toThrow();
   });
 });

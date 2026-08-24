@@ -207,6 +207,68 @@ describe("text predicates", () => {
   });
 });
 
+/**
+ * `PREFIX_IN` over a list large enough that how it is searched matters.
+ *
+ * `ir.md` states `values` is sorted and deduplicated by the compiler, and
+ * `engine.md` section 14 now asks that the test not be linear in the list. The
+ * cases here fix the semantics the search has to preserve, independently of how
+ * it is implemented — they passed against the linear scan and must go on
+ * passing.
+ *
+ * The one that matters most is the last. A search that finds the greatest
+ * element not after the value and asks whether that element is a prefix gets it
+ * wrong: over `["AB", "ABA"]` the greatest element before `"ABCD"` is `"ABA"`,
+ * which is not a prefix of it, while `"AB"` is. Membership has to be asked once
+ * per distinct element length, not once for the value.
+ */
+describe("PREFIX_IN over a sorted list", () => {
+  const prefixIn = (values: string[]): NodeSpec[] => [
+    valueNode(),
+    node(
+      ValueType.BOOLEAN,
+      { case: "predicateOperation", value: { kind: PredicateOpKind.PREFIX_IN, values } },
+      [0],
+    ),
+  ];
+  // Sorted and deduplicated, as check 13 now requires of any bundle.
+  const many = Array.from({ length: 500 }, (_, index) => `P${String(index).padStart(4, "0")}`);
+
+  it.each([
+    ["first element", "P0000X", true],
+    ["last element", "P0499X", true],
+    ["a middle element", "P0250X", true],
+    ["exactly an element, nothing after it", "P0250", true],
+    ["one before the first", "P", false],
+    ["between two elements", "P0250A", true],
+    ["absent from the list", "Q0250X", false],
+    ["past the last element", "Z9999", false],
+    ["shorter than every element", "P00", false],
+  ])("%s -> %s", async (_label, value, expected) => {
+    expect(await holds(prefixIn(many), value)).toBe(expected);
+  });
+
+  it("answers a single element list", async () => {
+    expect(await holds(prefixIn(["FR"]), "FR123")).toBe(true);
+    expect(await holds(prefixIn(["FR"]), "BE123")).toBe(false);
+  });
+
+  it("finds a short element when a longer one sorts between it and the value", async () => {
+    // "AB" is a prefix of "ABCD"; "ABA" is not, and sorts after "AB" and before
+    // "ABCD". Asking only about the nearest element answers false here.
+    expect(await holds(prefixIn(["AB", "ABA"]), "ABCD")).toBe(true);
+    expect(await holds(prefixIn(["ABA", "ABB"]), "ABCD")).toBe(false);
+  });
+
+  it("searches every distinct element length, not just one", async () => {
+    // Lengths 1, 3 and 5 in one list.
+    expect(await holds(prefixIn(["A", "BBB", "CCCCC"]), "CCCCCX")).toBe(true);
+    expect(await holds(prefixIn(["A", "BBB", "CCCCC"]), "BBBX")).toBe(true);
+    expect(await holds(prefixIn(["A", "BBB", "CCCCC"]), "AX")).toBe(true);
+    expect(await holds(prefixIn(["A", "BBB", "CCCCC"]), "BBX")).toBe(false);
+  });
+});
+
 describe("combinators", () => {
   const yes = (): NodeSpec => predicate(PredicateOpKind.IS_ABSENT, {}, [1]);
   const no = (): NodeSpec => predicate(PredicateOpKind.IS_ABSENT, {}, [0]);

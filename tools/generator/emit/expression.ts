@@ -232,10 +232,16 @@ function textPredicate(
     case PredicateOpKind.ENDS_WITH:
       return `support.endsWith(${view}, ${text()})`;
     case PredicateOpKind.PREFIX_IN: {
-      const names = (operation.values ?? []).map((value) =>
-        context.constants.codePoints(codePointsOf(value)),
+      const values = operation.values ?? [];
+      const names = values.map((value) => context.constants.codePoints(codePointsOf(value)));
+      // The distinct element lengths, ascending. The search asks the list once
+      // per length, so this is what keeps it logarithmic in the list rather
+      // than linear: every published table holds one length, and Germany's two
+      // are already split into a table each.
+      const lengths = [...new Set(values.map((value) => codePointsOf(value).length))].sort(
+        (left, right) => left - right,
       );
-      return `support.prefixIn(${view}, ${context.constants.prefixes(names)})`;
+      return `support.prefixIn(${view}, ${context.constants.prefixes(names)}, ${context.constants.lengths(lengths)})`;
     }
     case PredicateOpKind.CHAR_AT_IN:
       return `support.charAtIn(${view}, ${String(operation.index ?? 0)}, ${charset()})`;

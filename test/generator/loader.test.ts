@@ -413,6 +413,84 @@ describe("check 13: bounds", () => {
   });
 });
 
+/**
+ * `ir.md` section 9 puts `PredicateOperation.values` and `lengths` under the
+ * normative serialization order — "ascending, deduplicated" — and says an
+ * engine refuses a bundle that does not respect it.
+ *
+ * This was not enforced here, and the omission was invisible until the lookup
+ * stopped being a linear scan: `prefix_in` is documented as sorted precisely so
+ * an engine can binary-search it, and a binary search over an unsorted list
+ * does not answer slowly, it answers wrongly. The guarantee has to be checked
+ * before it can be relied on.
+ *
+ * `ir.md` section 10 names no check for it. Check 13 is where the other per
+ * node parameter list constraints live — it already refuses a custom alphabet
+ * that repeats a code point — so it is the consistent home, and the observable
+ * answer is `invalid_ruleset` either way. Reported upstream so the check list
+ * can name it.
+ */
+describe("check 13: the normative order of a parameter list", () => {
+  const withValues = (values: string[]): Uint8Array =>
+    singleKindBundle({
+      format: [
+        valueNode(),
+        node(
+          ValueType.BOOLEAN,
+          { case: "predicateOperation", value: { kind: PredicateOpKind.PREFIX_IN, values } },
+          [0],
+        ),
+        requireNode(1),
+        assertionSequence([2]),
+      ],
+    });
+  const withLengths = (lengths: number[]): Uint8Array =>
+    singleKindBundle({
+      format: [
+        valueNode(),
+        node(
+          ValueType.BOOLEAN,
+          { case: "predicateOperation", value: { kind: PredicateOpKind.LENGTH_IN, lengths } },
+          [0],
+        ),
+        requireNode(1),
+        assertionSequence([2]),
+      ],
+    });
+
+  it("accepts values that are ascending and distinct", () => {
+    expect(() => loadBundle(withValues(["BE", "FR"]))).not.toThrow();
+  });
+
+  it("refuses values in descending order", () => {
+    const payload = withValues(["FR", "BE"]);
+
+    expectRefusal(payload, 13);
+    expect(refusal(payload).message).toContain("ascending");
+  });
+
+  it("refuses a repeated value", () => {
+    const payload = withValues(["BE", "BE"]);
+
+    expectRefusal(payload, 13);
+  });
+
+  it("orders values by code point, where a longer string follows its own prefix", () => {
+    // "B" sorts before "BE": a shorter string precedes any string it prefixes.
+    expect(() => loadBundle(withValues(["B", "BE"]))).not.toThrow();
+    expectRefusal(withValues(["BE", "B"]), 13);
+  });
+
+  it("accepts lengths that are ascending and distinct", () => {
+    expect(() => loadBundle(withLengths([4, 6]))).not.toThrow();
+  });
+
+  it("refuses lengths out of order or repeated", () => {
+    expectRefusal(withLengths([6, 4]), 13);
+    expectRefusal(withLengths([4, 4]), 13);
+  });
+});
+
 describe("check 15: anchors and captures", () => {
   it("refuses a program with no node", () => {
     expectRefusal(
