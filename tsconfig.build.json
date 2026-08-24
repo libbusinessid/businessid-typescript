@@ -5,7 +5,13 @@
     "outDir": "dist",
     "noEmit": false,
     "types": [],
-    "removeComments": false
+    "removeComments": false,
+    // `files` ships `dist` and never `src`, so a map emitted here would name a
+    // source the consumer does not receive. At rules 2026.08.31 that was 32
+    // files and 516 077 bytes, 55 % of the unpacked package, resolving to
+    // nothing. The development build keeps both: only what ships drops them.
+    "sourceMap": false,
+    "declarationMap": false
   },
   "include": ["src"],
   "exclude": ["src/**/*.test.ts"]
