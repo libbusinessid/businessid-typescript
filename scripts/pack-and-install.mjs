@@ -8,7 +8,7 @@
  * else, because the test suite resolves modules from the source tree.
  */
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -26,6 +26,22 @@ console.log("packing");
 const packed = JSON.parse(run("npm", ["pack", "--json", "--pack-destination", root], root));
 const tarball = join(root, packed[0].filename);
 
+// The engine is a generator's output, not an interpreter: `engine.md` section
+// 1.2 keeps the bundle and the Protobuf runtime out of what ships. The public
+// surface tests state that from inside the source tree, where a bundle could
+// still be packed alongside it. Only the tarball settles it.
+const packedPaths = packed[0].files.map((file) => file.path);
+const bundles = packedPaths.filter((path) => path.endsWith(".binpb"));
+if (bundles.length > 0) {
+  throw new Error(`the tarball carries a rule bundle: ${bundles.join(", ")}`);
+}
+for (const field of ["dependencies", "peerDependencies", "optionalDependencies"]) {
+  const declared = Object.keys(manifest[field] ?? {});
+  if (declared.length > 0) {
+    throw new Error(`the package declares ${field}: ${declared.join(", ")}`);
+  }
+}
+
 const consumer = mkdtempSync(join(tmpdir(), "businessid-consumer-"));
 try {
   writeFileSync(
@@ -34,6 +50,20 @@ try {
   );
   console.log(`installing the tarball into ${consumer}`);
   run("npm", ["install", "--no-audit", "--no-fund", tarball], consumer);
+
+  // What a consumer really receives. A declared dependency is caught above; a
+  // Protobuf runtime that arrived any other way is caught here, because a blank
+  // project installing this package must end up with this package alone.
+  const installed = readdirSync(join(consumer, "node_modules"))
+    .filter((entry) => !entry.startsWith("."))
+    .flatMap((entry) =>
+      entry.startsWith("@")
+        ? readdirSync(join(consumer, "node_modules", entry)).map((sub) => `${entry}/${sub}`)
+        : [entry],
+    );
+  if (installed.join(" ") !== manifest.name) {
+    throw new Error(`installing the package pulled in more than itself: ${installed.join(", ")}`);
+  }
 
   // Exercise the package the way a consumer would: a bare ESM import of the
   // published name, with no bundler and no configuration.
@@ -64,7 +94,7 @@ try {
     format: "valid",
     checksum: "valid",
     fully: true,
-    rulesVersion: "2026.08.17",
+    rulesVersion: "2026.08.26",
     capabilities: 18,
   };
   for (const [key, value] of Object.entries(expected)) {

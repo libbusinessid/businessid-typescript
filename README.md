@@ -4,7 +4,7 @@ Offline canonicalization, format validation and checksum validation of business
 identifiers — VAT numbers, national company numbers, EUID, LEI and more — driven
 by the shared LibBusinessID rule bundle.
 
-**94 identifiers across 37 countries**, rules version `2026.08.17`. No network
+**94 identifiers across 37 countries**, rules version `2026.08.26`. No network
 access, no locale dependence, no regular expressions, and **no runtime
 dependencies**.
 
@@ -57,6 +57,14 @@ report.format.status; // "valid"
 report.checksum.status; // "valid"
 isFullyValidated(report); // true
 ```
+
+The value is the conformance corpus case `vat-be-normalization-004`, verbatim.
+It is **synthetic and belongs to no company**: the corpus classifies it that way
+and records its basis as a value produced by the generator of `DATA_POLICY.md`
+section 4, derived from no register, extract, submission or telemetry. Its
+sources — `be-fps-finance-vat` and `eu-vies-number-structure` — document the
+format, not the holder. Every example below comes from the same corpus on the
+same terms.
 
 `BusinessIdEngine.default` is the engine. Nothing is decoded, fetched or read
 from a file, so it costs nothing at start-up and the same code runs unchanged in
@@ -136,7 +144,7 @@ makes it throw.**
 
 ```ts
 BusinessIdEngine.default.rulesInfo();
-// { rulesVersion: "2026.08.17", formatVersion: 1, engineVersion: "0.1.0" }
+// { rulesVersion: "2026.08.26", formatVersion: 1, engineVersion: "0.1.0" }
 ```
 
 Three versions move independently. `engineVersion` follows SemVer for the
@@ -178,8 +186,13 @@ lower it.
 
 A longer input is refused without being processed, reported as
 `unsupported`/`input_too_long`. A value that is not well formed text — a lone
-surrogate, which has no UTF-8 encoding — is reported as
+surrogate, which JavaScript admits and UTF-8 cannot encode — is reported as
 `unsupported`/`invalid_encoding`.
+
+No conformance case can carry that reason: a proto3 `string` is valid UTF-8 by
+definition, and there is no portable malformed value anyway. It is pinned by a
+native test naming the form a JavaScript string admits —
+`test/unit/invalid-encoding.test.ts`.
 
 The bundle shaped limits are the generator's business and no longer apply once
 the code exists. The step budget does not apply at run time either: the emitted
@@ -190,7 +203,7 @@ counted from the roots the generator emits from.
 
 ## Conformance
 
-Every one of the **665 shared conformance cases passes**, run over the testee
+Every one of the **666 shared conformance cases passes**, run over the testee
 protocol the specification defines: a separate process receives one request at a
 time and never sees an expected result, so the absence of cheating is
 verifiable. No case is skipped, filtered, or marked expected to fail.
@@ -204,7 +217,8 @@ twenty five checks live there now.
 ```sh
 pnpm install
 pnpm generate        # run the generator: bundle -> src/rules.generated.ts
-pnpm test            # unit, generator, conformance and property tests
+pnpm test            # unit, generator and property tests
+pnpm test:conformance # the shared suite, judged by the runner from `spec`
 pnpm test:coverage   # with the 95% line and 90% branch thresholds
 pnpm test:browser    # the same engine in headless Chromium
 pnpm test:pack       # pack, install into a blank project, run and type check

@@ -621,6 +621,100 @@ describe("check 16: program shape", () => {
   });
 });
 
+/**
+ * `ir.md` section 10 orders the arithmetic bounds at 13 and the program shape
+ * at 16, and since 2026.08.26 check 16 names the accepted operation categories
+ * of the kind alongside the accepted root. A node can break both at once — a
+ * `LEFT_PAD` inside a format program, padding to a length outside the bound —
+ * and then the order alone decides which check answers.
+ *
+ * That is not academic. `left_pad_length.binpb` shipped carrying exactly this
+ * pair: this engine reported 13 and the Swift engine reported 16, both refusing
+ * the bundle and neither able to say which fault the case was proving. The
+ * fixture was repaired upstream and check 16 was given the categories it was
+ * already being asked to enforce; what remains is to keep this engine on the
+ * documented side of the order.
+ */
+describe("check 13 before check 16, when a node breaks both", () => {
+  const padInFormat = (length: number): Uint8Array =>
+    singleKindBundle({
+      format: [
+        valueNode(),
+        // Dead: no root reaches it. Its only role is to be foreign to a format
+        // program, which accepts string, predicate, assertion and a format call.
+        node(ValueType.CANONICALIZATION_STEP, {
+          case: "canonicalizationOperation",
+          value: { kind: CanonicalizationOpKind.LEFT_PAD, text: "0", length },
+        }),
+        node(
+          ValueType.BOOLEAN,
+          { case: "predicateOperation", value: { kind: PredicateOpKind.IS_ABSENT } },
+          [0],
+        ),
+        requireNode(2),
+        assertionSequence([3]),
+      ],
+    });
+
+  it("answers 16 when only the category is wrong", () => {
+    expectRefusal(padInFormat(4), 16);
+    expect(refusal(padInFormat(4)).message).toContain("foreign to its kind");
+  });
+
+  it("answers 13 when only the length is wrong", () => {
+    // Same operation, in a canonicalization program that accepts it.
+    const payload = singleKindBundle({
+      canonicalization: [
+        node(ValueType.CANONICALIZATION_STEP, {
+          case: "canonicalizationOperation",
+          value: { kind: CanonicalizationOpKind.LEFT_PAD, text: "0", length: 4097 },
+        }),
+        canonicalizationSequence([0]),
+      ],
+      format: alwaysValidFormat(),
+    });
+
+    expectRefusal(payload, 13);
+    expect(refusal(payload).message).toContain("4097");
+  });
+
+  it("answers 13 when both are wrong, because 13 comes first", () => {
+    expectRefusal(padInFormat(4097), 13);
+    expect(refusal(padInFormat(4097)).message).toContain("4097");
+  });
+
+  it("answers 13 when the two faults sit in different programs", () => {
+    // The category fault in the format program, the bound fault in the
+    // canonicalization program. Neither node is reachable from the other, so
+    // nothing but the documented order relates them.
+    const payload = singleKindBundle({
+      canonicalization: [
+        node(ValueType.CANONICALIZATION_STEP, {
+          case: "canonicalizationOperation",
+          value: { kind: CanonicalizationOpKind.LEFT_PAD, text: "0", length: 4097 },
+        }),
+        canonicalizationSequence([0]),
+      ],
+      format: [
+        valueNode(),
+        node(ValueType.CANONICALIZATION_STEP, {
+          case: "canonicalizationOperation",
+          value: { kind: CanonicalizationOpKind.LEFT_PAD, text: "0", length: 4 },
+        }),
+        node(
+          ValueType.BOOLEAN,
+          { case: "predicateOperation", value: { kind: PredicateOpKind.IS_ABSENT } },
+          [0],
+        ),
+        requireNode(2),
+        assertionSequence([3]),
+      ],
+    });
+
+    expectRefusal(payload, 13);
+  });
+});
+
 describe("check 17 and 18: definitions", () => {
   const withDefinition = (
     definition: Record<string, unknown>,

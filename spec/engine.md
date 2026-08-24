@@ -108,7 +108,6 @@ statuts `unsupported` et `not_run` sont des résultats normaux.
 Le moteur V1 implémente :
 
 - chargement de règles embarquées ;
-- chargement optionnel d’un bundle fourni en mémoire ;
 - canonicalisation ;
 - format ;
 - checksum ;
@@ -330,7 +329,8 @@ Sont des erreurs techniques :
 - graphe invalide ;
 - dépassement de limite structurelle ;
 - invariant interne violé ;
-- provider registre ayant échoué techniquement.
+- provider registre ayant échoué techniquement — réservé, pas à livrer : la
+  section 10 diffère le registre et aucun moteur V1 n'en porte.
 
 Une API peut représenter ces erreurs par exception, `Result`, `error`, type scellé ou
 Promise rejetée selon le langage. Les APIs spécifiques sont définies dans les
@@ -352,10 +352,15 @@ race. Après chargement, toutes les structures sont immuables.
 
 ### 7.2 Bundle personnalisé
 
-Le moteur PEUT permettre la construction depuis des bytes. Cette API est considérée
-comme traitant une entrée non fiable et applique toutes les validations et limites.
+Un jeu de règles personnalisé passe par le générateur, à la construction. Le moteur
+n'expose aucune fabrique acceptant un bundle en octets : la section 1.2 l'interdit,
+parce qu'une telle API impose le validateur complet et la machine d'exécution de l'IR
+à chaque appelant.
 
-Le moteur ne télécharge jamais lui-même le bundle en V1.
+Le générateur, lui, traite le bundle comme une entrée non fiable et applique les
+vingt-cinq contrôles avant d'émettre la moindre ligne.
+
+Le moteur ne télécharge jamais le bundle.
 
 ### 7.3 Validation obligatoire avant exécution
 
@@ -658,7 +663,41 @@ Tous les cas communs sont obligatoires. Un moteur ne peut pas exclure un cas pou
 faire passer sa CI. Une incompatibilité doit être corrigée ou documentée comme
 blocage de release.
 
+Le moteur fournit un **testee** et rien d'autre : un exécutable qui lit des requêtes
+sur son entrée standard, appelle son API publique et écrit des réponses. Il ne lit
+pas le corpus, n'interprète aucun résultat attendu et n'adapte pas son comportement
+au cas reçu.
+
+Le **runner**, lui, vient de `spec` et de nulle part ailleurs. Il s'exécute épinglé au
+commit que `rules.lock` enregistre sous `source_commit`, donc au même commit que le
+corpus :
+
+```bash
+go run github.com/libbusinessid/spec/cmd/conformance-runner@<source_commit> \
+  -corpus spec/businessid-conformance.binpb -- ./mon-testee
+```
+
+Aucune release n'est nécessaire, rien n'est à télécharger à la main, et le seul
+prérequis est une toolchain Go dans la CI : c'est un outil de construction, il
+n'entre ni dans le paquet publié ni dans ses dépendances.
+
+Le module `spec` demande une version de Go plus récente que celle qu'un moteur
+épingle probablement pour lui-même, et `actions/setup-go` pose `GOTOOLCHAIN: local`,
+ce qui interdit d'en récupérer une. L'étape du runner doit donc poser
+`GOTOOLCHAIN: auto` — le testee, lui, reste construit avec la toolchain épinglée du
+moteur. Mesuré : sans cela, la première exécution échoue sur la résolution de la
+toolchain, pas sur un écart de conformité.
+
+Un moteur NE DOIT PAS écrire son propre runner. C'est la seule chose qui fasse que
+« conforme » veuille dire quelque chose : un comparateur écrit par le moteur qu'il
+juge peut comparer trop faiblement — oublier un champ, traiter un champ absent
+comme un champ vide — et son moteur affichera la conformité en étant faux. Deux
+moteurs en ont écrit un, faute de savoir que celui-ci était accessible.
+
 ### 11.2 Comparaison normative
+
+Ce qui suit décrit ce que le runner compare. Un moteur n'a pas à l'implémenter ;
+c'est ici pour qu'il sache sur quoi il est jugé.
 
 Pour `canonicalize`, les champs comparés sont tous ceux de
 `CanonicalizationResult`, sauf `engineVersion`. Pour les trois opérations de
@@ -682,14 +721,30 @@ validation, ils sont tous ceux de `ValidationReport`, sauf `engineVersion`, donc
 La conformité partagée ne remplace pas :
 
 - tests unitaires de chaque opération IR ;
-- tests du décodeur et validateur de bundle ;
+- tests du décodeur et du validateur de bundle, dans le générateur ;
 - tests de l’API publique ;
 - tests de concurrence ;
-- tests de packaging de la ressource ;
+- tests de packaging : que le paquet publié ne porte ni bundle ni décodeur ;
 - tests de limites ;
 - property tests et fuzzing ;
 - benchmarks ;
-- tests de régression propres au runtime.
+- tests de régression propres au runtime ;
+- tests prouvant que le testee ne triche pas.
+
+Ce dernier point mérite d'être précisé, parce qu'une intention ne se teste pas.
+Le moteur TypeScript l'a formulé en propriétés observables, et c'est la forme
+exigée :
+
+| Ce qu'on affirme | Ce que ça exclut |
+| --- | --- |
+| le testee ne nomme ni le corpus ni rien qui en lise un | la lecture directe des attendus |
+| il n'atteint aucun système de fichiers | le corpus est un fichier ; qui n'ouvre rien ne le lit pas |
+| il répond identiquement quel que soit l'identifiant de cas — plausible, absurde, vide | la reconnaissance d'un cas |
+| il répond identiquement quel que soit l'ordre des requêtes | un comportement dépendant de l'historique |
+| il répond identiquement à une requête répétée | le non-déterminisme |
+
+Les requêtes de ces tests sont inventées sur place : le test d'honnêteté n'ouvre
+pas le corpus non plus, sinon il démontrerait le contraire de ce qu'il affirme.
 
 ## 12. Exigences qualité
 
@@ -717,6 +772,37 @@ Quality gates minimum :
 
 Le code Protobuf généré et les simples façades mécaniques peuvent être exclus du
 calcul, avec exclusion documentée.
+
+**Le code émis depuis le bundle l'est aussi, et pour une raison différente.** Ces
+seuils portent sur le code écrit à la main : le moteur, ses primitives, son API,
+son générateur. Le code émis, lui, est couvert par la conformité, et sa couverture
+ne mesure pas la qualité du moteur mais celle du corpus — une branche de règle
+jamais exécutée dit qu'aucun cas ne l'atteint, ce que le rapport des opérations
+inutilisées dit déjà mieux. **Mesurez-la et publiez-la, ne l'érigez pas en seuil** :
+un moteur irréprochable échouerait sur une lacune du corpus, et la seule façon de
+repasser au vert serait d'abaisser le seuil.
+
+Deux moteurs ont mesuré la même chose : retirer six cent soixante-huit cas de
+conformité d'une suite unitaire n'a pas bougé la couverture du code écrit à la main.
+La conformité est un accord entre implémentations, pas un parcours de code ; ce sont
+deux outils, et confondre leurs chiffres fait prendre une bonne nouvelle pour une
+mauvaise.
+
+### 12.2.1 Les identifiants d'un README
+
+Deux moteurs se sont arrêtés sur la même question, ce qui veut dire que le document
+ne répondait pas. `DATA_POLICY.md` section 3 la tranche déjà, et sa raison mérite
+d'être répétée ici : une valeur synthétique prouve un **algorithme**, une valeur
+réelle prouve que la **règle décrit ce qu'un registre émet**. Ce sont deux
+démonstrations différentes.
+
+Un exemple de README démontre une API, pas le format d'un registre. Une valeur
+synthétique y est donc correcte — et une valeur réelle y serait un choix discutable,
+puisqu'elle désigne une entreprise sans que personne ait besoin qu'elle en désigne
+une. La seule exigence est que l'exemple **dise ce qu'il est** : synthétique, produit
+par le générateur documenté, et de préférence le cas de conformité dont il est tiré.
+
+Une valeur inventée de mémoire n'est aucune des deux, et reste interdite partout.
 
 ### 12.3 Property tests
 
@@ -757,8 +843,7 @@ comparaisons de positions, bornes et dispatch. Objectif recommandé : mutation s
 - aucune locale globale ;
 - aucun cache mutable non synchronisé ;
 - aucun état de validation conservé entre deux appels ;
-- initialisation lazy thread-safe ;
-- provider registre injecté explicitement.
+- initialisation lazy thread-safe.
 
 Les types publics doivent signaler leur sûreté de concurrence selon les conventions
 du langage (`Sendable`, immutable data classes, etc.).
@@ -899,14 +984,15 @@ Un moteur NE DOIT PAS :
 
 Un moteur est prêt à publier lorsque :
 
-- il charge le bundle embarqué et refuse tous les bundles invalides communs ;
+- son générateur refuse tous les bundles invalides communs, et la bibliothèque
+  publiée ne porte ni bundle ni décodeur ;
 - il supporte toutes les feature IDs requises ;
 - l’API publique est idiomatique et documentée ;
 - dispatch, canonicalisation, format et checksum suivent exactement le pipeline
   normatif et les quatre opérations retournent les formes imposées ;
-- l’interface registre existe sans implémentation ;
 - toute la conformité partagée passe ;
-- les tests propres au moteur couvrent décodeur, IR, API, concurrence et packaging ;
+- les tests propres au moteur couvrent l'IR, l'API, la concurrence et le
+  packaging, et ceux du générateur couvrent le décodeur ;
 - les seuils de couverture sont atteints ;
 - les fuzzers ne trouvent aucun crash ;
 - lint et analyse statique sont sans avertissement ;

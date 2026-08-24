@@ -37,10 +37,12 @@
     "build:testee": "tsc -p tsconfig.testee.json",
     "test:pack": "node scripts/pack-and-install.mjs",
     "bench": "node --expose-gc scripts/bench.mjs",
-    "test:fuzz": "vitest run --project node test/security/fuzz.test.ts",
+    "test:fuzz": "vitest run --project node test/generator/fuzz.test.ts",
     "mutation": "stryker run",
     "prepack": "npm run build",
-    "build:generator": "tsc -p tsconfig.generator.json"
+    "build:generator": "tsc -p tsconfig.generator.json",
+    "test:conformance": "npm run build:testee && node scripts/conformance.mjs",
+    "coverage:generated": "node scripts/coverage-generated.mjs"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.72.0",

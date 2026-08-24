@@ -187,6 +187,23 @@ Utiliser Vitest ou runner moderne équivalent. Couvrir :
 - toutes les opérations IR ;
 - bundles malformés et limites ;
 - conformité BINPB complète ;
+
+Le runner de conformité vient de `spec`, jamais de ce dépôt. Il s'exécute épinglé au
+commit que `rules.lock` enregistre sous `source_commit` :
+
+```bash
+go run github.com/libbusinessid/spec/cmd/conformance-runner@<source_commit> \
+  -corpus spec/businessid-conformance.binpb -- node dist/testee.js
+```
+
+N'écris pas de comparateur : un moteur qui juge lui-même ses propres résultats peut
+se déclarer conforme en comparant trop faiblement. Ce que tu écris, c'est le testee,
+et les tests qui prouvent qu'il ne triche pas.
+
+`invalid_encoding` ne peut pas être un cas de conformité — `ir.md` section 5 étape 1
+dit pourquoi. Épingle-le par un test natif portant une chaîne contenant une demi-paire
+de substitution non appariée, que le type `string` de JavaScript admet.
+
 - API et type-level tests (`tsd` ou équivalent) ;
 - Unicode, UTF-16, surrogate pairs et ASCII ;
 - déterminisme et absence de mutation ;
@@ -250,7 +267,6 @@ utile. Ajouter SECURITY, CONTRIBUTING, changelog et politique SemVer.
 
 ## Livrables et définition de terminé
 
-Livrer package npm complet, runtime, API, assets générés, Protobuf, interface registre,
-tests, fast-check, fuzz harness, benchmarks, CI, docs et publication. Tous les
+Livrer package npm complet, runtime, API, code émis, générateur, tests, fast-check, fuzz harness, benchmarks, CI, docs et publication. Tous les
 critères `engine.md`, TypeScript strict, lint, conformité, couverture, navigateur,
 `npm pack` et test consommateur doivent être verts, sans TODO V1 ni warning.

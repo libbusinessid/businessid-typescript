@@ -46,8 +46,13 @@ source. Known contradictions and how this engine resolves them are recorded in
 - **Test first.** A defect gets a test that reproduces it, watched failing,
   before the fix. Every IR operation gets a nominal case, its bounds, its error,
   and its absent or indeterminate case.
-- **No expected result is computed by the engine under test.** The conformance
-  corpus is the authority, and the testee never sees it.
+- **No comparator is written here.** The runner comes from `spec`, pinned to the
+  commit `rules.lock` records. An engine that judges its own results can declare
+  itself conformant by comparing too weakly. What this repository writes is the
+  testee, and the tests proving it does not cheat.
+- **No expected result is read outside the runner.** The testee never sees one,
+  and neither does any test: engine tests assert what the protocol cannot carry,
+  such as which load check refused a bundle.
 - **No conformance case is skipped**, filtered, or marked expected to fail. An
   incompatibility is a release blocker, not a test to disable.
 - **No test, lint rule or coverage threshold is disabled** to make CI pass. A

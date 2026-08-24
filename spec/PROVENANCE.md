@@ -1,8 +1,8 @@
 # Where these files come from, and what to build
 
 Copied from `github.com/libbusinessid/spec` at commit
-`6e7fb24ae17d641cadbaef14de4e5c905e4ebce7`, rules version
-`2026.08.17`, stability `alpha`.
+`53fb506a0429f7babb859a2deb3c67a1a398e94d`, rules version
+`2026.08.26`, stability `alpha`.
 
 ## What this engine is — and is not
 
@@ -31,7 +31,7 @@ requires a republication of the engine for every rules version.
 | Path | Role |
 |---|---|
 | `spec/spec.md` | The normative specification. It governs. |
-| `spec/ir.md` | The 61 opcodes, their operands and their semantics. |
+| `spec/ir.md` | The 63 opcodes, their operands and their semantics. |
 | `spec/features.md` | The 18 frozen capability IDs. |
 | `spec/rules.proto` | Schema of the rules bundle — the generator's input. |
 | `spec/conformance.proto` | Schema of the conformance corpus. |

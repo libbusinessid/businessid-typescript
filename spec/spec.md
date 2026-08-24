@@ -1334,6 +1334,35 @@ Un moteur est conforme lorsque le runner rapporte zéro écart sur la totalité 
 corpus. Une exécution partielle, une catégorie ignorée ou un cas déclaré non
 applicable NE constituent PAS une conformité.
 
+#### Obtenir le runner
+
+Le runner s'exécute depuis ce dépôt, épinglé au commit que `rules.lock` enregistre
+sous `source_commit` — le même commit que le corpus, ce qui rend impossible de
+juger un corpus avec le comparateur d'un autre :
+
+```bash
+go run github.com/libbusinessid/spec/cmd/conformance-runner@<source_commit> \
+  -corpus spec/businessid-conformance.binpb -- ./mon-testee
+```
+
+Aucune release n'est nécessaire et rien n'est à télécharger à la main. Le seul
+prérequis est une toolchain Go dans la CI du moteur : c'est un outil de
+construction, il n'entre ni dans le paquet publié ni dans ses dépendances.
+
+Le module `spec` demande une version de Go plus récente que celle qu'un moteur
+épingle probablement pour lui-même, et `actions/setup-go` pose `GOTOOLCHAIN: local`,
+ce qui interdit d'en récupérer une. L'étape du runner doit donc poser
+`GOTOOLCHAIN: auto` — le testee, lui, reste construit avec la toolchain épinglée du
+moteur. Mesuré : sans cela, la première exécution échoue sur la résolution de la
+toolchain, pas sur un écart de conformité.
+
+Un moteur NE DOIT PAS écrire son propre runner. Deux moteurs l'ont fait faute de
+savoir que celui-ci était accessible, et cela vide de son sens la propriété
+énoncée plus haut : leur verdict de conformité était rendu par leur propre
+comparateur. Ce qu'un moteur écrit, et qu'il doit garder, ce sont les tests qui
+prouvent que son testee ne triche pas — qu'il ne lit pas le corpus, n'interprète
+aucun attendu et n'adapte pas son comportement au cas reçu.
+
 ### 8.8 Cas de chargement et cas d’exécution
 
 Les cas dont l’opération est `load_ruleset` éprouvent le refus d’un bundle hostile ou
@@ -1459,8 +1488,11 @@ moteur, chez un consommateur comme en intégration continue, n’exige ni résea
 accès au dépôt `spec`, conformément à 2.5. La régénération est une opération
 volontaire de mainteneur, jamais une étape de build.
 
-Un moteur PEUT malgré tout embarquer le bundle s’il choisit de l’interpréter ; il
-applique alors les mêmes vérifications de digest et d’attestation avant usage.
+Un moteur N’EMBARQUE PAS le bundle et ne l’interprète pas : `engine.md` section 1.2
+l’interdit, et cette phrase disait le contraire. Elle a survécu à quatre audits parce
+que les gardes mécaniques lisaient `engine.md` et les contrats par langage, jamais ce
+document-ci. Le bundle est une entrée du générateur, vérifiée par digest et par
+attestation à la construction, et rien de lui ne voyage dans le paquet publié.
 
 Format de `rules.lock` :
 
@@ -1469,6 +1501,7 @@ rules_version = "2026.08.0"
 format_version = 1
 rules_sha256 = "..."
 conformance_sha256 = "..."
+conformance_jsonl_sha256 = "..."
 rules_proto_sha256 = "..."
 conformance_proto_sha256 = "..."
 testee_proto_sha256 = "..."

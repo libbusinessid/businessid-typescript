@@ -15,9 +15,15 @@ interface Waiter {
 /**
  * Drives a testee over the protocol of `testee.proto`.
  *
- * This is the runner side of the exchange, and the only side that ever holds an
- * expected result. The testee runs as a separate process and receives nothing
- * but the request, so it cannot adapt its answer to the case it is given.
+ * This is **not** a conformance runner and must never become one. The runner
+ * comes from `spec`, pinned to the commit `rules.lock` records, and it is the
+ * only program that reads an expected result: a comparator written by the
+ * engine it judges can compare too weakly and report conformance while being
+ * wrong.
+ *
+ * What this drives is the honesty of the testee — that it does not read the
+ * corpus, does not interpret an expectation, and answers the same whatever case
+ * identifier it is handed. Nothing here ever opens the corpus.
  *
  * The exchange is strictly synchronous: one request is written, exactly one
  * response is read, and only then is the next request sent. Overlapping two
