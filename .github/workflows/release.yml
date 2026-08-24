@@ -86,8 +86,9 @@ jobs:
       - run: npm install -g npm@latest
       - run: pnpm install --frozen-lockfile
       # `prepack` builds `dist` from the sources at this commit, and `files` in
-      # the manifest decides the rest of the tarball. The `package` job above
-      # installed that exact tarball in a blank project before this step ran.
+      # the manifest decides the rest of the tarball. The `ci` job above ran
+      # `pnpm verify`, which packs that exact tarball and installs it in a blank
+      # project, so nothing here is the first to see it.
       - run: npm publish --provenance --tag "$DIST_TAG"
         env:
           DIST_TAG: ${{ needs.guard.outputs.dist_tag }}

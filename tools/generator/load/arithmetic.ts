@@ -203,8 +203,19 @@ function checkAscendingValues(where: string, values: readonly string[]): void {
  * search is exact. Mixed lengths are written as one `prefix_in` per length
  * under an `any`, which the German register rule already does.
  *
+ * The unit is UTF-8 bytes, because the search the rule protects is over bytes.
+ * It is not code points, and the difference is real in both directions: "PZ"
+ * and "é" are both two bytes and are not both two code points, while "AB" and
+ * "éé" are both two code points and are two and four bytes. Counting the wrong
+ * unit refuses a bundle the specification accepts and accepts one it refuses.
+ *
+ * This engine's own search groups more finely, by code point length, because a
+ * `StringValue` is code points. `ir.md` allows that explicitly — a finer
+ * grouping refuses nothing this accepts — and it is why `["PZ", "é"]` loads
+ * here and is then searched as two length classes rather than one.
+ *
  * This engine searches once per distinct element length and would have answered
- * such a list correctly. The check is here because the bundle may not carry the
+ * a mixed list correctly. The check is here because the bundle may not carry the
  * shape, not because this engine could not read it — and because an engine that
  * would answer it wrongly has no conformance case to catch it: all four
  * published `prefix_in` nodes hold a single length.
@@ -214,13 +225,13 @@ function checkUniformValueLengths(where: string, values: readonly string[]): voi
   if (first === undefined) {
     return;
   }
-  const expected = codePointsOf(first).length;
+  const expected = utf8ByteLength(first);
   for (const value of values) {
-    const length = codePointsOf(value).length;
+    const length = utf8ByteLength(value);
     if (length !== expected) {
       invalid(
         13,
-        `${where} declares values of mixed lengths: ${JSON.stringify(first)} is ${String(expected)} code points and ${JSON.stringify(value)} is ${String(length)}`,
+        `${where} declares values of mixed lengths: ${JSON.stringify(first)} is ${String(expected)} UTF-8 bytes and ${JSON.stringify(value)} is ${String(length)}`,
       );
     }
   }

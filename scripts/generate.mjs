@@ -14,7 +14,16 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const run = (command, args) => execFileSync(command, args, { cwd: root, stdio: "inherit" });
+// The child has already said what went wrong on its own stderr. Re-throwing
+// would bury that under a Node stack, and `verify` prints the failing step's
+// output verbatim — so exit with the child's status and add nothing.
+const run = (command, args) => {
+  try {
+    execFileSync(command, args, { cwd: root, stdio: "inherit" });
+  } catch (error) {
+    process.exit(typeof error.status === "number" ? error.status : 1);
+  }
+};
 
 run("npx", ["tsc", "-p", "tsconfig.generator.json"]);
 run(process.execPath, [

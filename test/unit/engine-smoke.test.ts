@@ -6,7 +6,7 @@ describe("the default engine", () => {
 
   it("reports the bundle it carries", () => {
     expect(engine.rulesInfo()).toEqual({
-      rulesVersion: "2026.09.2",
+      rulesVersion: "2026.08.32",
       formatVersion: 1,
       engineVersion: "0.1.0",
     });

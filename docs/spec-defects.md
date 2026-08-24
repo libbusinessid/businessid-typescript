@@ -1,8 +1,8 @@
 # Contradictions found in `spec`, and how they were resolved
 
-Found while implementing this engine, across eight synchronisations. Everything
+Found while implementing this engine, across nine synchronisations. Everything
 below has been corrected upstream in `github.com/libbusinessid/spec`. Nothing is
-open as of rules `2026.09.2`.
+open as of rules `2026.08.32`.
 
 ---
 
@@ -385,6 +385,51 @@ Installing the whole-table search fails both, and the property shrinks the
 counterexample to `["A", "AA"]` against `"AB"` in thirteen runs. Nothing in the
 shared suite fails. That is the measurement worth keeping: for this rule the
 conformance corpus is not the guard, and after `2026.09.2` it cannot become one.
+
+### 22. The `prefix_in` element length is bytes, and this engine was counting code points
+
+Entry 21 added the uniform-length rule; `2026.08.32` states the unit. It is
+**UTF-8 bytes**, because the search the rule protects is over bytes, and an
+engine working in another unit may group more finely without contradicting it.
+
+This engine had implemented the check in **code points**, which is wrong in both
+directions and was measured to be:
+
+| List           | UTF-8 bytes | code points | correct  | this engine, before |
+| -------------- | ----------- | ----------- | -------- | ------------------- |
+| `["PZ", "é"]`  | 2, 2        | 2, 1        | accepted | **refused**         |
+| `["AB", "éé"]` | 2, 4        | 2, 2        | refused  | **accepted**        |
+
+No conformance case separates the readings — every element of the published
+bundle is ASCII, where they agree — so nothing in the shared suite would ever
+have said so. Both cases are tests here now, and both failed before the unit was
+changed.
+
+The search still groups by code point length, because a `StringValue` is code
+points. `ir.md` permits the finer grouping explicitly, and `["PZ", "é"]` is the
+list that shows what it means: it loads as one byte-length class and is searched
+as two code-point classes. That is also a test.
+
+### 23. The rules version went backwards, and nothing here noticed
+
+`rules_version` is `YYYY.MM.PATCH` where `PATCH` counts within the month with no
+upper bound, so `2026.08.31` is followed by `2026.08.32`. Four versions announced
+September in August by treating the third field as a day, and `2026.09.2` rolls
+back to `2026.08.32`.
+
+**Checked here, because a rollback only costs something if something compares
+versions for order.** Nothing in this repository does. The version is emitted as
+a string constant, reported through `rulesInfo()`, compared for equality against
+`rules.lock` by the generator, and validated for character set and byte length by
+check 6. The single `>` anywhere near it is a length bound. Integrity comes from
+the digests, which is why the correction costs a visible discontinuity and
+nothing else.
+
+**And nothing published ever announced September.** `0.1.0` on npm carries rules
+`2026.08.26`; the `2026.09.x` versions existed only on `main`, never in a
+released artifact, and `CHANGELOG.md` is not among the files the package ships.
+A consumer reading version strings sees `2026.08.26` followed by `2026.08.32`,
+which is in order.
 
 ---
 

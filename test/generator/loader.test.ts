@@ -510,6 +510,23 @@ describe("check 13: the normative order of a parameter list", () => {
     expect(refusal(payload).message).toContain("length");
   });
 
+  it("measures the element length in UTF-8 bytes, not code points", () => {
+    // `ir.md`: the unit is bytes because the search is over bytes. "PZ" and "é"
+    // are both two bytes and are not both two code points, so a check counting
+    // code points refuses a bundle the specification accepts.
+    expect(() => loadBundle(withValues(["PZ", "é"]))).not.toThrow();
+  });
+
+  it("refuses equal code point counts of unequal byte length", () => {
+    // The other half of the same mistake: "AB" and "éé" are both two code
+    // points and are two and four bytes, so a check counting code points
+    // accepts a bundle the specification refuses.
+    const payload = withValues(["AB", "éé"]);
+
+    expectRefusal(payload, 13);
+    expect(refusal(payload).message).toContain("bytes");
+  });
+
   it("accepts lengths that are ascending and distinct", () => {
     expect(() => loadBundle(withLengths([4, 6]))).not.toThrow();
   });
