@@ -125,7 +125,7 @@ try {
     format: "valid",
     checksum: "valid",
     fully: true,
-    rulesVersion: "2026.08.32",
+    rulesVersion: "2026.08.33",
     capabilities: 18,
   };
   for (const [key, value] of Object.entries(expected)) {
