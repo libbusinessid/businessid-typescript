@@ -56,11 +56,6 @@ env:
   # identities to be verified — owner, repository, signing workflow and tag —
   # and this is the third of them.
   SIGNER_WORKFLOW: .github/workflows/release.yml
-  # setup-go pins GOTOOLCHAIN to `local`, which forbids fetching a toolchain.
-  # The binding condition is the `go` line of the spec module rather than its
-  # `toolchain` line, and resolving `stable` never meets it today — this is
-  # insurance for the day that line moves, and it costs nothing.
-  GOTOOLCHAIN: auto
 
 jobs:
   sync:
@@ -339,6 +334,18 @@ jobs:
       - name: Write spec/, rules.lock and spec/PROVENANCE.md
         if: steps.compare.outputs.needed == 'true'
         env:
+          # Here and not at workflow level. setup-go exports GOTOOLCHAIN=local
+          # through $GITHUB_ENV, which wins over the workflow and job `env`
+          # maps: measured in run 32780200174, where every step before setup-go
+          # saw `auto` and every step after it saw `local`, including this one
+          # and `pnpm verify`. Only a step `env` overrides it — which is what
+          # `ci` already does, and what this workflow did not.
+          #
+          # The binding condition is the `go` line of the spec module rather
+          # than its `toolchain` line, and resolving `stable` never meets it
+          # today, which is exactly why the insurance was worthless without
+          # anyone noticing.
+          GOTOOLCHAIN: auto
           VERSION: ${{ steps.sums.outputs.version }}
           COMMIT: ${{ steps.attest.outputs.commit }}
           IDENTITY: ${{ steps.attest.outputs.identity }}
@@ -470,6 +477,11 @@ jobs:
       - name: pnpm verify
         id: verify
         if: steps.compare.outputs.needed == 'true'
+        env:
+          # The conformance step runs the Go runner from `spec`, pinned to the
+          # commit `rules.lock` records. Same reason as above: setup-go left
+          # GOTOOLCHAIN at `local` and only a step `env` takes it back.
+          GOTOOLCHAIN: auto
         run: |
           set -uo pipefail
           if pnpm verify 2>&1 | tee "${RUNNER_TEMP}/verify.log"; then
