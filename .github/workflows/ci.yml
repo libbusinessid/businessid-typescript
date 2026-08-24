@@ -26,8 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The minimum this package supports and the current releases.
-        node: ["20.11", "22.x", "24.x"]
+        node: ["22.x", "24.x"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
@@ -57,6 +56,31 @@ jobs:
           name: coverage
           path: coverage/
           retention-days: 7
+
+  # A different question from the one above, not a second definition of green.
+  # `engines` claims Node 20.11, which is about the published package: no
+  # dependencies, nothing that reads a file or the network. What proves that
+  # claim is the engine's own suite and the packed tarball installed in a blank
+  # project, both run through the same entry point and the same step
+  # definitions.
+  #
+  # The browser project cannot be part of it. Its toolchain calls `crypto.hash`,
+  # added in Node 20.12, so `vite` cannot start on 20.11 at all — and running it
+  # there would measure the toolchain rather than the engine. This is what the
+  # collapse into one command surfaced: while the browser had its own job pinned
+  # to 22.x, nothing ever asked the question.
+  compat:
+    name: engine on node 20.11, the supported floor
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "20.11"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm verify "tests (node)" "packaging"
 
   audit:
     name: dependency audit

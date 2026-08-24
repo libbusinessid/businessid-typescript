@@ -30,7 +30,18 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const only = process.argv[2];
+/**
+ * Optional step filters. `pnpm verify` runs everything and is the definition of
+ * green; `pnpm verify "tests (node)" packaging` runs those steps alone.
+ *
+ * Scoped runs exist for one honest reason and no other: proving the shipped
+ * engine works on the oldest Node this package supports. The browser project
+ * cannot be part of that, because its toolchain cannot run there — `vite`
+ * calls `crypto.hash`, added in Node 20.12, and this package supports 20.11 for
+ * consumers who have no toolchain at all. A scoped run says which steps it ran
+ * and never prints the single green line, so it cannot be mistaken for one.
+ */
+const only = process.argv.slice(2);
 
 /**
  * Strips ANSI styling.
@@ -135,9 +146,12 @@ const steps = [
 ];
 
 const numbers = {};
-const wanted = only === undefined ? steps : steps.filter((step) => step.name.includes(only));
+const wanted =
+  only.length === 0
+    ? steps
+    : steps.filter((step) => only.some((filter) => step.name.includes(filter)));
 if (wanted.length === 0) {
-  process.stderr.write(`no step matches ${JSON.stringify(only)}\n`);
+  process.stderr.write(`no step matches ${only.map((one) => JSON.stringify(one)).join(", ")}\n`);
   process.exit(2);
 }
 

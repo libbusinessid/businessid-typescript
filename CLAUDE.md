@@ -23,10 +23,17 @@ the context of whoever is driving, twenty-nine of which say only "this passes".
 `engine.md` section 12.5 is where this comes from, and the reason it is written
 here rather than only there is that it addresses whoever runs, not whoever reads.
 
-`pnpm verify <substring>` runs the matching steps alone. That is for iterating on
-one thing, never for concluding that the repository is green.
+`pnpm verify <substring>...` runs the matching steps alone. It prints which ones
+it ran and never the single green line, so a scoped run cannot be mistaken for a
+full one. Use it while iterating, never to conclude the repository is green.
 
-CI calls `pnpm verify`, so "green" has exactly one definition.
+CI calls `pnpm verify`, so "green" has exactly one definition. It also runs a
+scoped `pnpm verify "tests (node)" "packaging"` on Node 20.11, which answers a
+different question — whether the published package works on the oldest version
+`engines` claims — and not a second definition of green. The browser project
+cannot be part of that: its toolchain calls `crypto.hash`, added in Node 20.12,
+so `vite` will not start on 20.11 and running it there would measure the
+toolchain rather than the engine.
 
 ### A step must never pass by doing nothing
 
