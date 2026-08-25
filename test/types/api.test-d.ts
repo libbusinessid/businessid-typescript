@@ -1,6 +1,6 @@
 import { describe, expectTypeOf, it } from "vitest";
 import type {
-  BusinessIdEngine,
+  EntIdEngine,
   CanonicalizationResult,
   IdentifierInput,
   IdentifierKind,
@@ -42,7 +42,7 @@ describe("the operations", () => {
   it("returns a report from the three validations and a result from canonicalize", () => {
     // Reading the signatures off the type, never off an instance: these
     // assertions are about the declaration, and nothing is ever called.
-    type Engine = BusinessIdEngine;
+    type Engine = EntIdEngine;
 
     expectTypeOf<ReturnType<Engine["validate"]>>().toEqualTypeOf<ValidationReport>();
     expectTypeOf<ReturnType<Engine["validateFormat"]>>().toEqualTypeOf<ValidationReport>();
@@ -65,7 +65,7 @@ describe("synchrony", () => {
     // `engine.md` section 10.1 fixes this: a registry lookup is a separate
     // asynchronous operation, never a mode of these. Making one of them return
     // a promise later would transform every caller.
-    type Engine = BusinessIdEngine;
+    type Engine = EntIdEngine;
 
     expectTypeOf<ReturnType<Engine["validate"]>>().not.toExtend<Promise<unknown>>();
     expectTypeOf<ReturnType<Engine["canonicalize"]>>().not.toExtend<Promise<unknown>>();

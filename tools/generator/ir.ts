@@ -19,7 +19,7 @@ import type {
   StringOpKind,
   ValueType,
   WeightAlignment,
-} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/entid/ir/v1/rules_pb.js";
 import type { ReasonCode } from "../../src/domain/reason-code.js";
 import type { ValidationProfile } from "../../src/domain/profile.js";
 

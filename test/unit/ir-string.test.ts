@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { engineFor, type TestEngine } from "../helpers/rules.js";
-import {
-  PredicateOpKind,
-  StringOpKind,
-  ValueType,
-} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+import { PredicateOpKind, StringOpKind, ValueType } from "../../generated/entid/ir/v1/rules_pb.js";
 import {
   assertionSequence,
   constantNode,

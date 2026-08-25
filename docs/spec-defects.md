@@ -2,8 +2,8 @@
 
 Found while implementing this engine, across nine synchronisations. Everything
 under **Resolved** has been corrected upstream in
-`github.com/libbusinessid/spec`. Two entries are open as of rules `2026.08.33`,
-both in the release automation rather than in the rules.
+`github.com/entid-org/spec`. One entry is open as of rules `2026.08.38`, in the
+release automation rather than in the rules.
 
 ---
 
@@ -203,7 +203,7 @@ entry 1; `test/unit/public-surface.test.ts` and the three tarball assertions in
 
 ### 13. The readable corpus shipped unverified
 
-`rules.lock` attested seven files. `spec/businessid-conformance.jsonl` was not
+`rules.lock` attested seven files. `spec/entid-conformance.jsonl` was not
 among them, although it is the form a human reviews and the form whose case ids
 engine tests cite as provenance — this repository's README note names
 `vat-be-normalization-004`, and nothing verified the file that defines it.
@@ -432,38 +432,6 @@ released artifact, and `CHANGELOG.md` is not among the files the package ships.
 A consumer reading version strings sees `2026.08.26` followed by `2026.08.32`,
 which is in order.
 
----
-
-## Open
-
-Both were found while implementing `engine.md` section 11.4 — the synchronization
-workflow — and both are in the release automation of `spec` rather than in the
-rules. Neither blocks this engine today: the workflow works around the second and
-says so out loud when it does.
-
-### 24. "The latest release" of `spec` cannot be resolved as the latest release
-
-Section 11.4 says the engine compares **the latest release** of `spec` to its own
-`rules.lock`. `spec` marks every release below `stable` as a prerelease, on
-purpose, so that "a consumer or a downstream script never picks it up by
-accident" — and rules are `alpha`.
-
-A prerelease is excluded from the endpoint that answers _the_ latest release, so
-with both published releases marked that way:
-
-```
-$ gh api repos/libbusinessid/spec/releases/latest
-gh: Not Found (HTTP 404)
-$ gh release view --repo libbusinessid/spec
-release not found
-```
-
-Measured on `v0.1.0` and `v0.1.1`, 2026-08-24. The workflow here therefore lists
-releases and takes the most recently published non-draft one, which is what the
-section means and not what it says. Worth stating in section 11.4, because the
-obvious implementation of that sentence resolves nothing and an engine writing it
-would find out only on the day of a release.
-
 ### 25. Both published releases predate the script that assembles `PROVENANCE.md`
 
 `tools/write_provenance.sh` is the single writer of an engine's
@@ -485,14 +453,51 @@ replaces: the step could not have run for either release.
 
 **Here**: the workflow fetches the spec sources at the attested source commit and
 refuses to continue when the writer is not there, naming the commit. A
-`workflow_dispatch` input, `provenance_tooling_ref`, names a newer ref for the
-writer alone; it exists for these two releases, it warns when it is used, and it
-is empty in normal operation. The first release cut from `51aad4c` or later needs
-none of it.
+`workflow_dispatch` input, `spec_sources_ref`, names a newer ref for the sources
+this workflow reads; it existed for these two releases, it warns when it is used,
+and it is empty in normal operation.
 
-**And one thing the writer reads is not release-pinned.** It takes the operation
-counts from `docs/generated/coverage.md` in whatever checkout it runs from, while
-every other figure it quotes comes from the release bundle. The release publishes
+**And one thing the writer read was not release-pinned.** It took the operation
+counts from `docs/generated/coverage.md` in whatever checkout it ran from, while
+every other figure it quoted came from the release bundle. The release publishes
 `coverage.md` as an asset covered by the attested `SHA256SUMS`, so this workflow
-copies that over the checkout's before invoking it. Taking it from the release
-directly would remove the last unpinned input.
+copies that over the checkout's before invoking it.
+
+**Resolved by `2026.08.38`.** Its source commit `70c408b` carries the writer, and
+the writer no longer assembles anything: the compiler puts `provenance-<engine>.md`
+in the release, so the script copies one attested file and the last unpinned input
+is gone with it. The synchronization onto `2026.08.38` ran it from the release's
+own source commit, with no `spec_sources_ref`.
+
+---
+
+## Open
+
+Found while implementing `engine.md` section 11.4 — the synchronization workflow
+— and in the release automation of `spec` rather than in the rules. It does not
+block this engine: the workflow resolves the latest release the way the section
+means rather than the way it reads.
+
+### 24. "The latest release" of `spec` cannot be resolved as the latest release
+
+Section 11.4 says the engine compares **the latest release** of `spec` to its own
+`rules.lock`. `spec` marks every release below `stable` as a prerelease, on
+purpose, so that "a consumer or a downstream script never picks it up by
+accident" — and rules are `alpha`.
+
+A prerelease is excluded from the endpoint that answers _the_ latest release, so
+with both published releases marked that way:
+
+```
+$ gh api repos/entid-org/spec/releases/latest
+gh: Not Found (HTTP 404)
+$ gh release view --repo entid-org/spec
+release not found
+```
+
+Measured on `v0.1.0` and `v0.1.1` on 2026-08-24, and again on `v2026.08.38` on
+2026-08-25. The workflow here therefore lists releases and takes the most
+recently published non-draft one, which is what the section means and not what it
+says. Filed upstream as `entid-org/spec#93`, because the obvious implementation
+of that sentence resolves nothing and an engine writing it would find out only on
+the day of a release.

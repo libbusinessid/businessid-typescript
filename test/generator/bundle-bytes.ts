@@ -11,7 +11,7 @@ import { readFileSync } from "node:fs";
 function attested(): Uint8Array {
   const lock = readFileSync(new URL("../../rules.lock", import.meta.url), "utf8");
   const expected = /^rules_sha256\s*=\s*"([0-9a-f]{64})"/m.exec(lock)?.[1];
-  const bytes = readFileSync(new URL("../../spec/businessid-rules.binpb", import.meta.url));
+  const bytes = readFileSync(new URL("../../spec/entid-rules.binpb", import.meta.url));
   const digest = createHash("sha256").update(bytes).digest("hex");
   if (digest !== expected) {
     throw new Error(`bundle digest ${digest} does not match rules.lock ${String(expected)}`);

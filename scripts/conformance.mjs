@@ -27,16 +27,35 @@ if (commit === undefined) {
   throw new Error("rules.lock records no source_commit");
 }
 
+/**
+ * The module path of the runner, read from the release rather than written here.
+ *
+ * A Go module declares its own path in `go.mod`, and that path is the
+ * repository's name *at the pinned commit*. This project was renamed, so a
+ * commit cut before the rename declares the former path and `go run` refuses
+ * the current one outright: "module declares its path as ... but was required
+ * as ...". GitHub's redirect does not help, because the conflict is between two
+ * strings and not between two locations.
+ *
+ * `attestation_identity` is the only field naming the repository a release came
+ * from, which makes it the only thing here that knows which of the two names
+ * the pinned commit carries. A lock without it was produced locally, from a
+ * checkout of the current repository, so the current name is the right answer.
+ */
+const SPEC_MODULE = "github.com/entid-org/spec";
+const identity = /^attestation_identity\s*=\s*"([^/"]+\/[^/"]+)\//m.exec(lock)?.[1];
+const specModule = identity === undefined ? SPEC_MODULE : `github.com/${identity}`;
+
 const testee = join(root, "build", "tools", "testee", "main.js");
-console.log(`runner pinned to spec@${commit}`);
+console.log(`runner pinned to ${specModule}@${commit}`);
 
 execFileSync(
   "go",
   [
     "run",
-    `github.com/libbusinessid/spec/cmd/conformance-runner@${commit}`,
+    `${specModule}/cmd/conformance-runner@${commit}`,
     "-corpus",
-    join(root, "spec", "businessid-conformance.binpb"),
+    join(root, "spec", "entid-conformance.binpb"),
     "--",
     process.execPath,
     testee,

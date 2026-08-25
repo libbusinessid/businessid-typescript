@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { fromBinary } from "@bufbuild/protobuf";
-import { RuleBundleSchema } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+import { RuleBundleSchema } from "../../generated/entid/ir/v1/rules_pb.js";
 import { bytes, fieldMessage, fieldVarint, tag, WIRE_LENGTH } from "../helpers/wire.js";
 
 /**

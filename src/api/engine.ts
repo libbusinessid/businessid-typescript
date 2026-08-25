@@ -29,14 +29,14 @@ export type RulesInfo = Readonly<{
  * permanently, so that a later registry lookup cannot turn into a breaking
  * change here.
  */
-export class BusinessIdEngine {
+export class EntIdEngine {
   /**
    * The engine bound to the rules this package ships.
    *
    * Nothing is decoded, fetched or read from a file, so this works unchanged in
    * a browser and costs nothing at start-up.
    */
-  static readonly default: BusinessIdEngine = new BusinessIdEngine();
+  static readonly default: EntIdEngine = new EntIdEngine();
 
   /** What the generated rules announce about themselves. */
   rulesInfo(): RulesInfo {

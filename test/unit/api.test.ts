@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  BusinessIdEngine,
+  EntIdEngine,
   isChecksumValid,
   isFormatValid,
   isFullyValidated,
@@ -10,27 +10,27 @@ import {
   type ValidationReport,
 } from "../../src/index.js";
 
-describe("BusinessIdEngine.default", () => {
+describe("EntIdEngine.default", () => {
   it("is the only way to obtain an engine", () => {
     // The rules are code, generated when this package was built. There is no
     // factory taking bundle bytes: a custom rule set goes through the
     // generator, not through the public API.
-    expect("fromRules" in BusinessIdEngine).toBe(false);
+    expect("fromRules" in EntIdEngine).toBe(false);
   });
 
   it("decodes the shipped bundle at most once", () => {
-    expect(BusinessIdEngine.default).toBe(BusinessIdEngine.default);
+    expect(EntIdEngine.default).toBe(EntIdEngine.default);
   });
 
   it("reports what the bundle announces", () => {
-    expect(BusinessIdEngine.default.rulesInfo().rulesVersion).toBe("2026.08.33");
-    expect(BusinessIdEngine.default.capabilities()).toEqual([
+    expect(EntIdEngine.default.rulesInfo().rulesVersion).toBe("2026.08.38");
+    expect(EntIdEngine.default.capabilities()).toEqual([
       1, 2, 3, 4, 5, 10, 11, 20, 21, 30, 31, 32, 33, 34, 35, 40, 41, 42,
     ]);
   });
 
   it("lists the kinds it routes, aliases included", () => {
-    const kinds = BusinessIdEngine.default.kinds();
+    const kinds = EntIdEngine.default.kinds();
 
     expect(kinds).toContain("vat");
     expect(kinds).toEqual([...KNOWN_IDENTIFIER_KINDS].sort());
@@ -38,7 +38,7 @@ describe("BusinessIdEngine.default", () => {
 });
 
 describe("ordinary input never throws", () => {
-  const engine = BusinessIdEngine.default;
+  const engine = EntIdEngine.default;
   const loneSurrogate = String.fromCharCode(0xd83d);
 
   it.each([
@@ -75,7 +75,7 @@ describe("report helpers", () => {
       inputValue: "x",
       canonicalValue: "x",
       profile: "compatible",
-      rulesVersion: "2026.08.33",
+      rulesVersion: "2026.08.38",
       formatVersion: 1,
       engineVersion: "0.1.0",
       format: { level: "format", status: format, reasonCode: "ok" },

@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { BusinessIdEngine, isInvalid } from "../../src/index.js";
+import { EntIdEngine, isInvalid } from "../../src/index.js";
 import * as support from "../../src/runtime/support.js";
 import { codePointsOf, stringOf, utf8ByteLength } from "../../src/runtime/text.js";
 
@@ -13,7 +13,7 @@ import { codePointsOf, stringOf, utf8ByteLength } from "../../src/runtime/text.j
  * however hostile, makes the engine throw: an unusable value produces a report
  * saying why.
  */
-const engine = BusinessIdEngine.default;
+const engine = EntIdEngine.default;
 const kinds = engine.kinds();
 
 /** Well formed strings: fast-check's `string` can emit lone surrogates. */

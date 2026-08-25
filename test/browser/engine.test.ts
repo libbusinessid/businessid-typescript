@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BusinessIdEngine } from "../../src/index.js";
+import { EntIdEngine } from "../../src/index.js";
 
 /**
  * The engine, running in a real browser.
@@ -11,14 +11,14 @@ import { BusinessIdEngine } from "../../src/index.js";
  */
 describe("the default engine in a browser", () => {
   it("builds itself synchronously from the inlined bundle", () => {
-    const engine = BusinessIdEngine.default;
+    const engine = EntIdEngine.default;
 
-    expect(engine.rulesInfo()).toMatchObject({ rulesVersion: "2026.08.33", formatVersion: 1 });
+    expect(engine.rulesInfo()).toMatchObject({ rulesVersion: "2026.08.38", formatVersion: 1 });
     expect(engine.capabilities()).toHaveLength(18);
   });
 
   it("validates an official example", () => {
-    const report = BusinessIdEngine.default.validate({ kind: "vat", value: "BE 0123.456.749" });
+    const report = EntIdEngine.default.validate({ kind: "vat", value: "BE 0123.456.749" });
 
     expect(report.canonicalValue).toBe("BE0123456749");
     expect(report.format.status).toBe("valid");
@@ -29,9 +29,9 @@ describe("the default engine in a browser", () => {
     // is where a length taken from `String.length` would show up.
     const astral = "\u{1D400}".repeat(512);
 
-    expect(
-      BusinessIdEngine.default.validate({ kind: "vat", value: astral }).format.reasonCode,
-    ).toBe("input_too_long");
+    expect(EntIdEngine.default.validate({ kind: "vat", value: astral }).format.reasonCode).toBe(
+      "input_too_long",
+    );
   });
 
   it("uses no locale sensitive case mapping", () => {
@@ -40,7 +40,7 @@ describe("the default engine in a browser", () => {
     expect("i".toLocaleUpperCase("tr")).not.toBe("I");
 
     expect(
-      BusinessIdEngine.default.canonicalize({ kind: "vat", value: "be0123456749" }).canonicalValue,
+      EntIdEngine.default.canonicalize({ kind: "vat", value: "be0123456749" }).canonicalValue,
     ).toBe("BE0123456749");
   });
 

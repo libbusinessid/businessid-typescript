@@ -4,8 +4,8 @@
  * Every refusal names the check of `ir.md` section 10 that produced it, which
  * is what makes a rejected bundle diagnosable instead of merely rejected.
  */
-import type { Node as ProtoNode } from "../../../generated/libbusinessid/ir/v1/rules_pb.js";
-import { ReasonCode as ProtoReasonCode } from "../../../generated/libbusinessid/ir/v1/rules_pb.js";
+import type { Node as ProtoNode } from "../../../generated/entid/ir/v1/rules_pb.js";
+import { ReasonCode as ProtoReasonCode } from "../../../generated/entid/ir/v1/rules_pb.js";
 import { BundleError, type BundleErrorReason } from "../errors.js";
 import type { ReasonCode } from "../../../src/domain/reason-code.js";
 import type { OpcodeSpec, OperationCase } from "../opcodes.js";

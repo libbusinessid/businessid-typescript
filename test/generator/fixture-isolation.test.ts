@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
-import { Operation } from "../../generated/libbusinessid/conformance/v1/conformance_pb.js";
+import { Operation } from "../../generated/entid/conformance/v1/conformance_pb.js";
 import {
   CanonicalizationOpKind,
   ChecksumOpKind,
@@ -11,7 +11,7 @@ import {
   StringOpKind,
   StringOperationSchema,
   ValueType,
-} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/entid/ir/v1/rules_pb.js";
 import { BundleError } from "../../tools/generator/errors.js";
 import { generate } from "../../tools/generator/generate.js";
 import { loadCorpus } from "../conformance/corpus.js";

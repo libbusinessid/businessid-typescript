@@ -12,7 +12,7 @@ import {
   type Program as ProtoProgram,
   type RuleBundle,
   RuleBundleSchema,
-} from "../../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../../generated/entid/ir/v1/rules_pb.js";
 import { SUPPORTED_CAPABILITIES } from "../capabilities.js";
 import { LIMITS, SUPPORTED_FORMAT_VERSIONS } from "../limits.js";
 import { utf8ByteLength } from "../../../src/runtime/text.js";

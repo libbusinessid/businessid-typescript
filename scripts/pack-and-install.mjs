@@ -73,7 +73,7 @@ for (const field of ["dependencies", "peerDependencies", "optionalDependencies"]
   }
 }
 
-const consumer = mkdtempSync(join(tmpdir(), "businessid-consumer-"));
+const consumer = mkdtempSync(join(tmpdir(), "entid-consumer-"));
 try {
   writeFileSync(
     join(consumer, "package.json"),
@@ -101,8 +101,8 @@ try {
   writeFileSync(
     join(consumer, "use.mjs"),
     [
-      `import { BusinessIdEngine, isFullyValidated } from "${manifest.name}";`,
-      "const engine = BusinessIdEngine.default;",
+      `import { EntIdEngine, isFullyValidated } from "${manifest.name}";`,
+      "const engine = EntIdEngine.default;",
       'const report = engine.validate({ kind: "vat", value: "BE 0123.456.749" });',
       "const info = engine.rulesInfo();",
       "console.log(JSON.stringify({",
@@ -125,7 +125,7 @@ try {
     format: "valid",
     checksum: "valid",
     fully: true,
-    rulesVersion: "2026.08.33",
+    rulesVersion: "2026.08.38",
     capabilities: 18,
   };
   for (const [key, value] of Object.entries(expected)) {
@@ -140,8 +140,8 @@ try {
   writeFileSync(
     join(consumer, "use.ts"),
     [
-      `import { BusinessIdEngine, type ValidationReport } from "${manifest.name}";`,
-      "const report: ValidationReport = BusinessIdEngine.default.validate({",
+      `import { EntIdEngine, type ValidationReport } from "${manifest.name}";`,
+      "const report: ValidationReport = EntIdEngine.default.validate({",
       '  kind: "vat",',
       '  value: "BE0123456749",',
       "});",

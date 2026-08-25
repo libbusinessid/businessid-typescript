@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { fromBinary } from "@bufbuild/protobuf";
-import { RuleBundleSchema } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+import { RuleBundleSchema } from "../../generated/entid/ir/v1/rules_pb.js";
 import { expansionOf } from "../../tools/generator/load/expansion.js";
 import { RULES_BUNDLE_BYTES } from "./bundle-bytes.js";
 import { loadBundle } from "../../tools/generator/load.js";
@@ -9,7 +9,7 @@ describe("the official bundle", () => {
   const bundle = loadBundle(RULES_BUNDLE_BYTES);
 
   it("announces the attested rules version", () => {
-    expect(bundle.rulesVersion).toBe("2026.08.33");
+    expect(bundle.rulesVersion).toBe("2026.08.38");
     expect(bundle.formatVersion).toBe(1);
   });
 
@@ -54,7 +54,7 @@ describe("what the shipped bundle costs to emit", () => {
    * Summing every capture rather than only the ones no other root reaches gives
    * 3204 instead of 3069, because all 54 captures are reached from their roots.
    */
-  it("matches the published profile for 2026.08.33", () => {
+  it("matches the published profile for 2026.08.38", () => {
     let instances = 0;
     let worst = 0;
     let worstProgram = 0;

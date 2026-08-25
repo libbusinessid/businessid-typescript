@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { BusinessIdEngine } from "../../src/index.js";
+import { EntIdEngine } from "../../src/index.js";
 
 describe("the default engine", () => {
-  const engine = BusinessIdEngine.default;
+  const engine = EntIdEngine.default;
 
   it("reports the bundle it carries", () => {
     expect(engine.rulesInfo()).toEqual({
-      rulesVersion: "2026.08.33",
+      rulesVersion: "2026.08.38",
       formatVersion: 1,
       engineVersion: "0.1.0",
     });
