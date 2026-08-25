@@ -7,7 +7,7 @@
  * and the primitives it calls, and nothing else — no bundle, no decoder, no
  * interpreter.
  */
-import { ChecksumOpKind, ProgramKind } from "../../../generated/libbusinessid/ir/v1/rules_pb.js";
+import { ChecksumOpKind, ProgramKind } from "../../../generated/entid/ir/v1/rules_pb.js";
 import { GeneratorError } from "../errors.js";
 import type { IrDefinition, IrDispatcher, IrProgram, LoadedBundle } from "../ir.js";
 import { type EmitContext, stringExpression } from "./expression.js";

@@ -12,7 +12,7 @@ import {
   IntegerOpKind,
   StringOpKind,
   WeightAlignment,
-} from "../../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../../generated/entid/ir/v1/rules_pb.js";
 import {
   ABSENT_CHECKSUM_REASON_CODES,
   INVALIDITY_REASON_CODES,

@@ -19,7 +19,7 @@ import {
   PredicateOpKind,
   StringOpKind,
   ValueType,
-} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/entid/ir/v1/rules_pb.js";
 import { CAPABILITY } from "./capabilities.js";
 import { ARITHMETIC } from "./limits.js";
 

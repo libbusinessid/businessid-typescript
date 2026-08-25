@@ -10,7 +10,7 @@
 import {
   type Program as ProtoProgram,
   type RuleBundle,
-} from "../../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../../generated/entid/ir/v1/rules_pb.js";
 import { OPCODE_TABLES, type OperationCase } from "../opcodes.js";
 import { invalid, isPresent, type ResolvedNode } from "./diagnostics.js";
 import { checkArithmetic } from "./arithmetic.js";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { Operation } from "../../generated/libbusinessid/conformance/v1/conformance_pb.js";
-import { ReasonCode } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+import { Operation } from "../../generated/entid/conformance/v1/conformance_pb.js";
+import { ReasonCode } from "../../generated/entid/ir/v1/rules_pb.js";
 import { EntIdEngine, REASON_CODES } from "../../src/index.js";
 import { loadCorpus } from "../conformance/corpus.js";
 

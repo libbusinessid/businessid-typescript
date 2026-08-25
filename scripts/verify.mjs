@@ -27,8 +27,9 @@
  */
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -97,9 +98,9 @@ const steps = [
     // that drifted.
     run: () => {
       const copies = [
-        ["rules.proto", "proto/libbusinessid/ir/v1/rules.proto"],
-        ["conformance.proto", "proto/libbusinessid/conformance/v1/conformance.proto"],
-        ["testee.proto", "proto/libbusinessid/testee/v1/testee.proto"],
+        ["rules.proto", "proto/entid/ir/v1/rules.proto"],
+        ["conformance.proto", "proto/entid/conformance/v1/conformance.proto"],
+        ["testee.proto", "proto/entid/testee/v1/testee.proto"],
       ];
       const lines = copies.map(([schema, copy]) => {
         const attested = readFileSync(join(root, "spec", schema));
@@ -111,16 +112,66 @@ const steps = [
         }
         return `${createHash("sha256").update(attested).digest("hex").slice(0, 16)} spec/${schema} == ${copy}`;
       });
-      run("npx", ["buf", "generate"]);
-      lines.push(
-        run("git", ["diff", "--exit-code", "--stat", "generated"]) || "generated/ unchanged",
-      );
+      // Generated beside the tree and compared to it, rather than over it and
+      // compared with `git diff`. Two reasons, and the first is what broke:
+      //
+      //   - a comparison against the index answers "has this been staged", not
+      //     "is this what buf emits". `rules-sync` regenerates and then runs
+      //     this entry point before committing anything, so a release that
+      //     changes the schemas — this one renamed their package — failed here
+      //     with the work correctly done, and the synchronization pull request
+      //     opened red and unarmed for it;
+      //   - `git diff` never reports a file git does not track, so a stale
+      //     module buf no longer emits went unnoticed. Comparing two listings
+      //     names it.
+      const emitted = mkdtempSync(join(tmpdir(), "entid-buf-"));
+      try {
+        run("npx", ["buf", "generate", "--output", emitted]);
+        const listing = (base) =>
+          readdirSync(base, { recursive: true, withFileTypes: true })
+            .filter((entry) => entry.isFile())
+            // `parentPath` since Node 20.12; `path` is its name before that,
+            // and this file also runs on the 20.11 floor the package supports.
+            .map((entry) => relative(base, join(entry.parentPath ?? entry.path, entry.name)))
+            .sort();
+
+        // `--output` is prepended to the `out` of the generation template,
+        // which is `generated`: the fresh tree lands one level down.
+        const freshRoot = join(emitted, "generated");
+        const fresh = listing(freshRoot);
+        const committed = listing(join(root, "generated"));
+        const missing = fresh.filter((path) => !committed.includes(path));
+        const stale = committed.filter((path) => !fresh.includes(path));
+        const differing = fresh
+          .filter((path) => committed.includes(path))
+          .filter(
+            (path) =>
+              !readFileSync(join(freshRoot, path)).equals(
+                readFileSync(join(root, "generated", path)),
+              ),
+          );
+
+        const wrong = [
+          ...missing.map((path) => `  missing   generated/${path}`),
+          ...stale.map((path) => `  stale     generated/${path}`),
+          ...differing.map((path) => `  differs   generated/${path}`),
+        ];
+        if (wrong.length > 0) {
+          throw new Error(
+            `generated/ is not what buf emits:\n${wrong.join("\n")}\n  run pnpm exec buf generate`,
+          );
+        }
+        lines.push(`generated/ is ${String(fresh.length)} files, all as buf emits them`);
+      } finally {
+        rmSync(emitted, { recursive: true, force: true });
+      }
       return lines.join("\n");
     },
     require: [
       /^[0-9a-f]{16} spec\/rules\.proto == /m,
       /^[0-9a-f]{16} spec\/conformance\.proto == /m,
       /^[0-9a-f]{16} spec\/testee\.proto == /m,
+      /^generated\/ is [1-9]\d* files, all as buf emits them$/m,
     ],
   },
   {

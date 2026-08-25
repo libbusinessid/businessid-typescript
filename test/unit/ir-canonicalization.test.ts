@@ -4,7 +4,7 @@ import {
   CanonicalizationOpKind,
   PredicateOpKind,
   ValueType,
-} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/entid/ir/v1/rules_pb.js";
 import {
   alwaysValidFormat,
   canonicalizationSequence,

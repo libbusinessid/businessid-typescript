@@ -463,9 +463,9 @@ jobs:
           # is a copy of the attested schemas, so the copy moves first or the
           # Protobuf types would be regenerated from the previous release's
           # definitions and nothing would say so.
-          cp spec/rules.proto       proto/libbusinessid/ir/v1/rules.proto
-          cp spec/conformance.proto proto/libbusinessid/conformance/v1/conformance.proto
-          cp spec/testee.proto      proto/libbusinessid/testee/v1/testee.proto
+          cp spec/rules.proto       proto/entid/ir/v1/rules.proto
+          cp spec/conformance.proto proto/entid/conformance/v1/conformance.proto
+          cp spec/testee.proto      proto/entid/testee/v1/testee.proto
           pnpm exec buf generate
           pnpm generate
           git diff --stat -- proto generated src

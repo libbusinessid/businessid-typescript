@@ -14,7 +14,7 @@ import {
   CanonicalizationOpKind,
   PredicateOpKind,
   StringOpKind,
-} from "../../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../../generated/entid/ir/v1/rules_pb.js";
 import type { IrProgram, LoadedBundle } from "../ir.js";
 
 /** What one program reads. */

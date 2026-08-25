@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { ValueType } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+import { ValueType } from "../../generated/entid/ir/v1/rules_pb.js";
 import { CAPABILITY_NAMES } from "../../tools/generator/capabilities.js";
 import { LOAD_CHECK_COUNT } from "../../tools/generator/load.js";
 import { OPCODE_TABLES, type OpcodeSpec } from "../../tools/generator/opcodes.js";

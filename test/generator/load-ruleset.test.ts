@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Operation } from "../../generated/libbusinessid/conformance/v1/conformance_pb.js";
+import { Operation } from "../../generated/entid/conformance/v1/conformance_pb.js";
 import { BundleError } from "../../tools/generator/errors.js";
 import { generate } from "../../tools/generator/generate.js";
 import { LOAD_CHECK_COUNT } from "../../tools/generator/load.js";

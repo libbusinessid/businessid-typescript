@@ -2,8 +2,8 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
-import { Operation } from "../../generated/libbusinessid/conformance/v1/conformance_pb.js";
-import type { TesteeRequest } from "../../generated/libbusinessid/testee/v1/testee_pb.js";
+import { Operation } from "../../generated/entid/conformance/v1/conformance_pb.js";
+import type { TesteeRequest } from "../../generated/entid/testee/v1/testee_pb.js";
 import { alwaysValidFormat, singleKindBundle } from "../helpers/bundle.js";
 import { TesteeClient } from "./testee-client.js";
 
@@ -34,7 +34,7 @@ afterAll(async () => {
 });
 
 const request = (caseId: string, over: Partial<TesteeRequest>): TesteeRequest => ({
-  $typeName: "libbusinessid.testee.v1.TesteeRequest",
+  $typeName: "entid.testee.v1.TesteeRequest",
   caseId,
   operation: Operation.VALIDATE,
   input: "",

@@ -17,18 +17,15 @@
  * no engine would ever have been built from.
  */
 import { fromBinary, toBinary } from "@bufbuild/protobuf";
-import {
-  Operation,
-  StepStatus,
-} from "../../generated/libbusinessid/conformance/v1/conformance_pb.js";
-import { ReasonCode } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+import { Operation, StepStatus } from "../../generated/entid/conformance/v1/conformance_pb.js";
+import { ReasonCode } from "../../generated/entid/ir/v1/rules_pb.js";
 import {
   FailureKind,
   type TesteeRequest,
   TesteeRequestSchema,
   type TesteeResponse,
   TesteeResponseSchema,
-} from "../../generated/libbusinessid/testee/v1/testee_pb.js";
+} from "../../generated/entid/testee/v1/testee_pb.js";
 import { EntIdEngine } from "../../src/index.js";
 import { BundleError } from "../generator/errors.js";
 import { generate } from "../generator/generate.js";
@@ -143,23 +140,23 @@ function observedStep(step: {
   };
 }
 
-const LOAD = "libbusinessid.testee.v1.ObservedLoad" as const;
-const CANONICALIZATION = "libbusinessid.testee.v1.ObservedCanonicalization" as const;
-const REPORT = "libbusinessid.testee.v1.ObservedValidationReport" as const;
-const STEP = "libbusinessid.testee.v1.ObservedStep" as const;
+const LOAD = "entid.testee.v1.ObservedLoad" as const;
+const CANONICALIZATION = "entid.testee.v1.ObservedCanonicalization" as const;
+const REPORT = "entid.testee.v1.ObservedValidationReport" as const;
+const STEP = "entid.testee.v1.ObservedStep" as const;
 
 function response(request: TesteeRequest, result: TesteeResponse["result"]): TesteeResponse {
-  return { $typeName: "libbusinessid.testee.v1.TesteeResponse", caseId: request.caseId, result };
+  return { $typeName: "entid.testee.v1.TesteeResponse", caseId: request.caseId, result };
 }
 
 function failure(caseId: string, detail: string): TesteeResponse {
   return {
-    $typeName: "libbusinessid.testee.v1.TesteeResponse",
+    $typeName: "entid.testee.v1.TesteeResponse",
     caseId,
     result: {
       case: "failure",
       value: {
-        $typeName: "libbusinessid.testee.v1.TesteeFailure",
+        $typeName: "entid.testee.v1.TesteeFailure",
         kind: FailureKind.INTERNAL_ERROR,
         detail,
       },

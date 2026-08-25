@@ -1,8 +1,8 @@
-# Prompt d’implémentation — moteur TypeScript LibBusinessID
+# Prompt d’implémentation — moteur TypeScript EntID
 
 ## Mission
 
-Implémente intégralement le dépôt TypeScript de LibBusinessID. Lis entièrement
+Implémente intégralement le dépôt TypeScript de EntID. Lis entièrement
 `engine.md` avant de coder. Exige et lis aussi `rules.proto`, `conformance.proto`,
 `ir.md`, `features.md`, le manifeste, `SHA256SUMS`, l’attestation et les deux BINPB
 de la même release. Si un élément manque ou se contredit, arrête-toi et fais corriger
@@ -15,7 +15,7 @@ commune tout en offrant des types TypeScript naturels et sûrs.
 
 ## Environnement et package
 
-- package npm proposé : `@libbusinessid/businessid`, sauf nom déjà réservé par le
+- package npm proposé : `@entid/entid`, sauf nom déjà réservé par le
   dépôt ;
 - ESM-first ; CommonJS uniquement si testé et justifié ;
 - TypeScript strict ;
@@ -27,7 +27,7 @@ commune tout en offrant des types TypeScript naturels et sûrs.
 - bundle officiel disponible synchroniquement sans fetch réseau.
 
 Comme l’import binaire universel varie selon les bundlers, la release peut générer un
-module interne exportant un `Uint8Array` à partir de `businessid-rules.binpb`. Ce
+module interne exportant un `Uint8Array` à partir de `entid-rules.binpb`. Ce
 module est généré, vérifié contre SHA-256 et non édité manuellement. Ne pas utiliser
 Base64 comme format canonique.
 
@@ -89,8 +89,8 @@ export type IdentifierInput = Readonly<{
   countryCode?: string;
 }>;
 
-export class BusinessIdEngine {
-  static readonly default: BusinessIdEngine;
+export class EntIdEngine {
+  static readonly default: EntIdEngine;
 
   canonicalize(input: IdentifierInput, options?: ValidationOptions): CanonicalizationResult;
   validate(input: IdentifierInput, options?: ValidationOptions): ValidationReport;
@@ -192,8 +192,8 @@ Le runner de conformité vient de `spec`, jamais de ce dépôt. Il s'exécute é
 commit que `rules.lock` enregistre sous `source_commit` :
 
 ```bash
-go run github.com/libbusinessid/spec/cmd/conformance-runner@<source_commit> \
-  -corpus spec/businessid-conformance.binpb -- node dist/testee.js
+go run github.com/entid-org/spec/cmd/conformance-runner@<source_commit> \
+  -corpus spec/entid-conformance.binpb -- node dist/testee.js
 ```
 
 N'écris pas de comparateur : un moteur qui juge lui-même ses propres résultats peut

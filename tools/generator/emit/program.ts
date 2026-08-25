@@ -14,7 +14,7 @@ import {
   CanonicalizationOpKind,
   ChecksumOpKind,
   ProgramKind,
-} from "../../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../../generated/entid/ir/v1/rules_pb.js";
 import { codePointsOf } from "../../../src/runtime/text.js";
 import { GeneratorError } from "../errors.js";
 import type { IrProgram } from "../ir.js";

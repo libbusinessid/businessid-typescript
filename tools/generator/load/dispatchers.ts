@@ -12,7 +12,7 @@ import {
   ProgramKind,
   type Program as ProtoProgram,
   type RuleBundle,
-} from "../../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../../generated/entid/ir/v1/rules_pb.js";
 import type { IrDispatcher, IrTarget } from "../ir.js";
 import { codePointsOf } from "../../../src/runtime/text.js";
 import {

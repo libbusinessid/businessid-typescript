@@ -18,7 +18,7 @@ import {
   type RuleBundle,
   StringOpKind,
   ValueType,
-} from "../../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../../generated/entid/ir/v1/rules_pb.js";
 import { LIMITS } from "../limits.js";
 import { OPCODE_TABLES } from "../opcodes.js";
 import { invalid, type ResolvedNode } from "./diagnostics.js";

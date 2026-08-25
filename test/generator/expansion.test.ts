@@ -4,7 +4,7 @@ import {
   ProgramKind,
   StringOpKind,
   ValueType,
-} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/entid/ir/v1/rules_pb.js";
 import { BundleError } from "../../tools/generator/errors.js";
 import { generate } from "../../tools/generator/generate.js";
 import {
@@ -21,7 +21,7 @@ import {
   valueNode,
 } from "../helpers/bundle.js";
 import { expansionOf } from "../../tools/generator/load/expansion.js";
-import { PredicateOpKind } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+import { PredicateOpKind } from "../../generated/entid/ir/v1/rules_pb.js";
 
 /**
  * Check 14: expansion within the evaluation budget.

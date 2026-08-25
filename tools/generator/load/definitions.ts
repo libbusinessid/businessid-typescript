@@ -13,7 +13,7 @@ import {
   type RuleBundle,
   type Source,
   SourceTier,
-} from "../../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../../generated/entid/ir/v1/rules_pb.js";
 import { VALIDATION_PROFILES } from "../../../src/domain/profile.js";
 import { ABSENT_CHECKSUM_REASON_CODES } from "../../../src/domain/reason-code.js";
 import { LIMITS } from "../limits.js";

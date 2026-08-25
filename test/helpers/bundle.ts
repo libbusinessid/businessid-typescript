@@ -22,7 +22,7 @@ import {
   type StringOperation,
   StringOpKind,
   ValueType,
-} from "../../generated/libbusinessid/ir/v1/rules_pb.js";
+} from "../../generated/entid/ir/v1/rules_pb.js";
 
 /**
  * Builds well formed bundles for tests.
@@ -153,7 +153,7 @@ export interface BundleSpec {
 export function bundle(spec: BundleSpec): RuleBundle {
   return create(RuleBundleSchema, {
     formatVersion: spec.formatVersion ?? 1,
-    rulesVersion: spec.rulesVersion ?? "2026.08.33",
+    rulesVersion: spec.rulesVersion ?? "2026.08.38",
     requiredFeatureIds: [...(spec.capabilities ?? ALL_CAPABILITIES)],
     sourceDigest: new Uint8Array(32),
     programs: spec.programs,
