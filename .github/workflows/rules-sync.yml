@@ -27,7 +27,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag of libbusinessid/spec. Empty resolves the most recently published one."
+        description: "Release tag of entid-org/spec. Empty resolves the most recently published one."
         type: string
         default: ""
       dry_run:
@@ -35,7 +35,7 @@ on:
         type: boolean
         default: false
       spec_sources_ref:
-        description: "Ref of libbusinessid/spec supplying the sources this workflow reads — the provenance writer and the three engine contracts. Empty means the release's own source commit, which is the only correct value in normal operation."
+        description: "Ref of entid-org/spec supplying the sources this workflow reads — the provenance writer and the three engine contracts. Empty means the release's own source commit, which is the only correct value in normal operation."
         type: string
         default: ""
 
@@ -51,7 +51,7 @@ defaults:
     shell: bash
 
 env:
-  SPEC_REPO: libbusinessid/spec
+  SPEC_REPO: entid-org/spec
   # The workflow that signs a release of `spec`. Section 11.4 asks for four
   # identities to be verified — owner, repository, signing workflow and tag —
   # and this is the third of them.
@@ -174,9 +174,9 @@ jobs:
           # The version is read back out of the sums file rather than taken on
           # trust from a file name, and everything below is cross-checked
           # against the attested manifest.
-          version="$(sed -n 's/^[0-9a-f]\{64\}  businessid-rules-\(.*\)\.binpb$/\1/p' SHA256SUMS)"
+          version="$(sed -n 's/^[0-9a-f]\{64\}  entid-rules-\(.*\)\.binpb$/\1/p' SHA256SUMS)"
           if [ -z "${version}" ]; then
-            echo "::error::SHA256SUMS lists no businessid-rules-<version>.binpb"
+            echo "::error::SHA256SUMS lists no entid-rules-<version>.binpb"
             exit 1
           fi
 
@@ -185,10 +185,10 @@ jobs:
           # would pass this step while being unverified, so the listing is
           # asserted before the digests are.
           for file in \
-            "businessid-rules-${version}.binpb" \
-            "businessid-conformance-${version}.binpb" \
-            "businessid-conformance-${version}.jsonl.gz" \
-            "businessid-manifest-${version}.json" \
+            "entid-rules-${version}.binpb" \
+            "entid-conformance-${version}.binpb" \
+            "entid-conformance-${version}.jsonl.gz" \
+            "entid-manifest-${version}.json" \
             rules.proto conformance.proto testee.proto ir.md features.md coverage.md; do
             if ! grep -qE "^[0-9a-f]{64}  ${file}\$" SHA256SUMS; then
               echo "::error::${file} is not listed in SHA256SUMS"
@@ -221,10 +221,10 @@ jobs:
 
           for file in \
             SHA256SUMS \
-            "businessid-rules-${VERSION}.binpb" \
-            "businessid-conformance-${VERSION}.binpb" \
-            "businessid-conformance-${VERSION}.jsonl.gz" \
-            "businessid-manifest-${VERSION}.json" \
+            "entid-rules-${VERSION}.binpb" \
+            "entid-conformance-${VERSION}.binpb" \
+            "entid-conformance-${VERSION}.jsonl.gz" \
+            "entid-manifest-${VERSION}.json" \
             rules.proto conformance.proto testee.proto ir.md features.md; do
 
             # --repo, never --repo together with --owner: gh refuses arguments
@@ -270,7 +270,7 @@ jobs:
             | jq -r '.[0].verificationResult.signature.certificate.buildSignerURI' \
             | sed 's|^https://github.com/||')"
 
-          manifest="${artifacts}/businessid-manifest-${VERSION}.json"
+          manifest="${artifacts}/entid-manifest-${VERSION}.json"
           declared="$(jq -r .rulesVersion "${manifest}")"
           if [ "${declared}" != "${VERSION}" ]; then
             echo "::error::the manifest declares ${declared}, the artifacts say ${VERSION}"
@@ -328,7 +328,7 @@ jobs:
           # The same resolution the conformance runner uses in `ci`. Go is not a
           # new cost here: `pnpm verify` already needs it, because the runner
           # that judges this engine is a Go program from `spec`. What
-          # PROVENANCE.md adds is one `go run ./cmd/businessidc inspect`.
+          # PROVENANCE.md adds is one `go run ./cmd/entidc inspect`.
           go-version: stable
 
       - name: Write spec/, rules.lock and spec/PROVENANCE.md
@@ -353,14 +353,14 @@ jobs:
           set -euo pipefail
           artifacts="${RUNNER_TEMP}/artifacts"
           src="${RUNNER_TEMP}/spec-src"
-          manifest="${artifacts}/businessid-manifest-${VERSION}.json"
+          manifest="${artifacts}/entid-manifest-${VERSION}.json"
 
           # The bundle is an input to this engine's generator, so it lands under
           # spec/ beside the schemas and the corpus, never inside the published
           # package: `engine.md` section 1.2 forbids shipping it as a resource.
-          cp "${artifacts}/businessid-rules-${VERSION}.binpb"       spec/businessid-rules.binpb
-          cp "${artifacts}/businessid-conformance-${VERSION}.binpb" spec/businessid-conformance.binpb
-          gzip -dc "${artifacts}/businessid-conformance-${VERSION}.jsonl.gz" > spec/businessid-conformance.jsonl
+          cp "${artifacts}/entid-rules-${VERSION}.binpb"       spec/entid-rules.binpb
+          cp "${artifacts}/entid-conformance-${VERSION}.binpb" spec/entid-conformance.binpb
+          gzip -dc "${artifacts}/entid-conformance-${VERSION}.jsonl.gz" > spec/entid-conformance.jsonl
           for schema in rules.proto conformance.proto testee.proto ir.md features.md; do
             cp "${artifacts}/${schema}" "spec/${schema}"
           done
@@ -379,7 +379,7 @@ jobs:
           # absent field and a wrong one are different failures and say so: the
           # manifest only started carrying this digest at `spec@b264614`, and a
           # release older than that cannot fill a lock entry the generator reads.
-          jsonl_sha="$(sha256sum spec/businessid-conformance.jsonl | cut -d' ' -f1)"
+          jsonl_sha="$(sha256sum spec/entid-conformance.jsonl | cut -d' ' -f1)"
           want_jsonl="$(jq -r '.conformanceJsonlSha256 // ""' "${manifest}")"
           if [ -z "${want_jsonl}" ]; then
             echo "::error::the release manifest carries no conformanceJsonlSha256, so rules.lock cannot record the digest of the decompressed corpus"
@@ -429,7 +429,7 @@ jobs:
           # publishes coverage.md, and SHA256SUMS — itself attested — covers it.
           cp "${artifacts}/coverage.md" "${src}/docs/generated/coverage.md"
           "${script}" "${src}" "${artifacts}" "${VERSION}" "${COMMIT}" \
-            businessid-typescript spec/PROVENANCE.md
+            entid-typescript spec/PROVENANCE.md
 
           # `spec`'s own guard, run against what was just written.
           "${src}/tools/check_lock.sh" rules.lock "${artifacts}" "${VERSION}"
@@ -543,7 +543,7 @@ jobs:
         run: |
           set -euo pipefail
           {
-            echo "Synchronization of the LibBusinessID rules, fetched by this repository."
+            echo "Synchronization of the EntID rules, fetched by this repository."
             echo
             echo "| | |"
             echo "| --- | --- |"

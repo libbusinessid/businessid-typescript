@@ -13,7 +13,7 @@ import {
  * separate process that receives one request at a time and never sees an
  * expectation, which is what makes the absence of cheating verifiable.
  */
-const CORPUS_PATH = new URL("../../spec/businessid-conformance.binpb", import.meta.url);
+const CORPUS_PATH = new URL("../../spec/entid-conformance.binpb", import.meta.url);
 const LOCK_PATH = new URL("../../rules.lock", import.meta.url);
 
 function attestedDigest(key: string): string {

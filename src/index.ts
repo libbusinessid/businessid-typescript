@@ -1,6 +1,6 @@
 /**
- * LibBusinessID — offline canonicalization, format and checksum validation of
- * business identifiers.
+ * EntID — offline canonicalization, format and checksum validation of business
+ * identifiers.
  *
  * The engine states what a documented rule proves and nothing more. A valid
  * format means the shape matches a documented variant; a valid checksum means
@@ -20,9 +20,9 @@
  *
  * @example
  * ```ts
- * import { BusinessIdEngine } from "@libbusinessid/businessid";
+ * import { EntIdEngine } from "@entid/entid";
  *
- * const report = BusinessIdEngine.default.validate({
+ * const report = EntIdEngine.default.validate({
  *   kind: "vat",
  *   value: "BE 0123.456.749",
  * });
@@ -34,7 +34,7 @@
  * @packageDocumentation
  */
 
-export { BusinessIdEngine, type RulesInfo } from "./api/engine.js";
+export { EntIdEngine, type RulesInfo } from "./api/engine.js";
 
 export type { IdentifierInput, ValidationOptions } from "./domain/input.js";
 export type { IdentifierKind, KnownIdentifierKind } from "./domain/kind.js";

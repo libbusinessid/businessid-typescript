@@ -1,15 +1,15 @@
 {
-  "name": "@libbusinessid/businessid",
+  "name": "@entid/entid",
   "version": "0.1.0",
-  "description": "Offline canonicalization, format and checksum validation of business identifiers, driven by the LibBusinessID rule bundle.",
+  "description": "Offline canonicalization, format and checksum validation of business identifiers, driven by the EntID rule bundle.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/libbusinessid/businessid-typescript.git"
+    "url": "git+https://github.com/entid-org/entid-typescript.git"
   },
-  "homepage": "https://github.com/libbusinessid/businessid-typescript#readme",
+  "homepage": "https://github.com/entid-org/entid-typescript#readme",
   "bugs": {
-    "url": "https://github.com/libbusinessid/businessid-typescript/issues"
+    "url": "https://github.com/entid-org/entid-typescript/issues"
   },
   "type": "module",
   "sideEffects": false,

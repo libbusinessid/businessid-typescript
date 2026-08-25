@@ -92,8 +92,8 @@ function emit(relativePath: string, contents: string): boolean {
 
 function main(): void {
   const lock = readLock();
-  const bundle = requireDigest(lock, "rules_sha256", join(root, "spec", "businessid-rules.binpb"));
-  requireDigest(lock, "conformance_sha256", join(root, "spec", "businessid-conformance.binpb"));
+  const bundle = requireDigest(lock, "rules_sha256", join(root, "spec", "entid-rules.binpb"));
+  requireDigest(lock, "conformance_sha256", join(root, "spec", "entid-conformance.binpb"));
 
   // `rules.lock` attests eight files and PROVENANCE.md asks for all eight to be
   // verified before starting. The two above are what this program reads; the
@@ -105,7 +105,7 @@ function main(): void {
   // engine tests cite its case ids as provenance. Its digest is taken on the
   // decompressed bytes that land in `spec/`.
   for (const [key, name] of [
-    ["conformance_jsonl_sha256", "businessid-conformance.jsonl"],
+    ["conformance_jsonl_sha256", "entid-conformance.jsonl"],
     ["rules_proto_sha256", "rules.proto"],
     ["conformance_proto_sha256", "conformance.proto"],
     ["testee_proto_sha256", "testee.proto"],

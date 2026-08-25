@@ -29,7 +29,7 @@ import {
   type TesteeResponse,
   TesteeResponseSchema,
 } from "../../generated/libbusinessid/testee/v1/testee_pb.js";
-import { BusinessIdEngine } from "../../src/index.js";
+import { EntIdEngine } from "../../src/index.js";
 import { BundleError } from "../generator/errors.js";
 import { generate } from "../generator/generate.js";
 import type { ValidationOptions } from "../../src/domain/input.js";
@@ -62,7 +62,7 @@ function optionsOf(request: TesteeRequest): ValidationOptions | undefined {
 }
 
 function answer(request: TesteeRequest): TesteeResponse {
-  const engine = BusinessIdEngine.default;
+  const engine = EntIdEngine.default;
 
   if (request.operation === Operation.LOAD_RULESET) {
     try {

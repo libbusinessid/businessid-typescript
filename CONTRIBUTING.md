@@ -8,7 +8,7 @@ TypeScript. The engine is what ships: that emitted code, the primitives it
 calls, and a hand written API.
 
 ```
-spec/businessid-rules.binpb          the attested bundle
+spec/entid-rules.binpb                the attested bundle
         |
         v  tools/generator/           the decoder, the 24 checks, the emitter
 src/rules.generated.ts                committed output
@@ -154,8 +154,8 @@ Two settings live outside the repository and are worth knowing about, because
 nothing here can assert them:
 
 - the trusted publisher on
-  `npmjs.com/package/@libbusinessid/businessid/access` — organisation
-  `libbusinessid`, repository `businessid-typescript`, workflow `release.yml`;
+  `npmjs.com/package/@entid/entid/access` — organisation `entid-org`,
+  repository `entid-typescript`, workflow `release.yml`;
 - the version bump itself, which is a decision. A rules update that changes a
   verdict is a minor version at least, never a patch.
 

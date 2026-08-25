@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Operation } from "../../generated/libbusinessid/conformance/v1/conformance_pb.js";
 import { ReasonCode } from "../../generated/libbusinessid/ir/v1/rules_pb.js";
-import { BusinessIdEngine, REASON_CODES } from "../../src/index.js";
+import { EntIdEngine, REASON_CODES } from "../../src/index.js";
 import { loadCorpus } from "../conformance/corpus.js";
 
 /**
@@ -21,7 +21,7 @@ import { loadCorpus } from "../conformance/corpus.js";
  * This is the whole of the coverage that branch can have, which is why it is
  * stated here rather than left to the shared suite.
  */
-const engine = BusinessIdEngine.default;
+const engine = EntIdEngine.default;
 
 /** A high surrogate with no low surrogate after it. */
 const LONE_HIGH = String.fromCharCode(0xd83d);

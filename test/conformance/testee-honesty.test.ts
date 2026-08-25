@@ -75,7 +75,7 @@ describe("the testee never reads the corpus", () => {
     // the testee legitimately imports the operation enum from it.
     const code = readFileSync(TESTEE, "utf8").replace(/\/\*[^]*?\*\/|\/\/[^\n]*/g, "");
 
-    expect(code).not.toMatch(/businessid-conformance/);
+    expect(code).not.toMatch(/entid-conformance/);
     expect(code).not.toMatch(/loadCorpus|Expected(Outcome|ValidationReport|Canonicalization)/);
     expect(code).not.toMatch(/expectedEngineError/);
   });

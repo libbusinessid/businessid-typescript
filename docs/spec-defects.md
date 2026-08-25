@@ -2,7 +2,7 @@
 
 Found while implementing this engine, across nine synchronisations. Everything
 under **Resolved** has been corrected upstream in
-`github.com/libbusinessid/spec`. Two entries are open as of rules `2026.08.33`,
+`github.com/entid-org/spec`. Two entries are open as of rules `2026.08.33`,
 both in the release automation rather than in the rules.
 
 ---
@@ -203,7 +203,7 @@ entry 1; `test/unit/public-surface.test.ts` and the three tarball assertions in
 
 ### 13. The readable corpus shipped unverified
 
-`rules.lock` attested seven files. `spec/businessid-conformance.jsonl` was not
+`rules.lock` attested seven files. `spec/entid-conformance.jsonl` was not
 among them, although it is the form a human reviews and the form whose case ids
 engine tests cite as provenance — this repository's README note names
 `vat-be-normalization-004`, and nothing verified the file that defines it.
@@ -452,9 +452,9 @@ A prerelease is excluded from the endpoint that answers _the_ latest release, so
 with both published releases marked that way:
 
 ```
-$ gh api repos/libbusinessid/spec/releases/latest
+$ gh api repos/entid-org/spec/releases/latest
 gh: Not Found (HTTP 404)
-$ gh release view --repo libbusinessid/spec
+$ gh release view --repo entid-org/spec
 release not found
 ```
 

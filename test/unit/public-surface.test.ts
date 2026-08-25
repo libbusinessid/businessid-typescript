@@ -11,7 +11,7 @@ import * as surface from "../../src/index.js";
 describe("the package exports", () => {
   it("exports exactly what it means to", () => {
     expect(Object.keys(surface).sort()).toEqual([
-      "BusinessIdEngine",
+      "EntIdEngine",
       "KNOWN_IDENTIFIER_KINDS",
       "REASON_CODES",
       "STEP_STATUSES",
@@ -50,7 +50,7 @@ describe("the package exports", () => {
   });
 
   it("names the four public operations and nothing ambiguous", () => {
-    const methods = Object.getOwnPropertyNames(surface.BusinessIdEngine.prototype)
+    const methods = Object.getOwnPropertyNames(surface.EntIdEngine.prototype)
       .filter((name) => name !== "constructor")
       .sort();
 

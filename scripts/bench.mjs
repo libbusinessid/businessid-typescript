@@ -13,7 +13,7 @@ import { execFileSync } from "node:child_process";
 import { performance } from "node:perf_hooks";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { BusinessIdEngine } from "../dist/index.js";
+import { EntIdEngine } from "../dist/index.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -31,7 +31,7 @@ function measure(name, iterations, body) {
   );
 }
 
-const engine = BusinessIdEngine.default;
+const engine = EntIdEngine.default;
 
 // Cold load. There is no bundle to decode — the rules are code — so what is
 // left is evaluating one module, and it has to be measured in a process that

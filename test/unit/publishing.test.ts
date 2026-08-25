@@ -17,6 +17,7 @@ const root = new URL("../../", import.meta.url);
 const read = (path: string): string => readFileSync(new URL(path, root), "utf8");
 
 const manifest = JSON.parse(read("package.json")) as {
+  name: string;
   version: string;
   private?: boolean;
   repository?: { type: string; url: string };
@@ -24,9 +25,18 @@ const manifest = JSON.parse(read("package.json")) as {
 };
 const release = read(".github/workflows/release.yml");
 
-const REPOSITORY = "https://github.com/libbusinessid/businessid-typescript";
+const REPOSITORY = "https://github.com/entid-org/entid-typescript";
+/** The npm name reserved for this engine, which `engine-typescript.md` names. */
+const PACKAGE = "@entid/entid";
 
 describe("the published package", () => {
+  it("is published under the reserved name", () => {
+    // The project was renamed, and a package name is the one identifier a
+    // consumer types. `@entid` is reserved for it; `@entid/entid`
+    // named an organisation that no longer exists.
+    expect(manifest.name).toBe(PACKAGE);
+  });
+
   it("names the repository it is built from", () => {
     // npm compares this against the repository the workflow runs in, case
     // sensitively, and refuses to attest provenance when they disagree.
@@ -34,9 +44,9 @@ describe("the published package", () => {
   });
 
   it("publishes the scope publicly", () => {
-    // A scoped package is restricted by default, and `@libbusinessid` is a
-    // free organisation, which cannot hold a private package: the first
-    // publish would be refused outright.
+    // A scoped package is restricted by default, and `@entid` is a free
+    // organisation, which cannot hold a private package: the first publish
+    // would be refused outright.
     expect(manifest.publishConfig?.access).toBe("public");
   });
 

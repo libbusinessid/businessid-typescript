@@ -16,9 +16,9 @@ update that changes a verdict is published as a new package version.
   twenty five load time checks of `ir.md` section 10 over a decoder that stays
   at the wire level, and emits `src/rules.generated.ts`. All 63 operations, the
   ten step dispatch algorithm and the tri-state checksum are emitted as code.
-- Public API: `BusinessIdEngine` with `canonicalize`, `validate`,
-  `validateFormat`, `validateChecksum`, `rulesInfo`, `capabilities` and `kinds`.
-  Every operation is synchronous and always will be.
+- Public API: `EntIdEngine` with `canonicalize`, `validate`, `validateFormat`,
+  `validateChecksum`, `rulesInfo`, `capabilities` and `kinds`. Every operation is
+  synchronous and always will be.
 - All 666 shared conformance cases pass, judged by the runner from the
   specification repository and pinned to the commit `rules.lock` records. This
   repository writes no comparator; it writes the testee and the tests proving it

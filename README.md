@@ -1,8 +1,8 @@
-# @libbusinessid/businessid
+# @entid/entid
 
 Offline canonicalization, format validation and checksum validation of business
 identifiers — VAT numbers, national company numbers, EUID, LEI and more — driven
-by the shared LibBusinessID rule bundle.
+by the shared EntID rule bundle.
 
 **94 identifiers across 37 countries**, rules version `2026.08.33`. No network
 access, no locale dependence, no regular expressions, and **no runtime
@@ -36,7 +36,7 @@ recognises.
 ## Install
 
 ```sh
-npm install @libbusinessid/businessid
+npm install @entid/entid
 ```
 
 ESM only. Node 20.11 or later, and any modern browser or bundler.
@@ -44,9 +44,9 @@ ESM only. Node 20.11 or later, and any modern browser or bundler.
 ## Use
 
 ```ts
-import { BusinessIdEngine, isFullyValidated } from "@libbusinessid/businessid";
+import { EntIdEngine, isFullyValidated } from "@entid/entid";
 
-const report = BusinessIdEngine.default.validate({
+const report = EntIdEngine.default.validate({
   kind: "vat",
   value: "BE 0123.456.749",
 });
@@ -66,7 +66,7 @@ sources — `be-fps-finance-vat` and `eu-vies-number-structure` — document the
 format, not the holder. Every example below comes from the same corpus on the
 same terms.
 
-`BusinessIdEngine.default` is the engine. Nothing is decoded, fetched or read
+`EntIdEngine.default` is the engine. Nothing is decoded, fetched or read
 from a file, and the same code runs unchanged in a browser. Start-up is the cost
 of loading one JavaScript module and no more: measured at 8 ms for the first
 `import` on a warm disk, of which the rules version bump from `2026.08.26` to
@@ -75,7 +75,7 @@ of loading one JavaScript module and no more: measured at 8 ms for the first
 ### The four operations
 
 ```ts
-const engine = BusinessIdEngine.default;
+const engine = EntIdEngine.default;
 
 engine.canonicalize(input, options?);      // CanonicalizationResult
 engine.validate(input, options?);          // format, then checksum
@@ -96,12 +96,7 @@ is neither fully validated nor invalid, so one boolean would have to lie about
 one of them. Name the condition you mean:
 
 ```ts
-import {
-  isFormatValid,
-  isChecksumValid,
-  isFullyValidated,
-  isInvalid,
-} from "@libbusinessid/businessid";
+import { isFormatValid, isChecksumValid, isFullyValidated, isInvalid } from "@entid/entid";
 ```
 
 ### Country context and profiles
@@ -133,7 +128,7 @@ There is no factory taking bundle bytes. A custom rule set goes through the
 generator, at build time:
 
 ```sh
-pnpm generate    # reads spec/businessid-rules.binpb, writes src/rules.generated.ts
+pnpm generate    # reads spec/entid-rules.binpb, writes src/rules.generated.ts
 ```
 
 The generator applies all twenty five load time checks of the specification and
@@ -145,7 +140,7 @@ makes it throw.**
 ### Versions
 
 ```ts
-BusinessIdEngine.default.rulesInfo();
+EntIdEngine.default.rulesInfo();
 // { rulesVersion: "2026.08.33", formatVersion: 1, engineVersion: "0.1.0" }
 ```
 
