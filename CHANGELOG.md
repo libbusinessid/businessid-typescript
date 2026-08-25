@@ -8,6 +8,8 @@ update that changes a verdict is published as a new package version.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-08-25
+
 ### Added
 
 - First implementation of the TypeScript engine, against rules version
